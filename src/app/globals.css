@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --rs-bg: #0c0c10;
+  --rs-bg-strong: #08080b;
+  --rs-panel: #18181c;
+  --rs-panel-strong: #232329;
+  --rs-line: #33333a;
+  --rs-text: #f4f4f5;
+  --rs-text-muted: #a1a1aa;
+  --rs-accent: #a3e635;
+  --rs-accent-purple: #a78bfa;
+  --rs-accent-amber: #fbbf24;
+  --rs-accent-magenta: #f472b6;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-jakarta);
+  --font-mono: var(--font-plex-mono);
+
+  --color-bg: var(--rs-bg);
+  --color-bg-strong: var(--rs-bg-strong);
+  --color-panel: var(--rs-panel);
+  --color-panel-strong: var(--rs-panel-strong);
+  --color-line: var(--rs-line);
+  --color-text: var(--rs-text);
+  --color-text-muted: var(--rs-text-muted);
+  --color-accent: var(--rs-accent);
+  --color-accent-purple: var(--rs-accent-purple);
+  --color-accent-amber: var(--rs-accent-amber);
+  --color-accent-magenta: var(--rs-accent-magenta);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--rs-bg);
+  color: var(--rs-text);
+}
+
+body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(167, 139, 250, 0.07), transparent),
+    radial-gradient(ellipse 40% 40% at 100% 10%, rgba(163, 230, 53, 0.04), transparent);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-delayed {
+  0%, 30% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out both;
+}
+
+.animate-fade-in-delayed {
+  animation: fade-in-delayed 0.8s ease-out both;
+}
+
+a {
+  color: inherit;
 }
