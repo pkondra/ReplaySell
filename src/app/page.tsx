@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   ArrowRight,
   Bell,
@@ -14,6 +15,65 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+
+/* ------------------------------------------------------------------ */
+/*  Page-level SEO                                                      */
+/* ------------------------------------------------------------------ */
+
+export const metadata: Metadata = {
+  title: "ReplaySell — Your live shopping replay, now a storefront",
+  description:
+    "Turn your live shopping replays into shoppable storefronts with countdown timers, buyer accounts, stock alerts, and Stripe checkout. Fixed $49/mo seller plan.",
+  alternates: { canonical: "https://replaysell.com" },
+};
+
+/* ------------------------------------------------------------------ */
+/*  Structured Data (JSON-LD)                                           */
+/* ------------------------------------------------------------------ */
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: "ReplaySell",
+      url: "https://replaysell.com",
+      description:
+        "Turn your live shopping replays into shoppable storefronts with countdown timers, buyer accounts, stock alerts, and Stripe checkout.",
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "ReplaySell",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      url: "https://replaysell.com",
+      description:
+        "Platform for live sellers to create shoppable replay storefronts with urgency timers, buyer alerts, and Stripe Connect checkout.",
+      offers: {
+        "@type": "Offer",
+        price: "49.00",
+        priceCurrency: "USD",
+        priceValidUntil: "2026-12-31",
+        availability: "https://schema.org/InStock",
+        description: "Monthly seller plan — flat fee, no commission",
+      },
+      featureList: [
+        "Shoppable replay storefronts",
+        "Countdown urgency timers",
+        "Buyer accounts with order history",
+        "Price drop and stock alerts",
+        "Stripe Connect checkout",
+        "Email notifications via Resend",
+      ],
+    },
+    {
+      "@type": "Organization",
+      name: "ReplaySell",
+      url: "https://replaysell.com",
+      email: "support@replaysell.com",
+    },
+  ],
+};
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
@@ -116,6 +176,12 @@ const faqs = [
 export default function HomePage() {
   return (
     <main className="page-fade-in min-h-screen">
+      {/* ── Structured data ──────────────────────────────────── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* ── Announcement banner ──────────────────────────────── */}
       <div className="border-b-[3px] border-line bg-[#b794f6] px-4 py-2.5 text-center font-dashboard text-sm font-semibold text-[#1a1a1a]">
         <span className="hidden sm:inline">
@@ -465,7 +531,7 @@ export default function HomePage() {
 
       {/* ── Footer ───────────────────────────────────────────── */}
       <footer className="mx-auto mt-20 w-full max-w-6xl rounded-t-[32px] border-x-[3px] border-t-[3px] border-line bg-[#ff6b5a] px-8 pb-8 pt-12 sm:px-10">
-        <div className="grid gap-10 md:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-5">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg border-[3px] border-[#2f201f] bg-[#ffbc8c] shadow-[0_3px_0_#2f201f]">
@@ -489,6 +555,20 @@ export default function HomePage() {
               </li>
               <li>
                 <Link href="/sign-in" className="hover:underline">Buyer Login</Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-heading text-lg font-bold">Legal</p>
+            <ul className="mt-3 space-y-2 text-sm font-semibold text-[#2f201f]">
+              <li>
+                <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:underline">Terms of Service</Link>
+              </li>
+              <li>
+                <Link href="/cookies" className="hover:underline">Cookie Policy</Link>
               </li>
             </ul>
           </div>

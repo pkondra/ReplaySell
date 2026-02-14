@@ -25,10 +25,81 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
+/* ------------------------------------------------------------------ */
+/*  SEO Metadata                                                        */
+/* ------------------------------------------------------------------ */
+
+const SITE_URL = "https://replaysell.com";
+const SITE_NAME = "ReplaySell";
+const SITE_DESCRIPTION =
+  "Turn your live shopping replays into shoppable storefronts with countdown timers, buyer accounts, stock alerts, and Stripe checkout.";
+
 export const metadata: Metadata = {
-  title: "ReplaySell",
-  description: "Monetize your replay window",
+  metadataBase: new URL(SITE_URL),
+
+  title: {
+    default: `${SITE_NAME} — Live Replay Storefronts`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+
+  keywords: [
+    "live shopping",
+    "replay storefront",
+    "shoppable replay",
+    "live selling",
+    "replay page",
+    "countdown timer",
+    "stock alerts",
+    "price drop alerts",
+    "Stripe Connect",
+    "ecommerce",
+    "live commerce",
+    "replay commerce",
+    "ReplaySell",
+  ],
+
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — Your live shopping replay, now a storefront`,
+    description: SITE_DESCRIPTION,
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — Live Replay Storefronts`,
+    description: SITE_DESCRIPTION,
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+
+  alternates: {
+    canonical: SITE_URL,
+  },
+
+  category: "ecommerce",
 };
+
+/* ------------------------------------------------------------------ */
+/*  Layout                                                              */
+/* ------------------------------------------------------------------ */
 
 export default function RootLayout({
   children,
