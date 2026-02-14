@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-export const alt = "ReplaySell — Your live shopping replay, now a storefront";
+export const alt = "ReplaySell — Turn your live replay into 48 hours of sales";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -142,7 +142,7 @@ export default function OGImage() {
                 textAlign: "center",
               }}
             >
-              Your live shopping replay,
+              Turn Your Live Replay Into
             </span>
             <span
               style={{
@@ -154,7 +154,7 @@ export default function OGImage() {
                 textAlign: "center",
               }}
             >
-              now a storefront.
+              48 Hours of Sales
             </span>
           </div>
 
@@ -169,7 +169,7 @@ export default function OGImage() {
               lineHeight: 1.5,
             }}
           >
-            Countdown timers · Buyer accounts · Stock alerts · Stripe checkout
+            Shoppable replay pages · Countdown timers · Stripe checkout
           </span>
 
           {/* Badge */}
@@ -190,7 +190,7 @@ export default function OGImage() {
               color: "#1a1a1a",
             }}
           >
-            $49/mo · No commission
+            Plans from $49/mo · No commission
           </div>
         </div>
       </div>

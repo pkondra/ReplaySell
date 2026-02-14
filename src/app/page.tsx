@@ -2,16 +2,24 @@ import type { Metadata } from "next";
 import {
   ArrowRight,
   Bell,
+  BarChart3,
   CalendarClock,
   Check,
-  CircleDollarSign,
   CreditCard,
+  Crown,
+  Link2,
   Mail,
   Package,
   Play,
   ShoppingBag,
+  Smartphone,
+  Sparkles,
+  Star,
   Store,
+  Timer,
+  TrendingUp,
   UserRound,
+  Users,
   Zap,
 } from "lucide-react";
 import Link from "next/link";
@@ -21,9 +29,9 @@ import Link from "next/link";
 /* ------------------------------------------------------------------ */
 
 export const metadata: Metadata = {
-  title: "ReplaySell — Your live shopping replay, now a storefront",
+  title: "ReplaySell — Turn your live replay into 48 hours of sales",
   description:
-    "Turn your live shopping replays into shoppable storefronts with countdown timers, buyer accounts, stock alerts, and Stripe checkout. Fixed $49/mo seller plan.",
+    "Capture the buyers who missed your live with a shoppable replay page, countdown timer, and built-in checkout. Plans from $49/mo. No integrations needed.",
   alternates: { canonical: "https://replaysell.com" },
 };
 
@@ -49,21 +57,44 @@ const jsonLd = {
       url: "https://replaysell.com",
       description:
         "Platform for live sellers to create shoppable replay storefronts with urgency timers, buyer alerts, and Stripe Connect checkout.",
-      offers: {
-        "@type": "Offer",
-        price: "49.00",
-        priceCurrency: "USD",
-        priceValidUntil: "2026-12-31",
-        availability: "https://schema.org/InStock",
-        description: "Monthly seller plan — flat fee, no commission",
-      },
+      offers: [
+        {
+          "@type": "Offer",
+          name: "Starter",
+          price: "49.00",
+          priceCurrency: "USD",
+          priceValidUntil: "2026-12-31",
+          availability: "https://schema.org/InStock",
+          description: "For solo sellers — unlimited replay pages, email follow-ups, Stripe checkout",
+        },
+        {
+          "@type": "Offer",
+          name: "Growth",
+          price: "99.00",
+          priceCurrency: "USD",
+          priceValidUntil: "2026-12-31",
+          availability: "https://schema.org/InStock",
+          description: "For consistent live sellers — SMS follow-ups, buyer segmentation, performance tracking",
+        },
+        {
+          "@type": "Offer",
+          name: "Boutique",
+          price: "149.00",
+          priceCurrency: "USD",
+          priceValidUntil: "2026-12-31",
+          availability: "https://schema.org/InStock",
+          description: "For teams & boutiques — multiple users, multiple brands, VIP buyer tagging",
+        },
+      ],
       featureList: [
         "Shoppable replay storefronts",
         "Countdown urgency timers",
         "Buyer accounts with order history",
         "Price drop and stock alerts",
         "Stripe Connect checkout",
-        "Email notifications via Resend",
+        "Email & SMS notifications",
+        "Buyer segmentation",
+        "Replay performance tracking",
       ],
     },
     {
@@ -82,90 +113,138 @@ const jsonLd = {
 const steps = [
   {
     num: "01",
-    title: "Go live, then replay",
-    body: "Run your live shopping event on any platform. When it ends, import products and create a shoppable replay page in seconds.",
+    title: "Paste your replay link",
+    body: "Drop your TikTok or Instagram replay URL. We handle the rest — no integrations, no code, no Shopify needed.",
     color: "bg-accent",
-    icon: Play,
+    icon: Link2,
   },
   {
     num: "02",
-    title: "Buyers browse & buy",
-    body: "Shoppers visit your replay storefront, see urgency timers, and checkout — all with their own account and order history.",
+    title: "Add products & set a timer",
+    body: "Import your products, set a 48-hour countdown, and your shoppable replay page is live in under 2 minutes.",
     color: "bg-[#ff9ecd]",
-    icon: ShoppingBag,
+    icon: Timer,
   },
   {
     num: "03",
-    title: "Alerts keep them coming back",
-    body: "Buyers subscribe to price drops, stock changes, and closing-soon reminders — so you sell more, automatically.",
+    title: "Buyers shop & you get paid",
+    body: "Shoppers browse, get alerts, and checkout via Stripe. You keep selling long after the live ends.",
     color: "bg-accent-amber",
-    icon: Bell,
+    icon: ShoppingBag,
   },
 ];
 
 const features = [
   {
-    title: "Replay storefronts with urgency",
-    body: "Every replay page has a visible countdown timer, product cards with stock badges, and inventory callouts that drive action.",
+    title: "48-hour countdown timers",
+    body: "Every replay page has a visible countdown that drives urgency and action from the moment it goes live.",
     color: "bg-accent",
     icon: CalendarClock,
   },
   {
-    title: "Full buyer accounts",
-    body: "Buyers sign up, track orders, manage alert preferences, and see purchase history — all in one place.",
+    title: "Built-in buyer accounts",
+    body: "Buyers sign up, track orders, manage alert preferences, and see their full purchase history.",
     color: "bg-[#ff9ecd]",
     icon: UserRound,
   },
   {
-    title: "Smart notifications",
-    body: "Timer reminders, price drops, restock alerts, and replay-close notices — sent automatically via email.",
+    title: "Smart email & SMS alerts",
+    body: "Timer reminders, price drops, restock alerts, and replay-closing notices — sent automatically.",
     color: "bg-accent-amber",
     icon: Bell,
   },
   {
-    title: "One-click checkout",
-    body: "Powered by Stripe Connect. Buyers pay you directly — fast, secure, and familiar.",
+    title: "Stripe-powered checkout",
+    body: "Buyers pay you directly via Stripe Connect. Fast, secure, and familiar — no middleman.",
     color: "bg-[#ffbc8c]",
     icon: CreditCard,
   },
   {
-    title: "Seller dashboard",
-    body: "Manage products, view analytics, track subscribers, and send campaigns from a single control panel.",
+    title: "Seller command center",
+    body: "Manage products, view performance analytics, track subscribers, and send campaigns from one dashboard.",
     color: "bg-[#b794f6]",
     icon: Store,
   },
   {
-    title: "Built for speed",
-    body: "Pages load instantly. No bloated plugins, no slow builders. Just fast, clean storefronts that convert.",
+    title: "Loads in milliseconds",
+    body: "No bloated plugins. No slow page builders. Just fast, clean storefronts that actually convert.",
     color: "bg-[#ff6b5a]/20",
     icon: Zap,
+  },
+];
+
+const plans = [
+  {
+    name: "Starter",
+    price: 49,
+    tagline: "For solo sellers",
+    cta: "Start with Starter",
+    popular: false,
+    color: "bg-accent",
+    features: [
+      "Unlimited replay pages",
+      "Email follow-ups",
+      "Stripe checkout",
+      "Countdown timers",
+      "Basic analytics",
+    ],
+  },
+  {
+    name: "Growth",
+    price: 99,
+    tagline: "For consistent live sellers",
+    cta: "Best for Weekly Lives",
+    popular: true,
+    color: "bg-[#ff9ecd]",
+    features: [
+      "Everything in Starter, plus:",
+      "Email + SMS follow-ups",
+      "Buyer segmentation",
+      "Replay performance tracking",
+      "Priority support",
+    ],
+  },
+  {
+    name: "Boutique",
+    price: 149,
+    tagline: "For teams & boutiques",
+    cta: "For Serious Sellers",
+    popular: false,
+    color: "bg-[#ffbc8c]",
+    features: [
+      "Everything in Growth, plus:",
+      "Multiple users",
+      "Multiple brands/pages",
+      "VIP buyer tagging",
+      "Advanced analytics",
+    ],
   },
 ];
 
 const faqs = [
   {
     q: "What exactly is a replay storefront?",
-    a: "After a live shopping event ends, ReplaySell lets you turn that event into a standalone product page with timers, stock levels, and checkout — so people who missed the live can still buy.",
+    a: "After your live shopping event ends, ReplaySell turns it into a standalone shoppable page with a countdown timer, stock levels, and checkout — so people who missed the live can still buy.",
+  },
+  {
+    q: "How fast can I set one up?",
+    a: "Under 2 minutes. Paste your replay link, add your products, set a timer, and you're live. No integrations, no Shopify, no code.",
   },
   {
     q: "How do payments work?",
-    a: "You subscribe to a fixed monthly seller plan via Stripe. Your buyers checkout through Stripe Connect Express, so payments go directly to your connected account.",
+    a: "Your buyers checkout through Stripe Connect, so payments go directly to your account. You pay a flat monthly plan fee — no per-transaction commissions from us.",
   },
   {
     q: "Do buyers need an account?",
     a: "Yes — buyers create a quick account so they can track orders, manage notification preferences, and see purchase history.",
   },
   {
-    q: "How are notifications sent?",
-    a: "Email notifications (timer reminders, price drops, stock alerts) are sent automatically via Resend. Buyers choose which alerts they want.",
+    q: "Can I use this with TikTok and Instagram?",
+    a: "Yes. Paste any TikTok or Instagram replay URL. ReplaySell doesn't host your live — it turns the replay into a shoppable storefront afterward.",
   },
   {
-    q: "Can I use this with any live platform?",
-    a: "Yes. ReplaySell doesn't host your live — it turns the replay into a shoppable storefront afterward. Works with any platform you already use.",
-  },
-  {
-    q: "Is there a free trial?",
-    a: "We're launching soon. Join the waitlist to get early access and a special introductory rate.",
+    q: "What's the difference between plans?",
+    a: "Starter gives you everything to sell from replays. Growth adds SMS, segmentation, and performance tracking. Boutique is for teams with multiple brands and VIP buyer features.",
   },
 ];
 
@@ -182,46 +261,31 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* ── Announcement banner ──────────────────────────────── */}
-      <div className="border-b-[3px] border-line bg-[#b794f6] px-4 py-2.5 text-center font-dashboard text-sm font-semibold text-[#1a1a1a]">
-        <span className="hidden sm:inline">
-          Fixed monthly seller plan &middot; Buyer checkout powered by Stripe Connect &middot;{" "}
-        </span>
-        <span className="sm:hidden">Seller plans &amp; Stripe checkout live &middot; </span>
-        <Link href="/sign-up" className="underline underline-offset-2 hover:no-underline">
-          Get started free&nbsp;&rarr;
-        </Link>
-      </div>
-
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="border-b-[3px] border-line bg-panel">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-          <div className="flex items-center gap-3">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
+          <Link href="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl border-[3px] border-line bg-[#ffbc8c] shadow-[0_4px_0_#000]">
               <Package size={20} />
             </div>
-            <div>
-              <p className="font-heading text-2xl font-black leading-none tracking-tight sm:text-3xl">
-                ReplaySell
-              </p>
-              <p className="font-dashboard text-[11px] font-semibold text-text-muted">
-                Live replay storefronts
-              </p>
-            </div>
-          </div>
+            <p className="font-heading text-2xl font-black leading-none tracking-tight sm:text-3xl">
+              ReplaySell
+            </p>
+          </Link>
 
           <div className="flex items-center gap-3">
             <Link
-              href="/dashboard"
-              className="brutal-btn-secondary hidden h-11 items-center px-5 font-dashboard text-sm sm:inline-flex"
-            >
-              Dashboard
-            </Link>
-            <Link
               href="/sign-in"
-              className="brutal-btn-primary inline-flex h-11 items-center px-5 font-dashboard text-sm"
+              className="hidden h-11 items-center px-5 font-dashboard text-sm font-bold text-text-muted transition-colors hover:text-text sm:inline-flex"
             >
               Login
+            </Link>
+            <Link
+              href="/sign-up"
+              className="brutal-btn-primary inline-flex h-11 items-center gap-2 px-5 font-dashboard text-sm"
+            >
+              Start Free
+              <ArrowRight size={14} />
             </Link>
           </div>
         </div>
@@ -229,138 +293,155 @@ export default function HomePage() {
 
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <div className="pb-8 pt-16 sm:pb-12 sm:pt-24 lg:pb-16 lg:pt-32">
-          {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-line bg-accent-amber px-4 py-2 shadow-[0_2px_0_#000]">
-            <Store size={14} />
-            <span className="font-dashboard text-xs font-bold uppercase tracking-[0.08em]">
-              Turn replays into revenue
-            </span>
-          </div>
+        <div className="grid items-center gap-12 pb-8 pt-14 sm:pb-12 sm:pt-20 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:pb-16 lg:pt-28">
+          {/* Left — Copy + Input */}
+          <div>
+            {/* Badge */}
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-line bg-accent-amber px-4 py-2 shadow-[0_2px_0_#000]">
+              <Sparkles size={14} />
+              <span className="font-dashboard text-xs font-bold uppercase tracking-[0.08em]">
+                2-minute setup &middot; No integrations
+              </span>
+            </div>
 
-          {/* Headline */}
-          <h1 className="max-w-4xl font-heading text-[clamp(2.4rem,5.5vw,4.8rem)] font-black leading-[1.08] tracking-[-0.035em]">
-            Your live shopping replay,
-            <br className="hidden sm:block" />
-            <span className="text-[#ff6b5a]"> now a storefront.</span>
-          </h1>
+            {/* Headline */}
+            <h1 className="font-heading text-[clamp(2.2rem,5vw,4.2rem)] font-black leading-[1.08] tracking-[-0.035em]">
+              Turn Your Live Replay Into{" "}
+              <span className="text-[#ff6b5a]">48 Hours of Sales</span>
+            </h1>
 
-          {/* Sub-headline */}
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-muted sm:text-xl sm:leading-relaxed">
-            ReplaySell turns your live shopping replays into shoppable pages with countdown timers,
-            buyer accounts, stock alerts, and Stripe checkout&nbsp;&mdash; so you keep selling long
-            after the live ends.
-          </p>
+            {/* Sub-headline */}
+            <p className="mt-5 max-w-lg text-lg leading-relaxed text-text-muted sm:text-xl sm:leading-relaxed">
+              Capture the buyers who missed your live&nbsp;&mdash; with a shoppable replay page,
+              countdown timer, and built-in checkout.
+            </p>
 
-          {/* CTAs */}
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link
-              href="/sign-up"
-              className="brutal-btn-primary inline-flex h-14 items-center justify-center gap-2 px-8 font-heading text-lg"
-            >
-              Start selling
-              <ArrowRight size={18} />
-            </Link>
-            <Link
-              href="/sign-in"
-              className="brutal-btn-secondary inline-flex h-14 items-center justify-center px-8 font-dashboard text-base"
-            >
-              Buyer login
-            </Link>
-          </div>
-
-          {/* Trust bullets */}
-          <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3">
-            {[
-              "Fixed monthly fee — no commission",
-              "Stripe-powered checkout",
-              "Automatic buyer alerts",
-              "Full order history",
-            ].map((item) => (
-              <div key={item} className="flex items-center gap-2 text-sm font-semibold">
-                <div className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-line bg-accent">
-                  <Check size={11} strokeWidth={3} />
+            {/* Input + CTA */}
+            <div className="mt-8 max-w-lg">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="relative flex-1">
+                  <Link2
+                    size={18}
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"
+                  />
+                  <input
+                    type="url"
+                    placeholder="Paste your TikTok / IG replay link"
+                    className="brutal-input h-14 pl-11 text-base"
+                    readOnly
+                  />
                 </div>
-                <span>{item}</span>
+                <Link
+                  href="/sign-up"
+                  className="brutal-btn-primary inline-flex h-14 shrink-0 items-center justify-center gap-2 px-6 font-heading text-base sm:px-8"
+                >
+                  Generate My Page
+                  <ArrowRight size={16} />
+                </Link>
               </div>
-            ))}
+              <p className="mt-3 font-dashboard text-xs font-semibold text-text-muted">
+                No integrations. No Shopify. 2-minute setup.
+              </p>
+            </div>
+          </div>
+
+          {/* Right — Replay page mockup */}
+          <div className="relative hidden lg:block">
+            {/* Decorative dots */}
+            <div className="absolute -right-4 -top-4 h-20 w-20 rounded-2xl border-[3px] border-line bg-accent-amber shadow-[0_4px_0_#000]" />
+            <div className="absolute -bottom-3 -left-3 h-14 w-14 rounded-xl border-[3px] border-line bg-[#b794f6] shadow-[0_3px_0_#000]" />
+
+            {/* Main mockup card */}
+            <div className="relative rounded-2xl border-[3px] border-line bg-white shadow-[0_8px_0_#000]">
+              {/* Mock nav */}
+              <div className="flex items-center justify-between border-b-[3px] border-line px-5 py-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-7 w-7 rounded-lg border-2 border-line bg-[#ffbc8c]" />
+                  <span className="font-heading text-sm font-black">Summer Haul</span>
+                </div>
+                <span className="rounded-full border-2 border-line bg-accent px-3 py-1 font-dashboard text-[10px] font-bold shadow-[0_2px_0_#000]">
+                  LIVE
+                </span>
+              </div>
+
+              {/* Mock countdown */}
+              <div className="flex items-center justify-between border-b-[3px] border-line bg-accent-amber px-5 py-2.5">
+                <div className="flex items-center gap-1.5">
+                  <Timer size={13} />
+                  <span className="font-dashboard text-xs font-bold">Closes in</span>
+                </div>
+                <span className="font-dashboard text-lg font-black tabular-nums">23:47:12</span>
+              </div>
+
+              {/* Mock content */}
+              <div className="p-5">
+                {/* Video placeholder */}
+                <div className="mb-4 flex h-36 items-center justify-center rounded-xl border-[3px] border-line bg-panel-strong">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-line bg-white shadow-[0_3px_0_#000]">
+                    <Play size={18} className="ml-0.5" />
+                  </div>
+                </div>
+
+                {/* Mock products */}
+                <div className="space-y-2.5">
+                  <MockProduct name="Floral Print Dress" price="$38.00" stock="12 left" inStock />
+                  <MockProduct name="Gold Hoop Earrings" price="$22.00" stock="4 left" inStock />
+                  <MockProduct name="Silk Scrunchie Set" price="$14.00" stock="Sold out" inStock={false} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile mockup — simplified */}
+        <div className="mb-8 lg:hidden">
+          <div className="brutal-card overflow-hidden bg-panel p-0">
+            <div className="flex items-center justify-between border-b-[3px] border-line bg-accent-amber px-5 py-3">
+              <div className="flex items-center gap-1.5">
+                <Timer size={14} />
+                <span className="font-dashboard text-xs font-bold">Replay closes in</span>
+              </div>
+              <span className="font-dashboard text-lg font-black tabular-nums">23:47:12</span>
+            </div>
+            <div className="grid grid-cols-3 divide-x-[3px] divide-line">
+              <div className="p-4 text-center">
+                <p className="font-heading text-2xl font-black">12</p>
+                <p className="font-dashboard text-[10px] font-bold text-text-muted">Products</p>
+              </div>
+              <div className="p-4 text-center">
+                <p className="font-heading text-2xl font-black">48h</p>
+                <p className="font-dashboard text-[10px] font-bold text-text-muted">Window</p>
+              </div>
+              <div className="p-4 text-center">
+                <p className="font-heading text-2xl font-black">$0</p>
+                <p className="font-dashboard text-[10px] font-bold text-text-muted">Commission</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Hero visual ──────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <div className="brutal-card overflow-hidden bg-panel p-0">
-          <div className="grid lg:grid-cols-3">
-            {/* Mock: Replay page */}
-            <div className="border-b-[3px] border-line bg-accent/40 p-8 lg:border-b-0 lg:border-r-[3px]">
-              <p className="font-dashboard text-xs font-bold uppercase tracking-[0.1em] text-text-muted">
-                Replay storefront
-              </p>
-              <div className="mt-5 space-y-3">
-                <div className="rounded-xl border-[3px] border-line bg-white p-4 shadow-[0_3px_0_#000]">
-                  <div className="flex items-center justify-between">
-                    <span className="font-heading text-base font-extrabold">Summer Haul Collection</span>
-                    <span className="rounded-full border-2 border-line bg-accent-amber px-2.5 py-0.5 font-dashboard text-[10px] font-bold shadow-[0_2px_0_#000]">
-                      LIVE
-                    </span>
-                  </div>
-                  <p className="mt-2 font-dashboard text-xs text-text-muted">12 products &middot; 3h 24m left</p>
-                </div>
-                <div className="rounded-xl border-[3px] border-line bg-white p-4 shadow-[0_3px_0_#000]">
-                  <div className="flex items-center justify-between">
-                    <span className="font-heading text-base font-extrabold">Flash Deals Friday</span>
-                    <span className="rounded-full border-2 border-line bg-[#ff9ecd] px-2.5 py-0.5 font-dashboard text-[10px] font-bold shadow-[0_2px_0_#000]">
-                      ENDED
-                    </span>
-                  </div>
-                  <p className="mt-2 font-dashboard text-xs text-text-muted">8 products &middot; Closed</p>
-                </div>
+      {/* ── Social proof bar ──────────────────────────────────── */}
+      <section className="border-y-[3px] border-line bg-panel-strong">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-5 py-5 sm:px-8">
+          {[
+            "No integrations needed",
+            "Works with TikTok & Instagram",
+            "Stripe-powered checkout",
+            "Setup in under 2 min",
+          ].map((item) => (
+            <div key={item} className="flex items-center gap-2 text-sm font-semibold">
+              <div className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-line bg-accent">
+                <Check size={11} strokeWidth={3} />
               </div>
+              <span>{item}</span>
             </div>
-
-            {/* Mock: Buyer alerts */}
-            <div className="border-b-[3px] border-line p-8 lg:border-b-0 lg:border-r-[3px]">
-              <p className="font-dashboard text-xs font-bold uppercase tracking-[0.1em] text-text-muted">
-                Buyer alerts
-              </p>
-              <div className="mt-5 space-y-3">
-                <AlertRow label="Replay closing soon" color="bg-accent-amber" />
-                <AlertRow label="Price dropped" color="bg-[#ff9ecd]" />
-                <AlertRow label="Back in stock" color="bg-accent" />
-              </div>
-              <div className="mt-5 flex items-center gap-2 rounded-xl border-2 border-line bg-panel-strong px-3 py-2.5">
-                <Mail size={14} className="text-text-muted" />
-                <span className="font-dashboard text-xs text-text-muted">Sent via Resend</span>
-              </div>
-            </div>
-
-            {/* Mock: Pricing summary */}
-            <div className="p-8">
-              <p className="font-dashboard text-xs font-bold uppercase tracking-[0.1em] text-text-muted">
-                Simple pricing
-              </p>
-              <div className="mt-5 space-y-3">
-                <div className="rounded-xl border-[3px] border-line bg-accent p-5 shadow-[0_3px_0_#000]">
-                  <p className="font-dashboard text-sm font-semibold text-text-muted">Seller plan</p>
-                  <p className="mt-1 font-heading text-3xl font-black">
-                    $49<span className="text-lg font-bold text-text-muted">/mo</span>
-                  </p>
-                  <p className="mt-1 text-xs font-semibold text-text-muted">Flat fee. No commission.</p>
-                </div>
-                <div className="rounded-xl border-[3px] border-line bg-[#ff9ecd] p-5 shadow-[0_3px_0_#000]">
-                  <p className="font-dashboard text-sm font-semibold text-text-muted">Buyer checkout</p>
-                  <p className="mt-1 font-heading text-xl font-black">Stripe Connect</p>
-                  <p className="mt-1 text-xs font-semibold text-text-muted">Payments go to you.</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* ── How it works ─────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-6xl px-5 pt-24 sm:px-8 sm:pt-32">
+      <section className="mx-auto w-full max-w-6xl px-5 pt-20 sm:px-8 sm:pt-28">
         <div className="mb-12 max-w-2xl">
           <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
             How it works
@@ -390,7 +471,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Features grid ────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-6xl px-5 pt-24 sm:px-8 sm:pt-32">
+      <section className="mx-auto w-full max-w-6xl px-5 pt-20 sm:px-8 sm:pt-28">
         <div className="mb-12 text-center">
           <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
             Everything you need
@@ -418,66 +499,95 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Monetization model ───────────────────────────────── */}
-      <section className="mx-auto w-full max-w-6xl px-5 pt-24 sm:px-8 sm:pt-32">
-        <div className="brutal-card overflow-hidden bg-panel p-0">
-          <div className="px-8 pb-2 pt-8 md:px-10 md:pt-10">
-            <div className="flex items-center gap-3">
-              <CircleDollarSign size={20} />
-              <h2 className="font-heading text-3xl font-black sm:text-4xl">How you make money</h2>
-            </div>
-            <p className="mt-3 max-w-2xl text-sm font-semibold leading-relaxed text-text-muted">
-              You pay a flat monthly fee. Your buyers pay you directly via Stripe Connect. No hidden
-              fees, no per-transaction commissions from us.
-            </p>
-          </div>
-
-          <div className="grid gap-0 md:grid-cols-2">
-            <div className="border-t-[3px] border-line bg-accent/40 p-8 md:border-r-[3px] md:p-10">
-              <p className="inline-flex items-center gap-2 rounded-full border-2 border-line bg-white px-3 py-1 font-dashboard text-xs font-bold shadow-[0_2px_0_#000]">
-                <Store size={12} /> Seller
-              </p>
-              <h3 className="mt-5 font-heading text-2xl font-extrabold">$49/month flat</h3>
-              <ul className="mt-4 space-y-2">
-                {[
-                  "Unlimited replay storefronts",
-                  "Product management & imports",
-                  "Subscriber capture & campaigns",
-                  "Full analytics dashboard",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm font-semibold">
-                    <Check size={14} className="mt-0.5 shrink-0 text-[#1a1a1a]" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="border-t-[3px] border-line bg-[#ffbc8c]/40 p-8 md:p-10">
-              <p className="inline-flex items-center gap-2 rounded-full border-2 border-line bg-white px-3 py-1 font-dashboard text-xs font-bold shadow-[0_2px_0_#000]">
-                <UserRound size={12} /> Buyer
-              </p>
-              <h3 className="mt-5 font-heading text-2xl font-extrabold">Free to sign up</h3>
-              <ul className="mt-4 space-y-2">
-                {[
-                  "Browse & buy from replay pages",
-                  "Stripe-powered secure checkout",
-                  "Order history & tracking",
-                  "Customizable alert preferences",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm font-semibold">
-                    <Check size={14} className="mt-0.5 shrink-0 text-[#1a1a1a]" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+      {/* ── Pricing ──────────────────────────────────────────── */}
+      <section className="mx-auto w-full max-w-6xl px-5 pt-20 sm:px-8 sm:pt-28">
+        <div className="mb-12 text-center">
+          <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
+            Simple pricing
+          </p>
+          <h2 className="mx-auto mt-3 max-w-xl font-heading text-4xl font-black tracking-tight sm:text-5xl">
+            Pick the plan that fits your lives
+          </h2>
+          <p className="mx-auto mt-4 max-w-lg text-base font-semibold text-text-muted">
+            All plans include Stripe checkout, buyer accounts, and order management.
+            No per-transaction fees from us&nbsp;&mdash; ever.
+          </p>
         </div>
+
+        <div className="grid gap-5 md:grid-cols-3">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`relative flex flex-col rounded-2xl border-[3px] border-line bg-panel shadow-[0_4px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_0_#000] ${
+                plan.popular ? "ring-4 ring-[#ff9ecd]/40 ring-offset-2 ring-offset-bg" : ""
+              }`}
+            >
+              {/* Popular badge */}
+              {plan.popular && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border-[3px] border-line bg-[#ff9ecd] px-4 py-1.5 font-dashboard text-xs font-bold shadow-[0_3px_0_#000]">
+                    <Star size={12} fill="currentColor" />
+                    Most Popular
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-1 flex-col p-7 pt-8">
+                {/* Plan name */}
+                <h3 className="font-heading text-2xl font-black">{plan.name}</h3>
+
+                {/* Price */}
+                <div className="mt-3 flex items-baseline gap-1">
+                  <span className="font-heading text-5xl font-black tracking-tight text-[#ff6b5a]">
+                    ${plan.price}
+                  </span>
+                  <span className="font-dashboard text-base font-semibold text-text-muted">/month</span>
+                </div>
+
+                {/* Tagline */}
+                <p className="mt-2 font-dashboard text-sm font-semibold text-text-muted">
+                  {plan.tagline}
+                </p>
+
+                {/* Divider */}
+                <div className="my-6 border-t-2 border-line/20" />
+
+                {/* Features */}
+                <ul className="flex-1 space-y-3">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2.5 text-sm font-semibold">
+                      <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-line bg-accent">
+                        <Check size={11} strokeWidth={3} />
+                      </div>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA */}
+                <Link
+                  href="/sign-up"
+                  className={`mt-8 inline-flex h-13 w-full items-center justify-center rounded-xl border-[3px] border-line font-heading text-base font-bold shadow-[0_4px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_6px_0_#000] ${
+                    plan.popular
+                      ? "bg-[#ff9ecd] hover:bg-[#ffb8da]"
+                      : "bg-white hover:bg-accent/40"
+                  }`}
+                >
+                  {plan.cta}
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Pricing footnote */}
+        <p className="mt-6 text-center font-dashboard text-xs font-semibold text-text-muted">
+          All plans billed monthly. Cancel anytime. Buyer checkout powered by Stripe Connect.
+        </p>
       </section>
 
       {/* ── FAQ ──────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-3xl px-5 pt-24 sm:px-8 sm:pt-32">
+      <section className="mx-auto w-full max-w-3xl px-5 pt-20 sm:px-8 sm:pt-28">
         <div className="mb-10 text-center">
           <h2 className="font-heading text-4xl font-black sm:text-5xl">Questions?</h2>
           <p className="mt-3 text-base font-semibold text-text-muted">
@@ -488,7 +598,7 @@ export default function HomePage() {
         <div className="space-y-4">
           {faqs.map((faq) => (
             <details key={faq.q} className="group brutal-card bg-panel p-0">
-              <summary className="flex cursor-pointer items-center justify-between gap-4 px-6 py-5 font-heading text-lg font-bold sm:text-xl">
+              <summary className="flex cursor-pointer items-center justify-between gap-4 px-6 py-5 font-heading text-lg font-bold sm:text-xl [&::-webkit-details-marker]:hidden">
                 <span className="leading-tight">{faq.q}</span>
                 <span className="shrink-0 text-2xl transition-transform duration-200 group-open:rotate-45">
                   +
@@ -503,27 +613,22 @@ export default function HomePage() {
       </section>
 
       {/* ── Bottom CTA ───────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-6xl px-5 pt-24 sm:px-8 sm:pt-32">
-        <div className="brutal-card bg-accent-amber p-10 text-center sm:p-14">
+      <section className="mx-auto w-full max-w-6xl px-5 pt-20 sm:px-8 sm:pt-28">
+        <div className="brutal-card overflow-hidden bg-accent-amber p-10 text-center sm:p-14">
           <h2 className="mx-auto max-w-2xl font-heading text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
-            Ready to turn replays into revenue?
+            Your next live deserves a storefront
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-base font-semibold text-text-muted sm:text-lg">
-            Set up your first replay storefront in minutes. Fixed pricing, no surprises.
+            Paste your replay link, add products, and start selling in under 2 minutes.
+            No integrations. No code. No Shopify.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/sign-up"
               className="brutal-btn-primary inline-flex h-14 items-center justify-center gap-2 px-8 font-heading text-lg"
             >
-              Start selling
+              Generate My Replay Page
               <ArrowRight size={18} />
-            </Link>
-            <Link
-              href="/sign-in"
-              className="brutal-btn-secondary inline-flex h-14 items-center justify-center px-8 font-dashboard text-base"
-            >
-              Buyer login
             </Link>
           </div>
         </div>
@@ -540,8 +645,8 @@ export default function HomePage() {
               <p className="font-heading text-2xl font-black">ReplaySell</p>
             </div>
             <p className="mt-4 max-w-sm text-sm font-semibold leading-relaxed text-[#2f201f]">
-              Turn your live shopping replays into shoppable storefronts. Manage products, capture buyers,
-              send alerts, and track everything from one dashboard.
+              Turn your live shopping replays into shoppable storefronts. Paste a link, add products,
+              and start selling in minutes.
             </p>
           </div>
           <div>
@@ -551,7 +656,7 @@ export default function HomePage() {
                 <Link href="/dashboard" className="hover:underline">Dashboard</Link>
               </li>
               <li>
-                <Link href="/sign-up" className="hover:underline">Seller Plan</Link>
+                <Link href="/sign-up" className="hover:underline">Pricing</Link>
               </li>
               <li>
                 <Link href="/sign-in" className="hover:underline">Buyer Login</Link>
@@ -591,15 +696,41 @@ export default function HomePage() {
 /*  Local components                                                   */
 /* ------------------------------------------------------------------ */
 
-function AlertRow({ label, color }: { label: string; color: string }) {
+function MockProduct({
+  name,
+  price,
+  stock,
+  inStock,
+}: {
+  name: string;
+  price: string;
+  stock: string;
+  inStock: boolean;
+}) {
   return (
     <div
-      className={`flex items-center justify-between rounded-xl border-[3px] border-line px-4 py-3 shadow-[0_2px_0_#000] ${color}`}
+      className={`flex items-center justify-between rounded-lg border-[3px] border-line p-3 shadow-[0_2px_0_#000] ${
+        inStock ? "bg-white" : "bg-panel-strong opacity-60"
+      }`}
     >
-      <span className="font-dashboard text-sm font-bold">{label}</span>
-      <span className="rounded-full border-2 border-line bg-white px-2.5 py-0.5 text-xs font-bold shadow-[0_2px_0_#000]">
-        ON
-      </span>
+      <div className="min-w-0">
+        <p className="font-heading text-sm font-extrabold leading-tight">{name}</p>
+        <div className="mt-1 flex items-center gap-2">
+          <span className="font-heading text-sm font-black">{price}</span>
+          <span
+            className={`rounded-full border-[1.5px] border-line px-2 py-0.5 font-dashboard text-[9px] font-bold ${
+              inStock ? "bg-accent" : "bg-panel-strong"
+            }`}
+          >
+            {stock}
+          </span>
+        </div>
+      </div>
+      {inStock ? (
+        <div className="shrink-0 rounded-lg border-2 border-line bg-[#ff9ecd] px-3 py-1.5 font-dashboard text-[10px] font-bold shadow-[0_2px_0_#000]">
+          Buy now
+        </div>
+      ) : null}
     </div>
   );
 }
