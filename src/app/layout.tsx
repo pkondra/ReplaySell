@@ -41,7 +41,7 @@ export default function RootLayout({
         className={`${outfit.variable} ${manrope.variable} ${spaceGrotesk.variable} bg-bg font-sans text-text antialiased`}
       >
         <AppProviders>
-          <div className="relative min-h-screen overflow-x-hidden">{children}</div>
+          <div className="relative z-10 min-h-screen overflow-x-hidden">{children}</div>
         </AppProviders>
       </body>
     </html>

@@ -58,11 +58,17 @@ body {
 }
 
 body::before {
-  content: none;
+  content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
+  background-image:
+    linear-gradient(to right, rgba(26, 26, 26, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(26, 26, 26, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 100%);
 }
 
 h1,
@@ -77,6 +83,11 @@ h6 {
 
 .dashboard-layout {
   font-family: var(--font-space-grotesk), sans-serif;
+}
+
+/* Hide the background grid on non-landing pages */
+body:has(.dashboard-layout)::before {
+  content: none;
 }
 
 a {
