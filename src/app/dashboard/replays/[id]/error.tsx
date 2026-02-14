@@ -17,16 +17,18 @@ export default function ReplayDetailError({
   }, [error]);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-8 sm:px-6">
-      <RetroCard className="max-w-md space-y-3 text-center">
-        <h2 className="text-xl font-semibold">Could not load replay</h2>
-        <p className="text-sm text-text-muted">
+    <main className="dashboard-layout min-h-screen px-4 py-6 sm:px-6">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-center rounded-[24px] border-[3px] border-line bg-panel p-6 shadow-[0_8px_0_#000]">
+      <RetroCard className="max-w-md space-y-3 text-center bg-white">
+        <h2 className="font-heading text-3xl font-black">Could not load replay</h2>
+        <p className="text-sm font-semibold text-text-muted">
           This replay may not exist for your account or you may have lost access.
         </p>
         <div className="flex justify-center">
           <RetroButton onClick={reset}>Try again</RetroButton>
         </div>
       </RetroCard>
+      </div>
     </main>
   );
 }

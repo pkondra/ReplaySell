@@ -54,10 +54,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={toast.id}
             className={cn(
-              "pointer-events-auto w-full rounded-lg border px-4 py-2.5 text-sm shadow-lg animate-fade-in",
+              "pointer-events-auto w-full rounded-xl border-2 border-line px-4 py-2.5 text-sm font-semibold text-text shadow-[0_4px_0_#000] page-fade-in",
               toast.type === "success"
-                ? "border-accent/30 bg-panel text-text"
-                : "border-accent-magenta/40 bg-panel text-text",
+                ? "bg-[#f2fffb]"
+                : "bg-[#fff3f0]",
             )}
             role="status"
             aria-live="polite"

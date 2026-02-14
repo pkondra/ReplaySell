@@ -27,18 +27,24 @@ export default defineSchema({
   subscribers: defineTable({
     replayId: v.id("replays"),
     userId: v.string(),
+    accountUserId: v.optional(v.string()),
     email: v.string(),
     phone: v.optional(v.string()),
     smsConsent: v.boolean(),
+    notifyTimer: v.optional(v.boolean()),
+    notifyStock: v.optional(v.boolean()),
+    notifyPriceChange: v.optional(v.boolean()),
     createdAt: v.number(),
   })
     .index("by_replayId", ["replayId"])
-    .index("by_userId", ["userId"]),
+    .index("by_userId", ["userId"])
+    .index("by_accountUserId", ["accountUserId"]),
 
   orders: defineTable({
     replayId: v.id("replays"),
     productId: v.id("products"),
     sellerId: v.string(),
+    buyerId: v.optional(v.string()),
     email: v.string(),
     quantity: v.number(),
     total: v.number(),
@@ -46,5 +52,6 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_replayId", ["replayId"])
-    .index("by_sellerId", ["sellerId"]),
+    .index("by_sellerId", ["sellerId"])
+    .index("by_buyerId", ["buyerId"]),
 });

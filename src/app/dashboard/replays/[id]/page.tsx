@@ -5,9 +5,9 @@ import { UserButton } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import {
   ArrowLeft,
+  Bell,
   Clock,
   Copy,
-  ExternalLink,
   Mail,
   Package,
   Plus,
@@ -15,7 +15,7 @@ import {
   Save,
   Send,
   Trash2,
-  Users,
+  UserRound,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -40,90 +40,95 @@ export default function ReplayDetailPage() {
   const removeProduct = useMutation(api.products.removeProduct);
 
   const [tab, setTab] = useState<"products" | "subscribers" | "orders" | "campaigns">("products");
+  const [renderNow] = useState(() => Date.now());
 
   if (replay === undefined) {
     return (
       <Shell>
-        <div className="rounded-lg border border-line bg-panel p-8 text-center text-sm text-text-muted">
-          Loading...
-        </div>
+        <div className="brutal-card p-8 text-sm font-semibold text-text-muted">Loading replay...</div>
       </Shell>
     );
   }
 
-  const isLive = replay.status === "live" && (replay.expiresAt ?? 0) > Date.now();
-  const publicUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/r/${replayId}`
-    : `/r/${replayId}`;
+  const isLive = replay.status === "live" && (replay.expiresAt ?? 0) > renderNow;
+  const publicUrl =
+    typeof window !== "undefined" ? `${window.location.origin}/r/${replayId}` : `/r/${replayId}`;
 
   return (
     <Shell>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
-            className="flex h-8 w-8 items-center justify-center rounded-md border border-line text-text-muted transition-colors hover:bg-panel-strong hover:text-text"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border-[2px] border-line bg-white shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5"
           >
             <ArrowLeft size={14} />
           </Link>
-          <h1 className="text-lg font-semibold tracking-tight">
-            {replay.title || "Untitled replay"}
-          </h1>
-          {isLive ? (
-            <span className="rounded-full bg-accent/15 px-2.5 py-0.5 text-[10px] font-bold text-accent">LIVE</span>
-          ) : (
-            <span className="rounded-full bg-text-muted/15 px-2.5 py-0.5 text-[10px] font-bold text-text-muted">ENDED</span>
-          )}
+          <h1 className="font-heading text-3xl font-black">{replay.title || "Untitled replay"}</h1>
+          <span
+            className={`rounded-full border-2 border-line px-3 py-1 text-xs font-bold shadow-[0_2px_0_#000] ${
+              isLive ? "bg-accent" : "bg-panel-strong"
+            }`}
+          >
+            {isLive ? "LIVE" : "ENDED"}
+          </span>
         </div>
+
         <button
           onClick={async () => {
             try {
               await navigator.clipboard.writeText(publicUrl);
-              toast.success("Public link copied!");
+              toast.success("Public link copied.");
             } catch {
               toast.error("Could not copy link.");
             }
           }}
-          className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-line px-3 text-xs font-medium text-text-muted transition-colors hover:bg-panel-strong hover:text-text"
+          className="brutal-btn-secondary inline-flex h-10 cursor-pointer items-center gap-2 px-4 text-sm"
         >
-          <Copy size={12} />
+          <Copy size={14} />
           Copy public link
         </button>
       </div>
 
       <div className="mb-6 grid gap-3 sm:grid-cols-4">
-        <MiniStat icon={Package} label="Products" value={products?.length ?? 0} />
-        <MiniStat icon={Users} label="Subscribers" value={subscribers?.length ?? 0} />
-        <MiniStat icon={Mail} label="Orders" value={orders?.length ?? 0} />
+        <MiniStat icon={Package} label="Products" value={products?.length ?? 0} tone="bg-accent" />
+        <MiniStat icon={UserRound} label="Subscribers" value={subscribers?.length ?? 0} tone="bg-[#ff9ecd]" />
+        <MiniStat icon={Mail} label="Orders" value={orders?.length ?? 0} tone="bg-[#ffbc8c]" />
         <MiniStat
           icon={Clock}
-          label="Expires"
-          value={isLive && replay.expiresAt ? timeLeft(replay.expiresAt) : "Ended"}
+          label="Time left"
+          value={isLive && replay.expiresAt ? timeLeft(replay.expiresAt, renderNow) : "Ended"}
+          tone="bg-accent-amber"
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.25fr]">
         <div className="space-y-4">
-          <div className="rounded-lg border border-line bg-panel p-4">
-            <p className="mb-2 text-xs font-medium text-text-muted">Preview</p>
+          <div className="brutal-card bg-white p-4">
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.08em] text-text-muted">Replay preview</p>
             <EmbedPreview url={replay.url} />
           </div>
+
           <ReplaySettingsCard replay={replay} updateReplay={updateReplay} toast={toast} />
         </div>
 
         <div className="space-y-4">
-          <div className="flex gap-1 rounded-lg border border-line bg-panel p-1">
-            {(["products", "subscribers", "orders", "campaigns"] as const).map((t) => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`flex-1 cursor-pointer rounded-md px-3 py-2 text-xs font-medium capitalize transition-colors ${
-                  tab === t ? "bg-panel-strong text-text" : "text-text-muted hover:text-text"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+          <div className="rounded-2xl border-[3px] border-line bg-white p-1 shadow-[0_4px_0_#000]">
+            <div className="grid grid-cols-4 gap-1">
+              {(["products", "subscribers", "orders", "campaigns"] as const).map((item) => (
+                <button
+                  key={item}
+                  onClick={() => setTab(item)}
+                  className={`cursor-pointer rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-[0.06em] transition-all ${
+                    tab === item
+                      ? "-translate-y-0.5 border-2 border-line bg-accent shadow-[0_2px_0_#000]"
+                      : "border-2 border-transparent hover:border-line"
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
           </div>
 
           {tab === "products" && (
@@ -137,7 +142,9 @@ export default function ReplayDetailPage() {
           )}
           {tab === "subscribers" && <SubscribersTab subscribers={subscribers ?? []} />}
           {tab === "orders" && <OrdersTab orders={orders ?? []} products={products ?? []} />}
-          {tab === "campaigns" && <CampaignsTab subscriberCount={subscribers?.length ?? 0} toast={toast} />}
+          {tab === "campaigns" && (
+            <CampaignsTab subscriberCount={subscribers?.length ?? 0} toast={toast} />
+          )}
         </div>
       </div>
     </Shell>
@@ -146,33 +153,47 @@ export default function ReplayDetailPage() {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-10 lg:py-14">
-      <header className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <RadioTower size={18} className="text-accent" />
-          <span className="text-sm font-semibold tracking-tight">ReplaySell</span>
-          <span className="text-text-muted/40">/</span>
-          <Link href="/dashboard" className="text-sm text-text-muted transition-colors hover:text-text">
-            Dashboard
-          </Link>
-          <span className="text-text-muted/40">/</span>
-          <span className="text-sm text-text-muted">Detail</span>
-        </div>
-        <UserButton afterSignOutUrl="/" appearance={{ elements: { userButtonAvatarBox: "h-8 w-8" } }} />
-      </header>
-      {children}
+    <main className="dashboard-layout page-fade-in min-h-screen px-4 py-6 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl rounded-[24px] border-[3px] border-line bg-panel p-5 shadow-[0_8px_0_#000] sm:p-6">
+        <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border-[3px] border-line bg-[#ffbc8c] shadow-[0_4px_0_#000]">
+              <RadioTower size={18} />
+            </div>
+            <div>
+              <p className="font-heading text-3xl font-black leading-none">ReplaySell</p>
+              <p className="text-sm font-semibold text-text-muted">Replay detail workspace</p>
+            </div>
+          </div>
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{ elements: { userButtonAvatarBox: "h-11 w-11 border-2 border-[#1A1A1A]" } }}
+          />
+        </header>
+        {children}
+      </div>
     </main>
   );
 }
 
-function MiniStat({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string | number }) {
+function MiniStat({
+  icon: Icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string | number;
+  tone: string;
+}) {
   return (
-    <div className="rounded-lg border border-line bg-panel px-4 py-3">
+    <div className={`rounded-2xl border-[3px] border-line p-4 shadow-[0_4px_0_#000] ${tone}`}>
       <div className="flex items-center gap-1.5 text-text-muted">
-        <Icon size={12} />
-        <span className="text-[11px] font-medium">{label}</span>
+        <Icon size={13} />
+        <span className="text-xs font-bold uppercase tracking-[0.06em]">{label}</span>
       </div>
-      <p className="mt-0.5 text-lg font-bold tracking-tight">{value}</p>
+      <p className="mt-1 font-heading text-3xl font-black leading-none">{value}</p>
     </div>
   );
 }
@@ -183,7 +204,12 @@ function ReplaySettingsCard({
   toast,
 }: {
   replay: Doc<"replays">;
-  updateReplay: (args: { id: Id<"replays">; url?: string; title?: string; status?: string }) => Promise<Id<"replays">>;
+  updateReplay: (args: {
+    id: Id<"replays">;
+    url?: string;
+    title?: string;
+    status?: string;
+  }) => Promise<Id<"replays">>;
   toast: { success: (m: string) => void; error: (m: string) => void };
 }) {
   const [title, setTitle] = useState(replay.title ?? "");
@@ -197,35 +223,33 @@ function ReplaySettingsCard({
     setSaving(true);
     try {
       await updateReplay({ id: replay._id, title: title.trim() || undefined });
-      toast.success("Saved.");
+      toast.success("Replay settings saved.");
     } catch {
-      toast.error("Could not save.");
+      toast.error("Could not save settings.");
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <div className="rounded-lg border border-line bg-panel p-4 space-y-3">
-      <p className="text-xs font-medium text-text-muted">Settings</p>
-      <div className="space-y-2">
-        <input
-          placeholder="Replay title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="h-9 w-full rounded-md border border-line bg-bg px-3 text-sm text-text placeholder:text-text-muted/60 focus:border-accent/40 focus:outline-none focus:ring-1 focus:ring-accent/30"
-        />
-        <div className="flex items-center justify-between text-xs text-text-muted">
-          <span>Created {formatTimestamp(replay.createdAt)}</span>
-          <span>Expires {replay.expiresAt != null ? formatTimestamp(replay.expiresAt) : "—"}</span>
-        </div>
+    <div className="brutal-card space-y-3 bg-white p-4">
+      <p className="text-xs font-bold uppercase tracking-[0.08em] text-text-muted">Replay settings</p>
+      <input
+        placeholder="Replay title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="brutal-input"
+      />
+      <div className="grid gap-1 text-xs font-semibold text-text-muted sm:grid-cols-2">
+        <p>Created {formatTimestamp(replay.createdAt)}</p>
+        <p>Expires {replay.expiresAt != null ? formatTimestamp(replay.expiresAt) : "—"}</p>
       </div>
       <button
         onClick={handleSave}
         disabled={saving}
-        className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md bg-accent px-3 text-xs font-semibold text-bg-strong transition hover:brightness-110 disabled:opacity-50"
+        className="brutal-btn-primary inline-flex h-10 items-center gap-2 px-4 text-sm disabled:opacity-60"
       >
-        <Save size={12} />
+        <Save size={14} />
         {saving ? "Saving..." : "Save"}
       </button>
     </div>
@@ -241,7 +265,12 @@ function ProductsTab({
 }: {
   replayId: Id<"replays">;
   products: Doc<"products">[];
-  addProduct: (args: { replayId: Id<"replays">; name: string; price: number; stock: number }) => Promise<Id<"products">>;
+  addProduct: (args: {
+    replayId: Id<"replays">;
+    name: string;
+    price: number;
+    stock: number;
+  }) => Promise<Id<"products">>;
   removeProduct: (args: { id: Id<"products"> }) => Promise<void | null>;
   toast: { success: (m: string) => void; error: (m: string) => void };
 }) {
@@ -274,9 +303,9 @@ function ProductsTab({
 
   return (
     <div className="space-y-3">
-      <form onSubmit={handleAdd} className="rounded-lg border border-line bg-panel p-4 space-y-3">
-        <p className="flex items-center gap-1.5 text-xs font-medium text-text-muted">
-          <Plus size={12} /> Add product
+      <form onSubmit={handleAdd} className="rounded-2xl border-[3px] border-line bg-white p-4 shadow-[0_4px_0_#000]">
+        <p className="mb-3 flex items-center gap-2 font-heading text-2xl font-black">
+          <Plus size={16} /> Add product
         </p>
         <div className="grid gap-2 sm:grid-cols-3">
           <input
@@ -284,7 +313,7 @@ function ProductsTab({
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="h-9 rounded-md border border-line bg-bg px-3 text-sm text-text placeholder:text-text-muted/60 focus:border-accent/40 focus:outline-none focus:ring-1 focus:ring-accent/30"
+            className="brutal-input"
           />
           <input
             type="number"
@@ -294,7 +323,7 @@ function ProductsTab({
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required
-            className="h-9 rounded-md border border-line bg-bg px-3 text-sm text-text placeholder:text-text-muted/60 focus:border-accent/40 focus:outline-none focus:ring-1 focus:ring-accent/30"
+            className="brutal-input"
           />
           <input
             type="number"
@@ -303,45 +332,45 @@ function ProductsTab({
             value={stock}
             onChange={(e) => setStock(e.target.value)}
             required
-            className="h-9 rounded-md border border-line bg-bg px-3 text-sm text-text placeholder:text-text-muted/60 focus:border-accent/40 focus:outline-none focus:ring-1 focus:ring-accent/30"
+            className="brutal-input"
           />
         </div>
         <button
           type="submit"
           disabled={adding}
-          className="h-8 cursor-pointer rounded-md bg-accent px-4 text-xs font-semibold text-bg-strong transition hover:brightness-110 disabled:opacity-50"
+          className="brutal-btn-primary mt-3 inline-flex h-10 items-center px-4 text-sm disabled:opacity-60"
         >
-          {adding ? "Adding..." : "Add"}
+          {adding ? "Adding..." : "Add product"}
         </button>
       </form>
 
       {products.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-line p-6 text-center text-sm text-text-muted">
-          No products yet. Add your first SKU above.
-        </div>
+        <div className="brutal-card p-6 text-sm font-semibold text-text-muted">No products yet.</div>
       ) : (
-        <div className="divide-y divide-line rounded-lg border border-line bg-panel">
+        <div className="space-y-2">
           {products.map((p) => (
-            <div key={p._id} className="flex items-center justify-between px-4 py-3">
-              <div>
-                <p className="text-sm font-medium text-text">{p.name}</p>
-                <p className="text-xs text-text-muted">
-                  ${p.price.toFixed(2)} &middot; {p.stock} in stock &middot; {p.sold} sold
-                </p>
+            <div key={p._id} className="rounded-2xl border-[3px] border-line bg-white p-4 shadow-[0_4px_0_#000]">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-heading text-2xl font-black">{p.name}</p>
+                  <p className="text-sm font-semibold text-text-muted">
+                    ${p.price.toFixed(2)} · {p.stock} in stock · {p.sold} sold
+                  </p>
+                </div>
+                <button
+                  onClick={async () => {
+                    try {
+                      await removeProduct({ id: p._id });
+                      toast.success("Product removed.");
+                    } catch {
+                      toast.error("Could not remove product.");
+                    }
+                  }}
+                  className="rounded-xl border-2 border-line bg-[#fff3f0] p-2 shadow-[0_2px_0_#000] transition-all hover:-translate-y-0.5"
+                >
+                  <Trash2 size={15} />
+                </button>
               </div>
-              <button
-                onClick={async () => {
-                  try {
-                    await removeProduct({ id: p._id });
-                    toast.success("Removed.");
-                  } catch {
-                    toast.error("Could not remove.");
-                  }
-                }}
-                className="cursor-pointer rounded-md p-1.5 text-text-muted transition-colors hover:bg-accent-magenta/10 hover:text-accent-magenta"
-              >
-                <Trash2 size={14} />
-              </button>
             </div>
           ))}
         </div>
@@ -354,24 +383,22 @@ function SubscribersTab({ subscribers }: { subscribers: Doc<"subscribers">[] }) 
   return (
     <div className="space-y-3">
       {subscribers.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-line p-6 text-center text-sm text-text-muted">
-          No subscribers yet. Share your public replay link to start capturing emails.
-        </div>
+        <div className="brutal-card p-6 text-sm font-semibold text-text-muted">No subscribers yet.</div>
       ) : (
-        <div className="divide-y divide-line rounded-lg border border-line bg-panel">
-          {subscribers.map((s) => (
-            <div key={s._id} className="flex items-center justify-between px-4 py-3">
-              <div>
-                <p className="text-sm font-medium text-text">{s.email}</p>
-                <p className="text-xs text-text-muted">
-                  {s.phone ? `${s.phone} · ` : ""}
-                  {s.smsConsent ? "SMS opt-in" : "Email only"} &middot;{" "}
-                  {formatTimestamp(s.createdAt)}
-                </p>
-              </div>
+        subscribers.map((sub) => (
+          <div key={sub._id} className="rounded-2xl border-[3px] border-line bg-white p-4 shadow-[0_4px_0_#000]">
+            <p className="font-heading text-2xl font-black leading-none">{sub.email}</p>
+            <p className="mt-1 text-sm font-semibold text-text-muted">
+              {sub.phone ? `${sub.phone} · ` : ""}
+              {sub.smsConsent ? "SMS opt-in" : "Email only"} · {formatTimestamp(sub.createdAt)}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <PreferenceChip enabled={sub.notifyTimer ?? true} label="Timer alerts" />
+              <PreferenceChip enabled={sub.notifyStock ?? true} label="Stock alerts" />
+              <PreferenceChip enabled={sub.notifyPriceChange ?? true} label="Price alerts" />
             </div>
-          ))}
-        </div>
+          </div>
+        ))
       )}
     </div>
   );
@@ -383,30 +410,28 @@ function OrdersTab({ orders, products }: { orders: Doc<"orders">[]; products: Do
   return (
     <div className="space-y-3">
       {orders.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-line p-6 text-center text-sm text-text-muted">
-          No orders yet. Orders will appear here when viewers buy from your replay page.
-        </div>
+        <div className="brutal-card p-6 text-sm font-semibold text-text-muted">No orders yet.</div>
       ) : (
-        <div className="divide-y divide-line rounded-lg border border-line bg-panel">
-          {orders.map((o) => {
-            const product = productMap.get(o.productId);
-            return (
-              <div key={o._id} className="flex items-center justify-between px-4 py-3">
+        orders.map((order) => {
+          const product = productMap.get(order.productId);
+          return (
+            <div key={order._id} className="rounded-2xl border-[3px] border-line bg-white p-4 shadow-[0_4px_0_#000]">
+              <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <p className="text-sm font-medium text-text">
-                    {product?.name ?? "Unknown"} &times; {o.quantity}
+                  <p className="font-heading text-2xl font-black leading-none">
+                    {product?.name ?? "Unknown"} × {order.quantity}
                   </p>
-                  <p className="text-xs text-text-muted">
-                    {o.email} &middot; ${o.total.toFixed(2)} &middot; {formatTimestamp(o.createdAt)}
+                  <p className="mt-1 text-sm font-semibold text-text-muted">
+                    {order.email} · ${order.total.toFixed(2)} · {formatTimestamp(order.createdAt)}
                   </p>
                 </div>
-                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">
-                  {o.status}
+                <span className="rounded-full border-2 border-line bg-accent-amber px-2.5 py-1 text-xs font-bold shadow-[0_2px_0_#000]">
+                  {order.status}
                 </span>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })
       )}
     </div>
   );
@@ -419,41 +444,47 @@ function CampaignsTab({
   subscriberCount: number;
   toast: { success: (m: string) => void; error: (m: string) => void };
 }) {
-  const templates = [
-    { label: "Replay is live now", icon: ExternalLink },
-    { label: "Only X items left", icon: Package },
-    { label: "Replay closes in 6 hours", icon: Clock },
-  ];
+  const templates = ["Replay is live now", "Only X items left", "Replay closes in 6 hours"];
 
   return (
-    <div className="space-y-3">
-      <div className="rounded-lg border border-line bg-panel p-4">
-        <p className="mb-3 text-xs font-medium text-text-muted">
-          Quick campaigns &middot; {subscriberCount} subscriber{subscriberCount !== 1 ? "s" : ""}
-        </p>
-        <div className="space-y-2">
-          {templates.map((t) => (
-            <button
-              key={t.label}
-              onClick={() => toast.success(`Campaign "${t.label}" sent! (dummy)`)}
-              className="flex w-full cursor-pointer items-center gap-3 rounded-md border border-line px-4 py-3 text-left text-sm transition-colors hover:bg-panel-strong"
-            >
-              <Send size={14} className="shrink-0 text-accent-purple" />
-              <span className="font-medium text-text">{t.label}</span>
-              <span className="ml-auto text-xs text-text-muted">Send</span>
-            </button>
-          ))}
-        </div>
-      </div>
-      <p className="text-center text-xs text-text-muted">
-        Full campaign builder coming soon. These are quick-send templates.
+    <div className="rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000]">
+      <p className="mb-3 flex items-center gap-2 font-heading text-2xl font-black">
+        <Bell size={18} /> Campaign templates
       </p>
+      <p className="mb-3 text-sm font-semibold text-text-muted">
+        {subscriberCount} subscribers available for send.
+      </p>
+
+      <div className="space-y-2">
+        {templates.map((template) => (
+          <button
+            key={template}
+            onClick={() => toast.success(`Template sent: ${template}`)}
+            className="flex w-full cursor-pointer items-center justify-between rounded-xl border-[2px] border-line bg-panel-strong px-4 py-3 text-left text-sm font-bold shadow-[0_2px_0_#000] transition-all hover:-translate-y-0.5"
+          >
+            <span>{template}</span>
+            <Send size={14} />
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
 
-function timeLeft(expiresAt: number) {
-  const diff = expiresAt - Date.now();
+function PreferenceChip({ enabled, label }: { enabled: boolean; label: string }) {
+  return (
+    <span
+      className={`rounded-full border-2 border-line px-3 py-1 text-xs font-bold shadow-[0_2px_0_#000] ${
+        enabled ? "bg-accent" : "bg-panel-strong"
+      }`}
+    >
+      {label}
+    </span>
+  );
+}
+
+function timeLeft(expiresAt: number, now: number) {
+  const diff = expiresAt - now;
   if (diff <= 0) return "Ended";
   const h = Math.floor(diff / 3_600_000);
   const m = Math.floor((diff % 3_600_000) / 60_000);

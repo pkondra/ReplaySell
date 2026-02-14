@@ -40,7 +40,7 @@ function LinkCard({
           href={href}
           target="_blank"
           rel="noreferrer"
-          className="break-all font-mono text-sm text-accent underline-offset-4 hover:underline"
+          className="break-all font-dashboard text-sm font-semibold text-[#0f8d75] underline-offset-4 hover:underline"
         >
           {href}
         </Link>
@@ -126,7 +126,7 @@ export function EmbedPreview({ url, className }: { url: string; className?: stri
           <Badge>{parsed.provider}</Badge>
           <span className="text-xs text-text-muted">Embedded preview</span>
         </div>
-        <div className="overflow-hidden rounded-md border border-line bg-bg-strong">
+        <div className="overflow-hidden rounded-xl border-[3px] border-line bg-bg-strong shadow-[0_4px_0_#000]">
           <div className="relative aspect-video">
             <iframe
               src={parsed.embedUrl}
@@ -155,7 +155,7 @@ export function EmbedPreview({ url, className }: { url: string; className?: stri
             <Badge>TikTok</Badge>
             <span className="text-xs text-text-muted">oEmbed assisted</span>
           </div>
-          <div className="overflow-hidden rounded-md border border-line bg-bg-strong">
+          <div className="overflow-hidden rounded-xl border-[3px] border-line bg-bg-strong shadow-[0_4px_0_#000]">
             <div className="relative mx-auto aspect-[9/16] w-full max-w-sm">
               <iframe
                 src={`https://www.tiktok.com/embed/v2/${embedId}`}
@@ -189,7 +189,7 @@ export function EmbedPreview({ url, className }: { url: string; className?: stri
             <span className="text-xs text-text-muted">Sanitized oEmbed</span>
           </div>
           <div
-            className="prose prose-invert max-w-none rounded-md border border-line bg-panel-strong p-3 text-sm"
+            className="max-w-none rounded-xl border-[3px] border-line bg-panel-strong p-3 text-sm shadow-[0_4px_0_#000]"
             dangerouslySetInnerHTML={{ __html: tiktokState.data.html }}
           />
         </RetroCard>

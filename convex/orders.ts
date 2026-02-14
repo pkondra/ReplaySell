@@ -19,6 +19,7 @@ export const placeOrder = mutation({
     quantity: v.number(),
   },
   handler: async (ctx, args) => {
+    const identity = await requireIdentity(ctx);
     const replay = await ctx.db.get(args.replayId);
     if (!replay) throw new Error("Replay not found");
     if (replay.status !== "live" || replay.expiresAt == null || replay.expiresAt < Date.now())
@@ -37,6 +38,7 @@ export const placeOrder = mutation({
       replayId: args.replayId,
       productId: args.productId,
       sellerId: replay.userId,
+      buyerId: identity.subject,
       email: args.email,
       quantity: args.quantity,
       total: product.price * args.quantity,
@@ -69,5 +71,43 @@ export const listMyOrders = query({
       .query("orders")
       .withIndex("by_sellerId", (q) => q.eq("sellerId", identity.subject))
       .collect();
+  },
+});
+
+export const listMyPurchases = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await requireIdentity(ctx);
+    return await ctx.db
+      .query("orders")
+      .withIndex("by_buyerId", (q) => q.eq("buyerId", identity.subject))
+      .order("desc")
+      .collect();
+  },
+});
+
+export const listMyPurchasesDetailed = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await requireIdentity(ctx);
+    const orders = await ctx.db
+      .query("orders")
+      .withIndex("by_buyerId", (q) => q.eq("buyerId", identity.subject))
+      .order("desc")
+      .collect();
+
+    const decorated = await Promise.all(
+      orders.map(async (order) => {
+        const replay = await ctx.db.get(order.replayId);
+        const product = await ctx.db.get(order.productId);
+        return {
+          ...order,
+          replayTitle: replay?.title ?? null,
+          productName: product?.name ?? null,
+        };
+      }),
+    );
+
+    return decorated;
   },
 });

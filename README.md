@@ -1,36 +1,41 @@
-# ReplaySell v1
+# ReplaySell
 
-ReplaySell is a production-oriented MVP for creating and managing replay embeds.
+ReplaySell is a replay-commerce app where sellers create shoppable replay pages and buyers subscribe for updates, create accounts, and purchase from replay windows.
 
 ## Stack
 
 - Next.js 16 (App Router, TypeScript, ESLint)
 - Tailwind CSS v4
-- Clerk (authentication + protected dashboard routes)
-- Convex (database, typed queries/mutations, auth-aware access control)
+- Clerk (auth for seller and buyer accounts)
+- Convex (database + mutations/queries)
+- Resend (transactional email scaffold)
 
-## Features in v1
+## Product Model
 
-- Landing page with single CTA flow: paste replay URL and `Get started`
-- Signed-out flow: redirects to Clerk sign-in/sign-up, then returns to dashboard with URL prefilled
-- Signed-in flow: creates a replay and opens replay detail page
-- Supported previews:
-  - YouTube (iframe)
-  - Vimeo (iframe)
-  - TikTok (oEmbed attempt + embed, fallback link card)
-  - Instagram/Whatnot (link card with "not supported in v1")
-- Dashboard:
-  - Create replay with live preview
-  - List my replays, newest first
-- Replay detail:
-  - Large preview
-  - Edit URL + save
-  - Copy placeholder public link
-- Convex authorization checks on all replay functions (owner-only read/write)
+- Sellers: fixed monthly fee (recommended via Stripe Billing subscription on platform account)
+- Buyers: checkout against seller connected account (recommended via Stripe Connect Express destination charges)
+- Buyers must sign in to purchase so order history is tied to account
 
-## Environment variables
+## Current Features
 
-Copy `.env.example` to `.env.local` and fill in:
+- Light-mode neo-brutalist UI system (Outfit + Manrope + Space Grotesk)
+- Seller dashboard with replay stats, replay creation, and management
+- Replay detail workspace:
+  - products
+  - subscribers
+  - orders
+  - quick campaign templates
+- Public replay page (`/r/[id]`):
+  - email capture + optional phone/SMS consent
+  - notification preference toggles (timer / stock / price change)
+  - sign-in prompt before purchase
+- Buyer purchase history page (`/dashboard/purchases`)
+- Resend helper at `src/lib/email/resend.ts` using:
+  - `noreply@hello.ringreceptionist.com`
+
+## Environment Variables
+
+Copy `.env.example` to `.env.local`:
 
 ```bash
 cp .env.example .env.local
@@ -40,10 +45,12 @@ Required:
 
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
 - `CLERK_SECRET_KEY`
-- `NEXT_PUBLIC_CONVEX_URL`
 - `CLERK_JWT_ISSUER_DOMAIN`
+- `NEXT_PUBLIC_CONVEX_URL`
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL` (default is already set)
 
-Convex CLI will also populate:
+Convex CLI also sets:
 
 - `CONVEX_DEPLOYMENT`
 - `NEXT_PUBLIC_CONVEX_SITE_URL`
@@ -56,70 +63,31 @@ Convex CLI will also populate:
 npm install
 ```
 
-2. Configure Convex deployment (first-time setup):
+2. Start Convex and generate types:
 
 ```bash
 npx convex dev
 ```
 
-This creates/updates `.env.local` with `CONVEX_DEPLOYMENT` and `NEXT_PUBLIC_CONVEX_URL`.
-
-3. Set Clerk issuer in Convex env:
-
-```bash
-npx convex env set CLERK_JWT_ISSUER_DOMAIN https://<your-clerk-domain>
-```
-
-4. Start Convex dev process (keep running):
-
-```bash
-npx convex dev
-```
-
-5. In another terminal, run Next.js:
+3. Start app:
 
 ```bash
 npm run dev
 ```
 
-App runs at [http://localhost:4000](http://localhost:4000).
+App runs on [http://localhost:4000](http://localhost:4000).
 
-## Project structure
+## Manual Smoke Checklist
 
-```text
-convex/
-  auth.config.ts
-  replays.ts
-  schema.ts
-src/
-  app/
-    page.tsx
-    sign-in/[[...sign-in]]/page.tsx
-    sign-up/[[...sign-up]]/page.tsx
-    dashboard/page.tsx
-    dashboard/replays/[id]/page.tsx
-    api/oembed/tiktok/route.ts
-  components/
-    providers/app-providers.tsx
-    replay/embed-preview.tsx
-    replay/replay-url-composer.tsx
-    ui/*
-  lib/
-    embed.ts
-    convex-client.ts
-```
-
-## Manual smoke checklist
-
-- [ ] Paste URL on landing while signed out -> redirect to auth -> return to `/dashboard` with prefilled URL
-- [ ] Paste YouTube URL -> iframe renders
-- [ ] Paste TikTok URL -> oEmbed attempt; fallback link card when unavailable
-- [ ] Create replay -> item appears in dashboard list
-- [ ] Open replay -> detail page loads
-- [ ] Update replay URL -> preview updates and save succeeds
-- [ ] User cannot access another user’s replay ID (error screen)
+- [ ] Seller signs in and creates a replay
+- [ ] Seller adds products to replay detail
+- [ ] Public replay unlock form saves subscriber with preferences
+- [ ] Buyer is prompted to sign in before buying
+- [ ] Signed-in buyer can place order
+- [ ] Buyer sees purchase in `/dashboard/purchases`
+- [ ] Seller sees order in replay detail orders tab
 
 ## Notes
 
-- Public replay pages are intentionally placeholder-only in v1.
-- No Stripe/catalog features are included in this scope.
+- Stripe flows are represented at product/design level in this version; production billing/checkout API wiring is the next step.
+- Resend helper is scaffolded and ready for route handlers/server actions.

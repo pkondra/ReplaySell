@@ -17,6 +17,10 @@ export const subscribe = mutation({
     email: v.string(),
     phone: v.optional(v.string()),
     smsConsent: v.optional(v.boolean()),
+    accountUserId: v.optional(v.string()),
+    notifyTimer: v.optional(v.boolean()),
+    notifyStock: v.optional(v.boolean()),
+    notifyPriceChange: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const replay = await ctx.db.get(args.replayId);
@@ -25,9 +29,13 @@ export const subscribe = mutation({
     return await ctx.db.insert("subscribers", {
       replayId: args.replayId,
       userId: replay.userId,
+      accountUserId: args.accountUserId,
       email: args.email,
       phone: args.phone,
       smsConsent: args.smsConsent ?? false,
+      notifyTimer: args.notifyTimer ?? true,
+      notifyStock: args.notifyStock ?? true,
+      notifyPriceChange: args.notifyPriceChange ?? true,
       createdAt: Date.now(),
     });
   },
@@ -55,6 +63,17 @@ export const listMySubs = query({
     return await ctx.db
       .query("subscribers")
       .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .collect();
+  },
+});
+
+export const listMyWatchlist = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await requireIdentity(ctx);
+    return await ctx.db
+      .query("subscribers")
+      .withIndex("by_accountUserId", (q) => q.eq("accountUserId", identity.subject))
       .collect();
   },
 });

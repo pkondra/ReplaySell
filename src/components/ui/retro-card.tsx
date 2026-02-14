@@ -6,7 +6,7 @@ export function RetroCard({ className, ...props }: React.HTMLAttributes<HTMLDivE
   return (
     <div
       className={cn(
-        "rounded-lg border border-line bg-panel p-5 transition-colors duration-150",
+        "brutal-card p-5",
         className,
       )}
       {...props}
