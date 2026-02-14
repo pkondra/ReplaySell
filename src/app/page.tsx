@@ -114,7 +114,7 @@ const steps = [
   {
     num: "01",
     title: "Paste your replay link",
-    body: "Drop your TikTok or Instagram replay URL. We handle the rest — no integrations, no code, no Shopify needed.",
+    body: "Paste your replay link and post it anywhere: Instagram, TikTok bio, WhatsApp, Facebook. We handle the rest — no integrations, no code, no Shopify needed.",
     color: "bg-accent",
     icon: Link2,
   },
@@ -177,40 +177,43 @@ const plans = [
   {
     name: "Starter",
     price: 49,
-    tagline: "For solo sellers",
-    cta: "Start with Starter",
+    tagline: "For solo sellers getting started with replay sales.",
+    cta: "Start My First Replay",
     popular: false,
     color: "bg-accent",
+    detail: "If one replay makes you $50+, this pays for itself.",
     features: [
       "Unlimited replay pages",
-      "Email follow-ups",
-      "Stripe checkout",
-      "Countdown timers",
-      "Basic analytics",
+      "Built-in countdown timers that drive urgency",
+      "Stripe-powered checkout (you get paid directly)",
+      "Automated email follow-ups",
+      "Essential sales tracking",
     ],
   },
   {
     name: "Growth",
     price: 99,
-    tagline: "For consistent live sellers",
-    cta: "Best for Weekly Lives",
+    tagline: "For sellers going live weekly.",
+    cta: "Upgrade My Replay Sales",
     popular: true,
     color: "bg-[#ff9ecd]",
+    detail: "Built for sellers who want consistent replay income after every live.",
     features: [
       "Everything in Starter, plus:",
-      "Email + SMS follow-ups",
-      "Buyer segmentation",
-      "Replay performance tracking",
+      "Email + SMS automation",
+      "Buyer tagging & segmentation",
+      "Replay revenue tracking",
       "Priority support",
     ],
   },
   {
     name: "Boutique",
     price: 149,
-    tagline: "For teams & boutiques",
-    cta: "For Serious Sellers",
+    tagline: "For teams & high-volume brands.",
+    cta: "Scale My Live Revenue",
     popular: false,
     color: "bg-[#ffbc8c]",
+    detail: "Designed for serious sellers scaling multiple drops.",
     features: [
       "Everything in Growth, plus:",
       "Multiple users",
@@ -239,8 +242,8 @@ const faqs = [
     a: "Yes — buyers create a quick account so they can track orders, manage notification preferences, and see purchase history.",
   },
   {
-    q: "Can I use this with TikTok and Instagram?",
-    a: "Yes. Paste any TikTok or Instagram replay URL. ReplaySell doesn't host your live — it turns the replay into a shoppable storefront afterward.",
+    q: "Can I use this with TikTok, Instagram, and Facebook?",
+    a: "Yes. Paste any TikTok, Instagram, or Facebook replay URL. Then copy your replay link and post it anywhere: Instagram, TikTok bio, WhatsApp, Facebook.",
   },
   {
     q: "What's the difference between plans?",
@@ -326,7 +329,7 @@ export default function HomePage() {
                   />
                   <input
                     type="url"
-                    placeholder="Paste your TikTok / IG replay link"
+                    placeholder="Paste your TikTok / IG / FB replay link"
                     className="brutal-input h-14 pl-11 text-base"
                     readOnly
                   />
@@ -340,7 +343,7 @@ export default function HomePage() {
                 </Link>
               </div>
               <p className="mt-3 font-dashboard text-xs font-semibold text-text-muted">
-                No integrations. No Shopify. 2-minute setup.
+                Copy your replay link and post it anywhere: Instagram, TikTok bio, WhatsApp, Facebook.
               </p>
             </div>
           </div>
@@ -426,7 +429,7 @@ export default function HomePage() {
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-5 py-5 sm:px-8">
           {[
             "No integrations needed",
-            "Works with TikTok & Instagram",
+            "Works with TikTok, Instagram & Facebook",
             "Stripe-powered checkout",
             "Setup in under 2 min",
           ].map((item) => (
@@ -503,14 +506,16 @@ export default function HomePage() {
       <section className="mx-auto w-full max-w-6xl px-5 pt-20 sm:px-8 sm:pt-28">
         <div className="mb-12 text-center">
           <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
-            Simple pricing
+            Pricing Built for Live Sellers
           </p>
           <h2 className="mx-auto mt-3 max-w-xl font-heading text-4xl font-black tracking-tight sm:text-5xl">
-            Pick the plan that fits your lives
+            Turn every live into predictable replay revenue.
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-base font-semibold text-text-muted">
-            All plans include Stripe checkout, buyer accounts, and order management.
-            No per-transaction fees from us&nbsp;&mdash; ever.
+            Launch your first replay free.
+          </p>
+          <p className="mx-auto mt-1 max-w-lg text-base font-semibold text-text-muted">
+            7-day trial. Cancel anytime. Keep 100% of your sales.
           </p>
         </div>
 
@@ -549,6 +554,12 @@ export default function HomePage() {
                   {plan.tagline}
                 </p>
 
+                {"detail" in plan ? (
+                  <p className="mt-2 font-dashboard text-xs font-semibold text-text-muted">
+                    {plan.detail}
+                  </p>
+                ) : null}
+
                 {/* Divider */}
                 <div className="my-6 border-t-2 border-line/20" />
 
@@ -582,7 +593,10 @@ export default function HomePage() {
 
         {/* Pricing footnote */}
         <p className="mt-6 text-center font-dashboard text-xs font-semibold text-text-muted">
-          All plans billed monthly. Cancel anytime. Buyer checkout powered by Stripe Connect.
+          No contracts. No revenue share. No hidden fees.
+        </p>
+        <p className="mt-1 text-center font-dashboard text-xs font-semibold text-text-muted">
+          You keep 100% of every sale.
         </p>
       </section>
 
