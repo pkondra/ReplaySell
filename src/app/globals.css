@@ -165,6 +165,71 @@ a {
   transform: translateY(-1px);
 }
 
+.testimonial-marquee-track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  animation: testimonialMarquee 75s linear infinite;
+}
+
+.testimonial-marquee:hover .testimonial-marquee-track {
+  animation-play-state: paused;
+}
+
+.testimonial-column {
+  width: min(32vw, 340px);
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+}
+
+@keyframes testimonialMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 1024px) {
+  .testimonial-marquee-track {
+    animation-duration: 92s;
+  }
+
+  .testimonial-column {
+    width: min(46vw, 320px);
+  }
+}
+
+@media (max-width: 640px) {
+  .testimonial-marquee-track {
+    animation-duration: 112s;
+  }
+
+  .testimonial-column {
+    width: min(82vw, 310px);
+  }
+}
+
+.share-hint-pop {
+  animation: shareHintPop 2.6s ease forwards;
+}
+
+@keyframes shareHintPop {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  10%,
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+}
+
 .page-fade-in {
   animation: pageFadeIn 0.3s ease-out both;
 }

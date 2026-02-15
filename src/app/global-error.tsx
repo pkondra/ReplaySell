@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertTriangle, RotateCcw } from "lucide-react";
+import Link from "next/link";
 
 export default function GlobalError({
   error,
@@ -48,12 +49,12 @@ export default function GlobalError({
               <RotateCcw size={16} />
               Try again
             </button>
-            <a
+            <Link
               href="/"
               className="inline-flex h-12 items-center rounded-xl border-2 border-[#1a1a1a] bg-white px-6 text-sm font-bold shadow-[0_3px_0_#000]"
             >
               Back to home
-            </a>
+            </Link>
           </div>
         </div>
       </body>

@@ -2,24 +2,18 @@ import type { Metadata } from "next";
 import {
   ArrowRight,
   Bell,
-  BarChart3,
   CalendarClock,
   Check,
   CreditCard,
-  Crown,
   Link2,
-  Mail,
   Package,
   Play,
   ShoppingBag,
-  Smartphone,
   Sparkles,
   Star,
   Store,
   Timer,
-  TrendingUp,
   UserRound,
-  Users,
   Zap,
 } from "lucide-react";
 import Link from "next/link";
@@ -173,6 +167,236 @@ const features = [
   },
 ];
 
+const testimonials = [
+  {
+    name: "Maya R.",
+    role: "TikTok fashion seller",
+    quote:
+      "I used to lose buyers after the live ended. Now replay links keep converting while I sleep.",
+    metric: "+$2,140 replay revenue in 7 days",
+    tone: "bg-accent",
+  },
+  {
+    name: "Carmen T.",
+    role: "Boutique owner",
+    quote:
+      "The countdown and low-stock alerts are the difference. People come back and actually checkout.",
+    metric: "3.4x more post-live orders",
+    tone: "bg-[#ff9ecd]",
+  },
+  {
+    name: "Jules N.",
+    role: "Instagram live host",
+    quote:
+      "Customers paste the link from my bio and buy fast. No DMs, no manual invoices, no chaos.",
+    metric: "12 hours saved every month",
+    tone: "bg-accent-amber",
+  },
+  {
+    name: "Kayla P.",
+    role: "Reseller",
+    quote:
+      "ReplaySell made my old replays useful again. The same content now closes new sales every week.",
+    metric: "41% of weekly sales from replays",
+    tone: "bg-[#ffbc8c]",
+  },
+  {
+    name: "Lena W.",
+    role: "Facebook live seller",
+    quote:
+      "I dropped the replay link in Stories and woke up to paid orders without touching DMs.",
+    metric: "$890 overnight replay sales",
+    tone: "bg-[#b794f6]",
+  },
+  {
+    name: "Amira S.",
+    role: "Beauty creator",
+    quote:
+      "The replay timer gives people a reason to buy now. It stopped the 'I'll come back later' problem.",
+    metric: "+62% same-day conversions",
+    tone: "bg-accent",
+  },
+  {
+    name: "Rocio D.",
+    role: "Vintage seller",
+    quote:
+      "Before ReplaySell I manually invoiced everyone. Now buyers self-checkout and I focus on sourcing.",
+    metric: "7 hours saved per week",
+    tone: "bg-[#ff9ecd]",
+  },
+  {
+    name: "Nadia F.",
+    role: "Accessories boutique",
+    quote:
+      "Our replay page works like a mini store after every live. It's clean, fast, and easy to share.",
+    metric: "2.8x replay click-through rate",
+    tone: "bg-accent-amber",
+  },
+  {
+    name: "Tiana B.",
+    role: "TikTok reseller",
+    quote:
+      "I posted one link in bio and got orders from people who missed the stream by 12 hours.",
+    metric: "34 extra orders per replay",
+    tone: "bg-[#ffbc8c]",
+  },
+  {
+    name: "Brook H.",
+    role: "Sneaker seller",
+    quote:
+      "Low-stock labels push buyers to checkout fast. It feels like the urgency from the live itself.",
+    metric: "3.1x faster sell-through",
+    tone: "bg-[#b794f6]",
+  },
+  {
+    name: "Hana M.",
+    role: "Home decor host",
+    quote:
+      "ReplaySell made old inventory move again. I now run replay drops weekly with almost no manual work.",
+    metric: "$1,740 monthly replay revenue",
+    tone: "bg-accent",
+  },
+  {
+    name: "Dee C.",
+    role: "Instagram boutique",
+    quote:
+      "Our buyers actually like the page because they can see products and buy in two taps.",
+    metric: "21% higher checkout rate",
+    tone: "bg-[#ff9ecd]",
+  },
+  {
+    name: "Piper J.",
+    role: "Live auction seller",
+    quote:
+      "I use replay links in WhatsApp follow-ups and they convert way better than plain text messages.",
+    metric: "2.2x WhatsApp conversions",
+    tone: "bg-accent-amber",
+  },
+  {
+    name: "Sara K.",
+    role: "Streetwear creator",
+    quote:
+      "The replay page looks premium and trustworthy. Buyers stopped asking if checkout is legit.",
+    metric: "18% fewer drop-offs",
+    tone: "bg-[#ffbc8c]",
+  },
+  {
+    name: "Mina L.",
+    role: "Jewelry seller",
+    quote:
+      "I schedule reminder posts and keep the same replay link everywhere. No confusion, just sales.",
+    metric: "+$1,120 in 10 days",
+    tone: "bg-[#b794f6]",
+  },
+  {
+    name: "Cleo V.",
+    role: "Facebook creator",
+    quote:
+      "ReplaySell turned my late-night lives into a 48-hour selling window that keeps paying back.",
+    metric: "46% of sales after stream end",
+    tone: "bg-accent",
+  },
+  {
+    name: "Rina O.",
+    role: "Boutique manager",
+    quote:
+      "The team loves that one replay link works across TikTok bio, Stories, and email blasts.",
+    metric: "4 channels, one link, one flow",
+    tone: "bg-[#ff9ecd]",
+  },
+  {
+    name: "Jo P.",
+    role: "Handmade shop owner",
+    quote:
+      "I can launch a replay page in minutes. It feels like a cheat code after every live session.",
+    metric: "Under 2 min setup time",
+    tone: "bg-accent-amber",
+  },
+  {
+    name: "Reese N.",
+    role: "TikTok beauty host",
+    quote:
+      "I use replay links for product rounds. It keeps momentum going all weekend long.",
+    metric: "+29% weekend revenue",
+    tone: "bg-[#ffbc8c]",
+  },
+  {
+    name: "Ayla T.",
+    role: "Fashion boutique",
+    quote:
+      "Our replay page looks on-brand and drives repeat buyers back without paid ads.",
+    metric: "37% repeat buyer rate",
+    tone: "bg-[#b794f6]",
+  },
+  {
+    name: "Noor E.",
+    role: "Home seller",
+    quote:
+      "The alerts bring people back when stock updates. We recover sales we used to lose.",
+    metric: "26 recovered orders/month",
+    tone: "bg-accent",
+  },
+  {
+    name: "Mia Y.",
+    role: "Live seller",
+    quote:
+      "The replay storefront is cleaner than link-in-bio tools and converts better for product drops.",
+    metric: "1.9x better than bio links",
+    tone: "bg-[#ff9ecd]",
+  },
+  {
+    name: "Ari Q.",
+    role: "Resale curator",
+    quote:
+      "People buy from replay while I prep the next live. That never happened before.",
+    metric: "Continuous sales between lives",
+    tone: "bg-accent-amber",
+  },
+  {
+    name: "Dina G.",
+    role: "Creator seller",
+    quote:
+      "Posting replay links in Stories became part of my routine because it just works.",
+    metric: "3.7x story-to-order lift",
+    tone: "bg-[#ffbc8c]",
+  },
+  {
+    name: "Faye R.",
+    role: "Curated thrift seller",
+    quote:
+      "ReplaySell gave me structure: timer, products, checkout. Buyers know exactly what to do.",
+    metric: "Higher intent from first click",
+    tone: "bg-[#b794f6]",
+  },
+  {
+    name: "Nia P.",
+    role: "TikTok boutique owner",
+    quote:
+      "I share one replay URL in captions and comments. Buyers keep finding it and buying later.",
+    metric: "+$980 replay lift per week",
+    tone: "bg-accent",
+  },
+  {
+    name: "Jade S.",
+    role: "Pop-up seller",
+    quote:
+      "I no longer miss post-live demand. The replay page captures all the late buyers for us.",
+    metric: "31% more total event revenue",
+    tone: "bg-[#ff9ecd]",
+  },
+];
+
+const TESTIMONIAL_ROWS = 3;
+const testimonialColumns = Array.from(
+  { length: Math.ceil(testimonials.length / TESTIMONIAL_ROWS) },
+  (_, columnIndex) =>
+    testimonials.slice(
+      columnIndex * TESTIMONIAL_ROWS,
+      columnIndex * TESTIMONIAL_ROWS + TESTIMONIAL_ROWS,
+    ),
+);
+const loopingTestimonialColumns = [...testimonialColumns, ...testimonialColumns];
+
 const plans = [
   {
     name: "Starter",
@@ -303,20 +527,19 @@ export default function HomePage() {
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-line bg-accent-amber px-4 py-2 shadow-[0_2px_0_#000]">
               <Sparkles size={14} />
               <span className="font-dashboard text-xs font-bold uppercase tracking-[0.08em]">
-                2-minute setup &middot; No integrations
+                Go live in 2 minutes &middot; No integrations
               </span>
             </div>
 
             {/* Headline */}
             <h1 className="font-heading text-[clamp(2.2rem,5vw,4.2rem)] font-black leading-[1.08] tracking-[-0.035em]">
-              Turn Your Live Replay Into{" "}
-              <span className="text-[#ff6b5a]">48 Hours of Sales</span>
+              From Replay Link to{" "}
+              <span className="text-[#ff6b5a]">Live Storefront in 2 Minutes</span>
             </h1>
 
             {/* Sub-headline */}
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-text-muted sm:text-xl sm:leading-relaxed">
-              Capture the buyers who missed your live&nbsp;&mdash; with a shoppable replay page,
-              countdown timer, and built-in checkout.
+              Paste your replay URL, add products, and publish instantly. Start selling to missed buyers before your next story post.
             </p>
 
             {/* Input + CTA */}
@@ -338,12 +561,23 @@ export default function HomePage() {
                   href="/sign-up"
                   className="brutal-btn-primary inline-flex h-14 shrink-0 items-center justify-center gap-2 px-6 font-heading text-base sm:px-8"
                 >
-                  Generate My Page
+                  Start in 2 minutes
                   <ArrowRight size={16} />
                 </Link>
               </div>
+              <div className="mt-3 grid gap-2 text-xs font-bold sm:grid-cols-3">
+                <div className="rounded-lg border-2 border-line bg-white px-3 py-2 shadow-[0_2px_0_#000]">
+                  01 &middot; Paste link
+                </div>
+                <div className="rounded-lg border-2 border-line bg-white px-3 py-2 shadow-[0_2px_0_#000]">
+                  02 &middot; Add products
+                </div>
+                <div className="rounded-lg border-2 border-line bg-white px-3 py-2 shadow-[0_2px_0_#000]">
+                  03 &middot; Share everywhere
+                </div>
+              </div>
               <p className="mt-3 font-dashboard text-xs font-semibold text-text-muted">
-                Copy your replay link and post it anywhere: Instagram, TikTok bio, WhatsApp, Facebook.
+                Post your replay link on Instagram, TikTok bio, WhatsApp, or Facebook and keep selling after the live.
               </p>
             </div>
           </div>
@@ -440,6 +674,66 @@ export default function HomePage() {
               <span>{item}</span>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── Testimonials ────────────────────────────────────── */}
+      <section className="mx-auto w-full max-w-6xl px-5 pt-16 sm:px-8 sm:pt-20">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
+              Seller stories
+            </p>
+            <h2 className="mt-3 font-heading text-4xl font-black tracking-tight sm:text-5xl">
+              Replay pages that keep selling
+            </h2>
+          </div>
+          <p className="text-sm font-semibold text-text-muted">
+            Auto-scrolls continuously. Hover to pause.
+          </p>
+        </div>
+
+        <div className="testimonial-marquee relative overflow-hidden rounded-3xl border-[3px] border-line bg-panel-strong/40 p-3 sm:p-4">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-bg to-transparent sm:w-12" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-bg to-transparent sm:w-12" />
+          <div className="testimonial-marquee-track">
+            {loopingTestimonialColumns.map((column, columnIndex) => (
+              <div
+                key={`testimonial-column-${columnIndex}`}
+                className="testimonial-column grid gap-4"
+              >
+                {column.map((item) => (
+                  <article
+                    key={`${item.name}-${item.metric}-${columnIndex}`}
+                    className="rounded-2xl border-[3px] border-line bg-panel p-5 shadow-[0_4px_0_#000]"
+                  >
+                    <div className="mb-3 flex items-center gap-1">
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <Star
+                          key={`${item.name}-star-${index}`}
+                          size={14}
+                          className="text-[#ff6b5a]"
+                          fill="currentColor"
+                        />
+                      ))}
+                    </div>
+                    <p className="text-sm font-semibold leading-relaxed text-text-muted">
+                      &quot;{item.quote}&quot;
+                    </p>
+                    <div className="mt-4 border-t-2 border-line/20 pt-3">
+                      <p className="font-heading text-lg font-black">{item.name}</p>
+                      <p className="text-xs font-semibold text-text-muted">{item.role}</p>
+                      <div
+                        className={`mt-2 inline-flex rounded-full border-2 border-line px-2.5 py-1 font-dashboard text-[10px] font-bold shadow-[0_2px_0_#000] ${item.tone}`}
+                      >
+                        {item.metric}
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

@@ -32,7 +32,7 @@ export function ReplayUrlComposer({
   const helperText = useMemo(() => {
     const check = validateReplayUrl(url);
     if (!url.trim()) {
-      return "Supports YouTube, TikTok, Vimeo embeds. Instagram & Whatnot as link cards.";
+      return "Supports YouTube, TikTok, Vimeo, and Facebook embeds. Instagram & Whatnot as link cards.";
     }
 
     if (!check.valid) {

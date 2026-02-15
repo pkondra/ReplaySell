@@ -8,10 +8,9 @@ import {
   BellRing,
   Check,
   Clock,
+  Copy,
   LogIn,
-  Mail,
   Package,
-  Phone,
   ShoppingBag,
   Timer,
 } from "lucide-react";
@@ -52,6 +51,8 @@ export default function PublicReplayClient() {
   const [subscribing, setSubscribing] = useState(false);
   const [countdown, setCountdown] = useState("");
   const [nowTs, setNowTs] = useState(() => Date.now());
+  const [copied, setCopied] = useState(false);
+  const [showShareTip, setShowShareTip] = useState(false);
 
   useEffect(() => {
     if (!replay?.expiresAt) return;
@@ -85,6 +86,21 @@ export default function PublicReplayClient() {
     () => `/sign-in?redirect_url=${encodeURIComponent(pathname)}`,
     [pathname],
   );
+  const publicShareUrl =
+    typeof window !== "undefined" ? window.location.href : `/r/${replayId}`;
+
+  async function handleCopyShareLink() {
+    try {
+      await navigator.clipboard.writeText(publicShareUrl);
+      setCopied(true);
+      setShowShareTip(true);
+      toast.success("Replay link copied.");
+      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setShowShareTip(false), 2600);
+    } catch {
+      toast.error("Could not copy replay link.");
+    }
+  }
 
   /* ── Loading state ─────────────────────────────────────── */
   if (replay === undefined) {
@@ -151,7 +167,13 @@ export default function PublicReplayClient() {
   /* ── Gated / subscribe view ────────────────────────────── */
   if (!unlocked) {
     return (
-      <PageShell countdown={countdown}>
+      <PageShell
+        countdown={countdown}
+        showShareStrip
+        onCopyLink={handleCopyShareLink}
+        copied={copied}
+        showShareTip={showShareTip}
+      >
         <div className="mx-auto flex min-h-[60vh] max-w-lg items-center justify-center py-8">
           <div className="w-full space-y-6">
             {/* Header */}
@@ -289,7 +311,13 @@ export default function PublicReplayClient() {
   const soldOutProducts = products?.filter((p) => p.stock <= 0) ?? [];
 
   return (
-    <PageShell countdown={countdown}>
+    <PageShell
+      countdown={countdown}
+      showShareStrip
+      onCopyLink={handleCopyShareLink}
+      copied={copied}
+      showShareTip={showShareTip}
+    >
       <div className="space-y-8">
         {/* Title */}
         {replay.title ? (
@@ -382,9 +410,17 @@ export default function PublicReplayClient() {
 function PageShell({
   children,
   countdown,
+  showShareStrip = false,
+  onCopyLink,
+  copied = false,
+  showShareTip = false,
 }: {
   children: React.ReactNode;
   countdown?: string;
+  showShareStrip?: boolean;
+  onCopyLink?: () => void;
+  copied?: boolean;
+  showShareTip?: boolean;
 }) {
   return (
     <div className="dashboard-layout min-h-screen bg-bg">
@@ -406,6 +442,30 @@ function PageShell({
           </Link>
         </div>
       </nav>
+
+      {showShareStrip && onCopyLink ? (
+        <div className="border-b-[3px] border-line bg-accent-amber">
+          <div className="mx-auto max-w-5xl px-5 py-2.5 sm:px-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="font-dashboard text-xs font-bold">
+                Your replay is live. Copy the link and post it in your bio, stories, or anywhere you share.
+              </p>
+              <button
+                onClick={onCopyLink}
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg border-[3px] border-line bg-white px-3 font-dashboard text-[11px] font-bold shadow-[0_2px_0_#000] transition-all hover:-translate-y-0.5"
+              >
+                {copied ? <Check size={12} /> : <Copy size={12} />}
+                {copied ? "Copied!" : "Copy link"}
+              </button>
+            </div>
+            {showShareTip ? (
+              <p className="share-hint-pop mt-1.5 text-xs font-semibold text-text-muted">
+                Paste it into Instagram, TikTok bio, WhatsApp, or Facebook.
+              </p>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
 
       {/* ── Countdown bar ────────────────────────────────── */}
       {countdown && (

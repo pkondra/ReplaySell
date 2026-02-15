@@ -10,7 +10,6 @@ import {
   Clock,
   Copy,
   ExternalLink,
-  Mail,
   Package,
   Plus,
   RadioTower,
@@ -27,6 +26,7 @@ import { useEffect, useState } from "react";
 import { api } from "@convex/_generated/api";
 import { EmbedPreview } from "@/components/replay/embed-preview";
 import { useToast } from "@/components/ui/toast-provider";
+import { validateReplayUrl } from "@/lib/embed";
 import { formatTimestamp } from "@/lib/time";
 
 /* ------------------------------------------------------------------ */
@@ -49,6 +49,7 @@ export default function ReplayDetailPage() {
   const [tab, setTab] = useState<"products" | "subscribers" | "orders" | "campaigns">("products");
   const [renderNow] = useState(() => Date.now());
   const [copied, setCopied] = useState(false);
+  const [showShareTip, setShowShareTip] = useState(false);
 
   if (replay === undefined) {
     return (
@@ -70,6 +71,19 @@ export default function ReplayDetailPage() {
     typeof window !== "undefined" ? `${window.location.origin}/r/${replayId}` : `/r/${replayId}`;
 
   const revenue = orders?.reduce((sum, o) => sum + o.total, 0) ?? 0;
+
+  async function handleCopyPublicLink() {
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      setCopied(true);
+      setShowShareTip(true);
+      toast.success("Public link copied.");
+      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setShowShareTip(false), 2600);
+    } catch {
+      toast.error("Could not copy link.");
+    }
+  }
 
   return (
     <Shell>
@@ -112,16 +126,7 @@ export default function ReplayDetailPage() {
             <span className="hidden sm:inline">Preview</span>
           </Link>
           <button
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(publicUrl);
-                setCopied(true);
-                toast.success("Public link copied.");
-                setTimeout(() => setCopied(false), 2000);
-              } catch {
-                toast.error("Could not copy link.");
-              }
-            }}
+            onClick={handleCopyPublicLink}
             className="brutal-btn-primary inline-flex h-10 cursor-pointer items-center gap-2 px-4 font-dashboard text-xs"
           >
             {copied ? <Check size={13} /> : <Copy size={13} />}
@@ -129,6 +134,28 @@ export default function ReplayDetailPage() {
           </button>
         </div>
       </div>
+
+      {isLive && (
+        <div className="mb-7 rounded-xl border-[3px] border-line bg-accent-amber px-4 py-3 shadow-[0_3px_0_#000]">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="font-dashboard text-xs font-bold sm:text-sm">
+              Your replay is live. Copy the link and post it in your bio, stories, or anywhere you share.
+            </p>
+            <button
+              onClick={handleCopyPublicLink}
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl border-[3px] border-line bg-white px-3 font-dashboard text-[11px] font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5"
+            >
+              {copied ? <Check size={12} /> : <Copy size={12} />}
+              {copied ? "Copied!" : "Copy link"}
+            </button>
+          </div>
+          {showShareTip ? (
+            <p className="share-hint-pop mt-2 text-xs font-semibold text-text-muted">
+              Paste it into Instagram, TikTok bio, WhatsApp, or Facebook.
+            </p>
+          ) : null}
+        </div>
+      )}
 
       {/* ── Stats row ────────────────────────────────────── */}
       <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -307,16 +334,36 @@ function ReplaySettingsCard({
   toast: { success: (m: string) => void; error: (m: string) => void };
 }) {
   const [title, setTitle] = useState(replay.title ?? "");
+  const [url, setUrl] = useState(replay.url);
+  const [urlError, setUrlError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setTitle(replay.title ?? "");
   }, [replay.title]);
 
+  useEffect(() => {
+    setUrl(replay.url);
+    setUrlError(null);
+  }, [replay.url]);
+
   async function handleSave() {
+    const check = validateReplayUrl(url);
+    if (!check.valid || !check.parsed) {
+      const message = check.message ?? "Enter a valid URL.";
+      setUrlError(message);
+      toast.error(message);
+      return;
+    }
+
     setSaving(true);
     try {
-      await updateReplay({ id: replay._id, title: title.trim() || undefined });
+      await updateReplay({
+        id: replay._id,
+        title: title.trim() || undefined,
+        url: check.parsed.normalizedUrl,
+      });
+      setUrlError(null);
       toast.success("Replay settings saved.");
     } catch {
       toast.error("Could not save settings.");
@@ -341,6 +388,28 @@ function ReplaySettingsCard({
             onChange={(e) => setTitle(e.target.value)}
             className="brutal-input"
           />
+        </div>
+        <div className="space-y-2">
+          <label className="block font-dashboard text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">
+            Replay link
+          </label>
+          <input
+            type="url"
+            placeholder="https://www.facebook.com/reel/..."
+            value={url}
+            onChange={(e) => {
+              setUrl(e.target.value);
+              if (urlError) {
+                setUrlError(null);
+              }
+            }}
+            className="brutal-input"
+          />
+          <p className={`text-xs font-semibold ${urlError ? "text-accent-magenta" : "text-text-muted"}`}>
+            {urlError ??
+              "Supports YouTube, TikTok, Vimeo, and Facebook embeds. Instagram and Whatnot save as link cards."}
+          </p>
+          <EmbedPreview url={url} className="mt-1" />
         </div>
         <div className="rounded-xl border-2 border-line bg-panel-strong px-4 py-3">
           <div className="grid gap-1 text-xs font-semibold text-text-muted sm:grid-cols-2">

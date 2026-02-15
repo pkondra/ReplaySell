@@ -2,6 +2,7 @@ export type ReplayProvider =
   | "youtube"
   | "vimeo"
   | "tiktok"
+  | "facebook"
   | "instagram"
   | "whatnot"
   | "unknown";
@@ -18,7 +19,14 @@ export type ParsedReplayUrl = {
   supportNote?: string;
 };
 
-const EMBED_ATTEMPT_HOSTS = ["youtube.com", "youtu.be", "vimeo.com", "tiktok.com"];
+const EMBED_ATTEMPT_HOSTS = [
+  "youtube.com",
+  "youtu.be",
+  "vimeo.com",
+  "tiktok.com",
+  "facebook.com",
+  "fb.watch",
+];
 
 function normalizeHostname(hostname: string) {
   return hostname.toLowerCase().replace(/^www\./, "");
@@ -65,6 +73,32 @@ function getVimeoVideoId(url: URL) {
 function getTikTokVideoId(url: URL) {
   const match = url.pathname.match(/\/video\/(\d+)/);
   return match?.[1] ?? null;
+}
+
+function isFacebookVideoUrl(url: URL) {
+  const host = normalizeHostname(url.hostname);
+  const path = url.pathname.toLowerCase();
+
+  if (host === "fb.watch") {
+    return true;
+  }
+
+  return (
+    path.startsWith("/reel/") ||
+    path.includes("/videos/") ||
+    path === "/watch" ||
+    path === "/watch/" ||
+    path === "/video.php" ||
+    url.searchParams.has("v")
+  );
+}
+
+function buildFacebookEmbedUrl(url: URL) {
+  const normalized = new URL(url.toString());
+  normalized.hash = "";
+  return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
+    normalized.toString(),
+  )}&show_text=false&width=1280`;
 }
 
 export function parseReplayUrl(rawValue: string): ParsedReplayUrl | null {
@@ -119,6 +153,26 @@ export function parseReplayUrl(rawValue: string): ParsedReplayUrl | null {
       provider: "tiktok",
       previewKind: "tiktok",
       tiktokVideoId: getTikTokVideoId(url) ?? undefined,
+    };
+  }
+
+  if (matchesHost(hostname, "facebook.com") || matchesHost(hostname, "fb.watch")) {
+    if (isFacebookVideoUrl(url)) {
+      return {
+        normalizedUrl: url.toString(),
+        hostname,
+        provider: "facebook",
+        previewKind: "iframe",
+        embedUrl: buildFacebookEmbedUrl(url),
+      };
+    }
+
+    return {
+      normalizedUrl: url.toString(),
+      hostname,
+      provider: "facebook",
+      previewKind: "link-card",
+      supportNote: "Saved as a Facebook link card preview.",
     };
   }
 
