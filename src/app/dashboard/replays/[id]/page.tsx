@@ -3,6 +3,8 @@
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import {
+  Archive,
+  ArchiveRestore,
   ArrowLeft,
   Bell,
   Check,
@@ -19,7 +21,7 @@ import {
   UserRound,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { api } from "@convex/_generated/api";
@@ -61,13 +63,20 @@ export default function ReplayDetailPage() {
     canQuery ? {} : "skip",
   );
   const updateReplay = useMutation(api.replays.updateReplay);
+  const deleteReplay = useMutation(api.replays.deleteReplay);
+  const archiveReplay = useMutation(api.replays.archiveReplay);
+  const unarchiveReplay = useMutation(api.replays.unarchiveReplay);
   const addProduct = useMutation(api.products.addProduct);
   const removeProduct = useMutation(api.products.removeProduct);
+  const router = useRouter();
 
   const [tab, setTab] = useState<"products" | "subscribers" | "orders" | "campaigns">("products");
   const [renderNow] = useState(() => Date.now());
   const [copied, setCopied] = useState(false);
   const [showShareTip, setShowShareTip] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [archiving, setArchiving] = useState(false);
 
   if (replay === undefined) {
     return (
@@ -84,6 +93,7 @@ export default function ReplayDetailPage() {
     );
   }
 
+  const isArchived = replay.status === "archived";
   const isLive = replay.status === "live" && (replay.expiresAt ?? 0) > renderNow;
   const publicUrl =
     typeof window !== "undefined" ? `${window.location.origin}/r/${replayId}` : `/r/${replayId}`;
@@ -121,10 +131,14 @@ export default function ReplayDetailPage() {
               </h1>
               <span
                 className={`rounded-full border-2 border-line px-3 py-1 font-dashboard text-[10px] font-bold uppercase shadow-[0_2px_0_#000] ${
-                  isLive ? "bg-accent" : "bg-panel-strong"
+                  isArchived
+                    ? "bg-[#e0d4f7]"
+                    : isLive
+                      ? "bg-accent"
+                      : "bg-panel-strong"
                 }`}
               >
-                {isLive ? "Live" : "Ended"}
+                {isArchived ? "Archived" : isLive ? "Live" : "Ended"}
               </span>
             </div>
             <p className="mt-0.5 font-dashboard text-xs text-text-muted">
@@ -135,6 +149,61 @@ export default function ReplayDetailPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          {!confirmDelete ? (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              className="flex h-10 w-10 items-center justify-center rounded-xl border-[3px] border-line bg-[#fff3f0] shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5 hover:bg-[#ffe5df]"
+              title="Delete replay"
+            >
+              <Trash2 size={14} />
+            </button>
+          ) : (
+            <button
+              onClick={async () => {
+                setDeleting(true);
+                try {
+                  await deleteReplay({ id: replayId });
+                  toast.success("Replay deleted.");
+                  router.push("/dashboard");
+                } catch {
+                  toast.error("Could not delete replay.");
+                  setDeleting(false);
+                  setConfirmDelete(false);
+                }
+              }}
+              disabled={deleting}
+              className="inline-flex h-10 items-center gap-1.5 rounded-xl border-[3px] border-[#ff6b5a] bg-[#ff6b5a] px-4 font-dashboard text-xs font-bold text-white shadow-[0_3px_0_#c0392b] transition-all hover:-translate-y-0.5 disabled:opacity-60"
+            >
+              <Trash2 size={13} />
+              {deleting ? "Deleting..." : "Confirm delete"}
+            </button>
+          )}
+          <button
+            onClick={async () => {
+              setArchiving(true);
+              try {
+                if (isArchived) {
+                  await unarchiveReplay({ id: replayId });
+                  toast.success("Replay restored.");
+                } else {
+                  await archiveReplay({ id: replayId });
+                  toast.success("Replay archived.");
+                }
+              } catch {
+                toast.error("Could not update replay.");
+              } finally {
+                setArchiving(false);
+              }
+            }}
+            disabled={archiving}
+            className={`inline-flex h-10 items-center gap-1.5 rounded-xl border-[3px] border-line px-4 font-dashboard text-xs font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5 disabled:opacity-60 ${
+              isArchived ? "bg-accent" : "bg-[#e0d4f7]"
+            }`}
+            title={isArchived ? "Restore replay" : "Archive replay"}
+          >
+            {isArchived ? <ArchiveRestore size={13} /> : <Archive size={13} />}
+            {archiving ? "..." : isArchived ? "Restore" : "Archive"}
+          </button>
           <Link
             href={`/r/${replayId}`}
             target="_blank"
@@ -153,12 +222,44 @@ export default function ReplayDetailPage() {
         </div>
       </div>
 
-      {isLive && (
-        <div className="mb-7 rounded-xl border-[3px] border-line bg-accent-amber px-4 py-3 shadow-[0_3px_0_#000]">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+      {isArchived && (
+        <div className="mb-7 flex flex-wrap items-center justify-between gap-3 rounded-xl border-[3px] border-line bg-[#e0d4f7] px-5 py-4 shadow-[0_3px_0_#000]">
+          <div className="flex items-center gap-3">
+            <Archive size={15} />
             <p className="font-dashboard text-xs font-bold sm:text-sm">
-              Your replay is live. Copy the link and post it in your bio, stories, or anywhere you share.
+              This replay is archived. It&apos;s hidden from public view. Restore it to make it accessible again.
             </p>
+          </div>
+          <button
+            onClick={async () => {
+              setArchiving(true);
+              try {
+                await unarchiveReplay({ id: replayId });
+                toast.success("Replay restored.");
+              } catch {
+                toast.error("Could not restore replay.");
+              } finally {
+                setArchiving(false);
+              }
+            }}
+            disabled={archiving}
+            className="inline-flex h-9 items-center gap-1.5 rounded-xl border-[3px] border-line bg-white px-3 font-dashboard text-[11px] font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5 disabled:opacity-60"
+          >
+            <ArchiveRestore size={12} />
+            {archiving ? "Restoring..." : "Restore"}
+          </button>
+        </div>
+      )}
+
+      {isLive && !isArchived && (
+        <div className="mb-7 rounded-xl border-[3px] border-line bg-accent-amber px-5 py-4 shadow-[0_3px_0_#000]">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex h-2 w-2 animate-pulse rounded-full bg-[#1a1a1a]" />
+              <p className="font-dashboard text-xs font-bold sm:text-sm">
+                Your replay is live. Copy the link and post it in your bio, stories, or anywhere you share.
+              </p>
+            </div>
             <button
               onClick={handleCopyPublicLink}
               className="inline-flex h-9 items-center gap-1.5 rounded-xl border-[3px] border-line bg-white px-3 font-dashboard text-[11px] font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5"
@@ -168,7 +269,7 @@ export default function ReplayDetailPage() {
             </button>
           </div>
           {showShareTip ? (
-            <p className="share-hint-pop mt-2 text-xs font-semibold text-text-muted">
+            <p className="share-hint-pop mt-2 pl-5 text-xs font-semibold text-text-muted">
               Paste it into Instagram, TikTok bio, WhatsApp, or Facebook.
             </p>
           ) : null}
@@ -209,14 +310,23 @@ export default function ReplayDetailPage() {
           </div>
 
           {/* Revenue card */}
-          <div className="rounded-2xl border-[3px] border-line bg-accent p-5 shadow-[0_4px_0_#000]">
+          <div className="relative overflow-hidden rounded-2xl border-[3px] border-line bg-accent p-6 shadow-[0_4px_0_#000]">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full border-[3px] border-line/20 bg-white/30"
+            />
             <p className="font-dashboard text-xs font-bold uppercase tracking-[0.08em] text-text-muted">
               Total revenue
             </p>
-            <p className="mt-1 font-heading text-4xl font-black">${revenue.toFixed(2)}</p>
-            <p className="mt-1 text-xs font-semibold text-text-muted">
-              from {orders?.length ?? 0} order{(orders?.length ?? 0) !== 1 ? "s" : ""}
-            </p>
+            <p className="mt-2 font-heading text-5xl font-black tracking-tight">${revenue.toFixed(2)}</p>
+            <div className="mt-2 flex items-center gap-2">
+              <span className="rounded-full border-2 border-line bg-white/60 px-2.5 py-0.5 font-dashboard text-[10px] font-bold shadow-[0_1px_0_#000]">
+                {orders?.length ?? 0} order{(orders?.length ?? 0) !== 1 ? "s" : ""}
+              </span>
+              <span className="rounded-full border-2 border-line bg-white/60 px-2.5 py-0.5 font-dashboard text-[10px] font-bold shadow-[0_1px_0_#000]">
+                {products?.length ?? 0} product{(products?.length ?? 0) !== 1 ? "s" : ""}
+              </span>
+            </div>
           </div>
 
           {/* Settings */}
@@ -273,9 +383,17 @@ export default function ReplayDetailPage() {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="dashboard-layout page-fade-in min-h-screen bg-bg">
-      {/* ── Top nav ──────────────────────────────────────── */}
-      <header className="border-b-[3px] border-line bg-panel">
+    <main className="dashboard-layout page-fade-in relative min-h-screen bg-bg">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-32 top-24 h-64 w-64 rounded-full bg-[#acf8e0]/20 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-24 top-96 h-56 w-56 rounded-full bg-[#ff9ecd]/15 blur-3xl"
+      />
+
+      <header className="relative z-10 border-b-[3px] border-line bg-panel/90 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
           <Link href="/dashboard" className="flex items-center gap-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl border-[3px] border-line bg-[#ffbc8c] shadow-[0_3px_0_#000]">
@@ -294,8 +412,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      {/* ── Content ──────────────────────────────────────── */}
-      <div className="mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 sm:py-10">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 sm:py-10">
         {children}
       </div>
     </main>
@@ -318,14 +435,20 @@ function StatCard({
   tone: string;
 }) {
   return (
-    <div className={`rounded-2xl border-[3px] border-line p-5 shadow-[0_4px_0_#000] ${tone}`}>
-      <div className="flex items-center gap-1.5 text-text-muted">
-        <Icon size={14} />
-        <span className="font-dashboard text-[11px] font-bold uppercase tracking-[0.06em]">
+    <div className={`relative overflow-hidden rounded-2xl border-[3px] border-line p-5 shadow-[0_4px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_0_#000] ${tone}`}>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full bg-white/20"
+      />
+      <div className="flex items-center gap-2">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-line bg-white/60 shadow-[0_1px_0_#000]">
+          <Icon size={14} />
+        </div>
+        <span className="font-dashboard text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">
           {label}
         </span>
       </div>
-      <p className="mt-2 font-heading text-3xl font-black leading-none">{value}</p>
+      <p className="mt-3 font-heading text-4xl font-black leading-none">{value}</p>
     </div>
   );
 }
@@ -579,18 +702,21 @@ function ProductsTab({
           {products.map((p) => (
             <div
               key={p._id}
-              className="flex items-center justify-between gap-4 rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000]"
+              className="group flex items-center gap-4 rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_0_#000]"
             >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-[3px] border-line bg-accent-amber shadow-[0_2px_0_#000]">
+                <Package size={18} />
+              </div>
               <div className="min-w-0 flex-1">
                 <p className="font-heading text-xl font-black">{p.name}</p>
-                <div className="mt-1.5 flex flex-wrap items-center gap-3 text-sm font-semibold text-text-muted">
+                <div className="mt-1.5 flex flex-wrap items-center gap-2">
                   <span className="font-heading text-lg font-black text-text">
                     ${p.price.toFixed(2)}
                   </span>
                   <span className="rounded-full border-2 border-line bg-accent px-2.5 py-0.5 font-dashboard text-[10px] font-bold shadow-[0_1px_0_#000]">
                     {p.stock} in stock
                   </span>
-                  <span className="rounded-full border-2 border-line bg-accent-amber px-2.5 py-0.5 font-dashboard text-[10px] font-bold shadow-[0_1px_0_#000]">
+                  <span className="rounded-full border-2 border-line bg-[#ff9ecd] px-2.5 py-0.5 font-dashboard text-[10px] font-bold shadow-[0_1px_0_#000]">
                     {p.sold} sold
                   </span>
                 </div>
@@ -604,7 +730,7 @@ function ProductsTab({
                     toast.error("Could not remove product.");
                   }
                 }}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-[3px] border-line bg-[#fff3f0] shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-[3px] border-line bg-[#fff3f0] shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5 hover:bg-[#ffe5df]"
               >
                 <Trash2 size={15} />
               </button>
@@ -635,21 +761,22 @@ function SubscribersTab({ subscribers }: { subscribers: Doc<"subscribers">[] }) 
         subscribers.map((sub) => (
           <div
             key={sub._id}
-            className="rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000]"
+            className="flex items-start gap-4 rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_0_#000]"
           >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-heading text-lg font-black leading-tight">{sub.email}</p>
-                <p className="mt-1 text-xs font-semibold text-text-muted">
-                  {sub.phone ? `${sub.phone} · ` : ""}
-                  {sub.smsConsent ? "SMS opt-in" : "Email only"} · {formatTimestamp(sub.createdAt)}
-                </p>
-              </div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-[3px] border-line bg-[#ff9ecd] shadow-[0_2px_0_#000]">
+              <UserRound size={18} />
             </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <PreferenceChip enabled={sub.notifyTimer ?? true} label="Timer" />
-              <PreferenceChip enabled={sub.notifyStock ?? true} label="Stock" />
-              <PreferenceChip enabled={sub.notifyPriceChange ?? true} label="Price" />
+            <div className="min-w-0 flex-1">
+              <p className="font-heading text-lg font-black leading-tight">{sub.email}</p>
+              <p className="mt-1 text-xs font-semibold text-text-muted">
+                {sub.phone ? `${sub.phone} · ` : ""}
+                {sub.smsConsent ? "SMS opt-in" : "Email only"} · {formatTimestamp(sub.createdAt)}
+              </p>
+              <div className="mt-2.5 flex flex-wrap gap-2">
+                <PreferenceChip enabled={sub.notifyTimer ?? true} label="Timer" />
+                <PreferenceChip enabled={sub.notifyStock ?? true} label="Stock" />
+                <PreferenceChip enabled={sub.notifyPriceChange ?? true} label="Price" />
+              </div>
             </div>
           </div>
         ))
@@ -681,29 +808,34 @@ function OrdersTab({ orders, products }: { orders: Doc<"orders">[]; products: Do
           return (
             <div
               key={order._id}
-              className="rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000]"
+              className="flex items-center gap-4 rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_0_#000]"
             >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-heading text-lg font-black leading-tight">
-                    {product?.name ?? "Unknown product"} &times; {order.quantity}
-                  </p>
-                  <p className="mt-1 text-xs font-semibold text-text-muted">
-                    {order.email} · {formatTimestamp(order.createdAt)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-heading text-lg font-black">
-                    ${order.total.toFixed(2)}
-                  </span>
-                  <span
-                    className={`rounded-full border-2 border-line px-2.5 py-0.5 font-dashboard text-[10px] font-bold uppercase shadow-[0_2px_0_#000] ${
-                      order.status === "completed" ? "bg-accent" : "bg-accent-amber"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </div>
+              <div
+                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-[3px] border-line shadow-[0_2px_0_#000] ${
+                  order.status === "completed" ? "bg-accent" : "bg-accent-amber"
+                }`}
+              >
+                <ShoppingBag size={18} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-heading text-lg font-black leading-tight">
+                  {product?.name ?? "Unknown product"} &times; {order.quantity}
+                </p>
+                <p className="mt-1 text-xs font-semibold text-text-muted">
+                  {order.email} · {formatTimestamp(order.createdAt)}
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-1.5">
+                <span className="font-heading text-lg font-black">
+                  ${order.total.toFixed(2)}
+                </span>
+                <span
+                  className={`rounded-full border-2 border-line px-2.5 py-0.5 font-dashboard text-[10px] font-bold uppercase shadow-[0_2px_0_#000] ${
+                    order.status === "completed" ? "bg-accent" : "bg-accent-amber"
+                  }`}
+                >
+                  {order.status}
+                </span>
               </div>
             </div>
           );

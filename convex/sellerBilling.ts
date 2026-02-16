@@ -24,6 +24,8 @@ export const getMySellerSubscription = query({
         trialEndsAt: null,
         currentPeriodEnd: null,
         cancelAtPeriodEnd: false,
+        canceledAt: null,
+        hasStripeCustomer: false,
       };
     }
 
@@ -34,6 +36,8 @@ export const getMySellerSubscription = query({
       trialEndsAt: subscription.trialEndsAt ?? null,
       currentPeriodEnd: subscription.currentPeriodEnd ?? null,
       cancelAtPeriodEnd: subscription.cancelAtPeriodEnd ?? false,
+      canceledAt: subscription.canceledAt ?? null,
+      hasStripeCustomer: !!subscription.stripeCustomerId,
     };
   },
 });

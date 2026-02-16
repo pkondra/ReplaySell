@@ -175,6 +175,33 @@ export const createSellerCheckoutSession = action({
   },
 });
 
+export const createSellerPortalSession = action({
+  args: {},
+  handler: async (ctx): Promise<{ url: string }> => {
+    const identity = await requireIdentity(ctx);
+    const existing: {
+      stripeCustomerId?: string;
+    } | null = await ctx.runQuery(
+      internal.sellerBilling.getSellerSubscriptionByUserIdInternal,
+      { userId: identity.subject },
+    );
+
+    if (!existing?.stripeCustomerId) {
+      throw new Error("No billing account found. Subscribe to a plan first.");
+    }
+
+    const stripe = getStripe();
+    const appUrl = getAppUrl();
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: existing.stripeCustomerId,
+      return_url: `${appUrl}/dashboard`,
+    });
+
+    return { url: session.url };
+  },
+});
+
 export const ingestStripeSubscriptionState = action({
   args: {
     ingestSecret: v.string(),

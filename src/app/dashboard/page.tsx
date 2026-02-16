@@ -6,6 +6,7 @@ import {
   CalendarClock,
   CreditCard,
   DollarSign,
+  ExternalLink,
   Layers2,
   Mail,
   Plus,
@@ -66,6 +67,9 @@ export default function DashboardPage() {
   const createSellerCheckoutSession = useAction(
     api.sellerBillingActions.createSellerCheckoutSession,
   );
+  const createSellerPortalSession = useAction(
+    api.sellerBillingActions.createSellerPortalSession,
+  );
   const initialUrl = searchParams.get("url") ?? "";
   const billingState = searchParams.get("billing");
   const preferredPlan = parseSellerPlan(searchParams.get("plan"));
@@ -73,6 +77,7 @@ export default function DashboardPage() {
   const [showCreate, setShowCreate] = useState(() => Boolean(initialUrl));
   const [renderNow] = useState(() => Date.now());
   const [checkoutPlan, setCheckoutPlan] = useState<SellerPlanId | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
   const billingGateRef = useRef<HTMLDivElement | null>(null);
   const handledBillingStateRef = useRef<string | null>(null);
   const hasSellerAccess = sellerSubscription?.hasAccess ?? false;
@@ -88,6 +93,17 @@ export default function DashboardPage() {
 
     handledBillingStateRef.current = billingState;
   }, [billingState, toast]);
+
+  async function handleManageSubscription() {
+    setPortalLoading(true);
+    try {
+      const { url } = await createSellerPortalSession();
+      window.location.href = url;
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Could not open billing portal."));
+      setPortalLoading(false);
+    }
+  }
 
   async function handleStartTrial(plan: SellerPlanId) {
     setCheckoutPlan(plan);
@@ -133,29 +149,72 @@ export default function DashboardPage() {
             </Link>
           </nav>
 
-          <div className="mt-7 rounded-xl border-[3px] border-line bg-accent p-5 shadow-[0_4px_0_#000]">
+          <div
+            className={`mt-7 rounded-xl border-[3px] border-line p-5 shadow-[0_4px_0_#000] ${
+              sellerSubscription?.status === "canceled"
+                ? "bg-panel-strong"
+                : sellerSubscription?.status === "past_due"
+                  ? "bg-[#fff1ef]"
+                  : sellerSubscription?.cancelAtPeriodEnd
+                    ? "bg-[#f9e27f]"
+                    : "bg-accent"
+            }`}
+          >
             <p className="font-heading text-lg font-black">
-              {sellerSubscription?.hasAccess
-                ? `${formatSellerPlan(sellerSubscription.plan)} plan`
-                : "Seller billing required"}
+              {sellerSubscription === undefined
+                ? "Loading..."
+                : sellerSubscription.status === "canceled"
+                  ? "Subscription canceled"
+                  : sellerSubscription.status === "past_due"
+                    ? "Payment failed"
+                    : sellerSubscription.hasAccess
+                      ? `${formatSellerPlan(sellerSubscription.plan)} plan`
+                      : "Seller billing required"}
             </p>
             <p className="text-sm font-semibold text-text-muted">
               {sellerSubscription === undefined
                 ? "Checking seller access..."
-                : sellerSubscription.hasAccess
-                  ? `Status: ${formatSellerStatus(sellerSubscription.status)}`
-                  : "Start a 7-day trial to unlock replay and product creation."}
+                : sellerSubscription.status === "canceled"
+                  ? "Your access has ended. Resubscribe to continue."
+                  : sellerSubscription.status === "past_due"
+                    ? "Update your payment method to keep access."
+                    : sellerSubscription.cancelAtPeriodEnd
+                      ? "Cancels at end of period. You still have access until then."
+                      : sellerSubscription.hasAccess
+                        ? `Status: ${formatSellerStatus(sellerSubscription.status)}`
+                        : "Start a 7-day trial to unlock replay and product creation."}
             </p>
-            {(sellerSubscription?.trialEndsAt ??
-              sellerSubscription?.currentPeriodEnd) && (
-              <p className="mt-1 text-xs font-semibold text-text-muted">
-                {sellerSubscription.status === "trialing" ? "Trial ends" : "Next billing"}{" "}
-                {formatBillingDate(
-                  sellerSubscription.trialEndsAt ??
-                    sellerSubscription.currentPeriodEnd,
-                )}
-              </p>
-            )}
+            {sellerSubscription?.cancelAtPeriodEnd &&
+              sellerSubscription.currentPeriodEnd && (
+                <p className="mt-1 text-xs font-bold text-[#8a2a20]">
+                  Access ends{" "}
+                  {formatBillingDate(sellerSubscription.currentPeriodEnd)}
+                </p>
+              )}
+            {!sellerSubscription?.cancelAtPeriodEnd &&
+              (sellerSubscription?.trialEndsAt ??
+                sellerSubscription?.currentPeriodEnd) && (
+                <p className="mt-1 text-xs font-semibold text-text-muted">
+                  {sellerSubscription.status === "trialing"
+                    ? "Trial ends"
+                    : "Next billing"}{" "}
+                  {formatBillingDate(
+                    sellerSubscription.trialEndsAt ??
+                      sellerSubscription.currentPeriodEnd,
+                  )}
+                </p>
+              )}
+            {sellerSubscription?.hasStripeCustomer &&
+              sellerSubscription.status !== "none" && (
+                <button
+                  onClick={handleManageSubscription}
+                  disabled={portalLoading}
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border-[3px] border-line bg-white px-4 py-2.5 text-xs font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_0_#000] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <ExternalLink size={13} />
+                  {portalLoading ? "Opening..." : "Manage Subscription"}
+                </button>
+              )}
           </div>
         </aside>
 
@@ -249,12 +308,15 @@ export default function DashboardPage() {
             ) : (
               <div className="space-y-4">
                 {replays.map((replay: Doc<"replays">) => {
+                  const isArchived = replay.status === "archived";
                   const isLive = replay.status === "live" && (replay.expiresAt ?? 0) > renderNow;
                   return (
                     <Link
                       key={replay._id}
                       href={`/dashboard/replays/${replay._id}`}
-                      className="group block rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[0_6px_0_#000]"
+                      className={`group block rounded-2xl border-[3px] border-line p-5 shadow-[0_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[0_6px_0_#000] ${
+                        isArchived ? "bg-panel-strong/50 opacity-75" : "bg-white"
+                      }`}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
@@ -267,10 +329,14 @@ export default function DashboardPage() {
                         </div>
                         <span
                           className={`rounded-full border-2 border-line px-2.5 py-1 text-[11px] font-bold shadow-[0_2px_0_#000] ${
-                            isLive ? "bg-accent" : "bg-panel-strong"
+                            isArchived
+                              ? "bg-[#e0d4f7]"
+                              : isLive
+                                ? "bg-accent"
+                                : "bg-panel-strong"
                           }`}
                         >
-                          {isLive ? "LIVE" : "ENDED"}
+                          {isArchived ? "ARCHIVED" : isLive ? "LIVE" : "ENDED"}
                         </span>
                       </div>
                     </Link>

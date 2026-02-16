@@ -65,6 +65,65 @@ export const updateReplay = mutation({
   },
 });
 
+export const archiveReplay = mutation({
+  args: { id: v.id("replays") },
+  handler: async (ctx, args) => {
+    const identity = await requireIdentity(ctx);
+    const replay = await ctx.db.get(args.id);
+    if (!replay || replay.userId !== identity.subject)
+      throw new Error("Replay not found");
+    await ctx.db.patch(args.id, { status: "archived", updatedAt: Date.now() });
+    return args.id;
+  },
+});
+
+export const unarchiveReplay = mutation({
+  args: { id: v.id("replays") },
+  handler: async (ctx, args) => {
+    const identity = await requireIdentity(ctx);
+    const replay = await ctx.db.get(args.id);
+    if (!replay || replay.userId !== identity.subject)
+      throw new Error("Replay not found");
+    const now = Date.now();
+    const isExpired = replay.expiresAt != null && replay.expiresAt <= now;
+    await ctx.db.patch(args.id, {
+      status: isExpired ? "ended" : "live",
+      updatedAt: now,
+    });
+    return args.id;
+  },
+});
+
+export const deleteReplay = mutation({
+  args: { id: v.id("replays") },
+  handler: async (ctx, args) => {
+    const identity = await requireIdentity(ctx);
+    const replay = await ctx.db.get(args.id);
+    if (!replay || replay.userId !== identity.subject)
+      throw new Error("Replay not found");
+
+    const products = await ctx.db
+      .query("products")
+      .withIndex("by_replayId", (q) => q.eq("replayId", args.id))
+      .collect();
+    const subscribers = await ctx.db
+      .query("subscribers")
+      .withIndex("by_replayId", (q) => q.eq("replayId", args.id))
+      .collect();
+    const orders = await ctx.db
+      .query("orders")
+      .withIndex("by_replayId", (q) => q.eq("replayId", args.id))
+      .collect();
+
+    await Promise.all([
+      ...products.map((p) => ctx.db.delete(p._id)),
+      ...subscribers.map((s) => ctx.db.delete(s._id)),
+      ...orders.map((o) => ctx.db.delete(o._id)),
+    ]);
+    await ctx.db.delete(args.id);
+  },
+});
+
 export const listMyReplays = query({
   args: {},
   handler: async (ctx) => {

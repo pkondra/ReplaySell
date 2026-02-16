@@ -525,99 +525,187 @@ export default function HomePage() {
       </header>
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <div className="grid items-center gap-12 pb-8 pt-14 sm:pb-12 sm:pt-20 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:pb-16 lg:pt-28">
-          {/* Left — Copy + Input */}
-          <div>
-            {/* Badge */}
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-line bg-accent-amber px-4 py-2 shadow-[0_2px_0_#000]">
-              <Sparkles size={14} />
-              <span className="font-dashboard text-xs font-bold uppercase tracking-[0.08em]">
-                Launch your replay in 2 minutes
-              </span>
-            </div>
+      <section className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-32 top-16 h-72 w-72 rounded-full bg-[#acf8e0]/30 blur-2xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-24 bottom-0 h-64 w-64 rounded-full bg-[#ff9ecd]/25 blur-2xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/3 top-0 h-48 w-48 rounded-full bg-[#f9e27f]/20 blur-2xl"
+        />
 
-            {/* Headline */}
-            <h1 className="font-heading text-[clamp(2.2rem,5vw,4.2rem)] font-black leading-[1.08] tracking-[-0.035em]">
-              From Replay Link to{" "}
-              <span className="text-[#ff6b5a]">Live Storefront in 2 Minutes</span>
-            </h1>
-
-            {/* Sub-headline */}
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-text-muted sm:text-xl sm:leading-relaxed">
-              Paste your replay URL, add products, and publish instantly. Start selling to missed buyers before your next story post.
-            </p>
-
-            {/* Input + CTA */}
-            <HeroReplayCta />
-          </div>
-
-          {/* Right — Replay page mockup */}
-          <div className="relative hidden lg:block">
-            {/* Main mockup card */}
-            <div className="relative rounded-2xl border-[3px] border-line bg-white shadow-[0_8px_0_#000]">
-              {/* Mock nav */}
-              <div className="flex items-center justify-between border-b-[3px] border-line px-5 py-3">
-                <div className="flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-lg border-2 border-line bg-[#ffbc8c]" />
-                  <span className="font-heading text-sm font-black">Summer Haul</span>
-                </div>
-                <span className="rounded-full border-2 border-line bg-accent px-3 py-1 font-dashboard text-[10px] font-bold shadow-[0_2px_0_#000]">
-                  LIVE
+        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+          <div className="grid items-center gap-12 pb-8 pt-14 sm:pb-12 sm:pt-20 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:pb-20 lg:pt-28">
+            {/* Left — Copy + Input */}
+            <div className="relative">
+              {/* Badge */}
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-line bg-accent-amber px-4 py-2 shadow-[0_2px_0_#000]">
+                <Sparkles size={14} />
+                <span className="font-dashboard text-xs font-bold uppercase tracking-[0.08em]">
+                  Launch your replay in 2 minutes
                 </span>
               </div>
 
-              {/* Mock countdown */}
-              <div className="flex items-center justify-between border-b-[3px] border-line bg-accent-amber px-5 py-2.5">
-                <div className="flex items-center gap-1.5">
-                  <Timer size={13} />
-                  <span className="font-dashboard text-xs font-bold">Closes in</span>
-                </div>
-                <span className="font-dashboard text-lg font-black tabular-nums">23:47:12</span>
-              </div>
+              {/* Headline */}
+              <h1 className="font-heading text-[clamp(2.2rem,5vw,4.2rem)] font-black leading-[1.08] tracking-[-0.035em]">
+                From Replay Link to{" "}
+                <span className="relative text-[#ff6b5a]">
+                  Live Storefront in 2 Minutes
+                  <svg
+                    aria-hidden
+                    className="absolute -bottom-1 left-0 w-full"
+                    viewBox="0 0 300 12"
+                    fill="none"
+                  >
+                    <path
+                      d="M2 8 C60 2, 120 2, 180 6 S260 10, 298 4"
+                      stroke="#ff6b5a"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      opacity="0.35"
+                    />
+                  </svg>
+                </span>
+              </h1>
 
-              {/* Mock content */}
-              <div className="p-5">
-                {/* Video placeholder */}
-                <div className="mb-4 flex h-36 items-center justify-center rounded-xl border-[3px] border-line bg-panel-strong">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-line bg-white shadow-[0_3px_0_#000]">
-                    <Play size={18} className="ml-0.5" />
+              {/* Sub-headline */}
+              <p className="mt-5 max-w-lg text-lg leading-relaxed text-text-muted sm:text-xl sm:leading-relaxed">
+                Paste your replay URL, add products, and publish instantly. Start selling to missed buyers before your next story post.
+              </p>
+
+              {/* Input + CTA */}
+              <HeroReplayCta />
+
+              {/* Social proof row */}
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <div className="flex -space-x-2">
+                  {["bg-[#ff9ecd]", "bg-[#acf8e0]", "bg-[#ffbc8c]", "bg-[#b794f6]", "bg-accent-amber"].map(
+                    (bg, i) => (
+                      <div
+                        key={i}
+                        className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-line ${bg} text-[10px] font-black`}
+                      >
+                        {["M", "K", "C", "J", "R"][i]}
+                      </div>
+                    ),
+                  )}
+                </div>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={13} className="fill-[#ff6b5a] text-[#ff6b5a]" />
+                  ))}
+                </div>
+                <span className="text-sm font-bold text-text-muted">
+                  Trusted by 2,000+ live sellers
+                </span>
+              </div>
+            </div>
+
+            {/* Right — Replay page mockup */}
+            <div className="relative hidden lg:block">
+              {/* Decorative shapes behind mockup */}
+              <div
+                aria-hidden
+                className="absolute -right-6 -top-6 h-28 w-28 rounded-2xl border-[3px] border-line/20 bg-[#acf8e0]/40 rotate-6"
+              />
+              <div
+                aria-hidden
+                className="absolute -bottom-5 -left-5 h-24 w-24 rounded-full border-[3px] border-line/20 bg-[#ff9ecd]/30"
+              />
+
+              {/* Floating sold notification */}
+              <div className="absolute -left-12 top-24 z-20 animate-bounce rounded-xl border-[3px] border-line bg-white px-4 py-3 shadow-[0_4px_0_#000]" style={{ animationDuration: "3s" }}>
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-line bg-accent">
+                    <ShoppingBag size={14} />
+                  </div>
+                  <div>
+                    <p className="font-heading text-xs font-black">New order!</p>
+                    <p className="font-dashboard text-[10px] font-semibold text-text-muted">
+                      Floral Dress — $38.00
+                    </p>
                   </div>
                 </div>
+              </div>
 
-                {/* Mock products */}
-                <div className="space-y-2.5">
-                  <MockProduct name="Floral Print Dress" price="$38.00" stock="12 left" inStock />
-                  <MockProduct name="Gold Hoop Earrings" price="$22.00" stock="4 left" inStock />
-                  <MockProduct name="Silk Scrunchie Set" price="$14.00" stock="Sold out" inStock={false} />
+              {/* Stats floating pill */}
+              <div className="absolute -right-8 bottom-28 z-20 rounded-xl border-[3px] border-line bg-accent-amber px-4 py-2.5 shadow-[0_4px_0_#000]">
+                <p className="font-heading text-lg font-black">$2,140</p>
+                <p className="font-dashboard text-[10px] font-bold text-text-muted">
+                  Replay revenue
+                </p>
+              </div>
+
+              {/* Main mockup card */}
+              <div className="relative z-10 rounded-2xl border-[3px] border-line bg-white shadow-[0_10px_0_#000]">
+                {/* Mock nav */}
+                <div className="flex items-center justify-between border-b-[3px] border-line px-5 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-lg border-2 border-line bg-[#ffbc8c]" />
+                    <span className="font-heading text-sm font-black">Summer Haul</span>
+                  </div>
+                  <span className="rounded-full border-2 border-line bg-accent px-3 py-1 font-dashboard text-[10px] font-bold shadow-[0_2px_0_#000]">
+                    LIVE
+                  </span>
+                </div>
+
+                {/* Mock countdown */}
+                <div className="flex items-center justify-between border-b-[3px] border-line bg-accent-amber px-5 py-2.5">
+                  <div className="flex items-center gap-1.5">
+                    <Timer size={13} />
+                    <span className="font-dashboard text-xs font-bold">Closes in</span>
+                  </div>
+                  <span className="font-dashboard text-lg font-black tabular-nums">23:47:12</span>
+                </div>
+
+                {/* Mock content */}
+                <div className="p-5">
+                  {/* Video placeholder */}
+                  <div className="mb-4 flex h-36 items-center justify-center rounded-xl border-[3px] border-line bg-panel-strong">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-line bg-white shadow-[0_3px_0_#000]">
+                      <Play size={18} className="ml-0.5" />
+                    </div>
+                  </div>
+
+                  {/* Mock products */}
+                  <div className="space-y-2.5">
+                    <MockProduct name="Floral Print Dress" price="$38.00" stock="12 left" inStock />
+                    <MockProduct name="Gold Hoop Earrings" price="$22.00" stock="4 left" inStock />
+                    <MockProduct name="Silk Scrunchie Set" price="$14.00" stock="Sold out" inStock={false} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Mobile mockup — simplified */}
-        <div className="mb-8 lg:hidden">
-          <div className="brutal-card overflow-hidden bg-panel p-0">
-            <div className="flex items-center justify-between border-b-[3px] border-line bg-accent-amber px-5 py-3">
-              <div className="flex items-center gap-1.5">
-                <Timer size={14} />
-                <span className="font-dashboard text-xs font-bold">Replay closes in</span>
+          {/* Mobile mockup — simplified */}
+          <div className="mb-8 lg:hidden">
+            <div className="brutal-card overflow-hidden bg-panel p-0">
+              <div className="flex items-center justify-between border-b-[3px] border-line bg-accent-amber px-5 py-3">
+                <div className="flex items-center gap-1.5">
+                  <Timer size={14} />
+                  <span className="font-dashboard text-xs font-bold">Replay closes in</span>
+                </div>
+                <span className="font-dashboard text-lg font-black tabular-nums">23:47:12</span>
               </div>
-              <span className="font-dashboard text-lg font-black tabular-nums">23:47:12</span>
-            </div>
-            <div className="grid grid-cols-3 divide-x-[3px] divide-line">
-              <div className="p-4 text-center">
-                <p className="font-heading text-2xl font-black">12</p>
-                <p className="font-dashboard text-[10px] font-bold text-text-muted">Products</p>
-              </div>
-              <div className="p-4 text-center">
-                <p className="font-heading text-2xl font-black">48h</p>
-                <p className="font-dashboard text-[10px] font-bold text-text-muted">Window</p>
-              </div>
-              <div className="p-4 text-center">
-                <p className="font-heading text-2xl font-black">$0</p>
-                <p className="font-dashboard text-[10px] font-bold text-text-muted">Commission</p>
+              <div className="grid grid-cols-3 divide-x-[3px] divide-line">
+                <div className="p-4 text-center">
+                  <p className="font-heading text-2xl font-black">12</p>
+                  <p className="font-dashboard text-[10px] font-bold text-text-muted">Products</p>
+                </div>
+                <div className="p-4 text-center">
+                  <p className="font-heading text-2xl font-black">48h</p>
+                  <p className="font-dashboard text-[10px] font-bold text-text-muted">Window</p>
+                </div>
+                <div className="p-4 text-center">
+                  <p className="font-heading text-2xl font-black">$0</p>
+                  <p className="font-dashboard text-[10px] font-bold text-text-muted">Commission</p>
+                </div>
               </div>
             </div>
           </div>

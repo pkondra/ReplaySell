@@ -124,14 +124,20 @@ export default function PublicReplayClient() {
     return (
       <PageShell>
         <div className="flex min-h-[50vh] items-center justify-center">
-          <div className="text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border-[3px] border-line bg-panel-strong shadow-[0_4px_0_#000]">
-              <Package size={24} />
+          <div className="mx-auto max-w-sm text-center">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border-[3px] border-line bg-panel-strong shadow-[0_6px_0_#000]">
+              <Package size={26} />
             </div>
             <h2 className="font-heading text-3xl font-black">Replay not found</h2>
             <p className="mt-2 text-sm font-semibold text-text-muted">
               This replay may have been removed or the link is incorrect.
             </p>
+            <Link
+              href="/"
+              className="brutal-btn-secondary mt-5 inline-flex h-11 items-center px-6 font-dashboard text-sm"
+            >
+              Back to ReplaySell
+            </Link>
           </div>
         </div>
       </PageShell>
@@ -146,8 +152,13 @@ export default function PublicReplayClient() {
       <PageShell>
         <div className="flex min-h-[50vh] items-center justify-center">
           <div className="mx-auto max-w-md text-center">
-            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border-[3px] border-line bg-panel-strong shadow-[0_6px_0_#000]">
-              <Clock size={28} />
+            <div className="relative mx-auto mb-6">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border-[3px] border-line bg-panel-strong shadow-[0_6px_0_#000]">
+                <Clock size={32} />
+              </div>
+              <span className="absolute -right-2 -top-2 rounded-full border-2 border-line bg-[#ff6b5a] px-2.5 py-0.5 font-dashboard text-[10px] font-bold text-white shadow-[0_2px_0_#000]">
+                Ended
+              </span>
             </div>
             <h2 className="font-heading text-4xl font-black">This replay has ended</h2>
             <p className="mt-3 text-base font-semibold text-text-muted">
@@ -179,8 +190,11 @@ export default function PublicReplayClient() {
           <div className="w-full space-y-6">
             {/* Header */}
             <div className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border-[3px] border-line bg-accent shadow-[0_6px_0_#000]">
-                <BellRing size={24} />
+              <div className="relative mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border-[3px] border-line bg-accent shadow-[0_6px_0_#000]">
+                <BellRing size={26} />
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-line bg-[#ff6b5a] font-dashboard text-[9px] font-bold text-white">
+                  !
+                </span>
               </div>
               <h2 className="font-heading text-3xl font-black sm:text-4xl">
                 Unlock this replay
@@ -188,6 +202,14 @@ export default function PublicReplayClient() {
               <p className="mt-2 text-sm font-semibold text-text-muted">
                 Subscribe to get countdown, stock, and price-change alerts.
               </p>
+              <div className="mx-auto mt-3 flex items-center justify-center gap-3">
+                <span className="inline-flex items-center gap-1 rounded-full border-2 border-line bg-accent px-2.5 py-1 font-dashboard text-[10px] font-bold shadow-[0_1px_0_#000]">
+                  <Check size={10} strokeWidth={3} /> Free to browse
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full border-2 border-line bg-[#ff9ecd] px-2.5 py-1 font-dashboard text-[10px] font-bold shadow-[0_1px_0_#000]">
+                  <Check size={10} strokeWidth={3} /> Instant alerts
+                </span>
+              </div>
             </div>
 
             {/* Form card */}
@@ -338,13 +360,15 @@ export default function PublicReplayClient() {
           <div className="space-y-5">
             {/* Products */}
             <div className="rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000] sm:p-6">
-              <div className="mb-4 flex items-center justify-between">
-                <p className="flex items-center gap-2 font-heading text-xl font-black">
-                  <ShoppingBag size={18} />
+              <div className="mb-5 flex items-center justify-between">
+                <p className="flex items-center gap-2.5 font-heading text-xl font-black">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border-[3px] border-line bg-accent shadow-[0_2px_0_#000]">
+                    <ShoppingBag size={16} />
+                  </div>
                   Products
                 </p>
                 <span className="rounded-full border-2 border-line bg-accent px-3 py-1 font-dashboard text-xs font-bold shadow-[0_2px_0_#000]">
-                  {products?.length ?? 0}
+                  {products?.length ?? 0} item{(products?.length ?? 0) !== 1 ? "s" : ""}
                 </span>
               </div>
 
@@ -386,9 +410,15 @@ export default function PublicReplayClient() {
             </div>
 
             {/* Alerts enabled */}
-            <div className="rounded-2xl border-[3px] border-line bg-[#ff9ecd] p-5 shadow-[0_4px_0_#000]">
+            <div className="relative overflow-hidden rounded-2xl border-[3px] border-line bg-[#ff9ecd] p-5 shadow-[0_4px_0_#000]">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full bg-white/20"
+              />
               <p className="mb-3 flex items-center gap-2 font-heading text-lg font-black">
-                <Bell size={16} />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-line bg-white/60 shadow-[0_1px_0_#000]">
+                  <Bell size={14} />
+                </div>
                 Your alerts
               </p>
               <div className="flex flex-wrap gap-2">
@@ -424,9 +454,17 @@ function PageShell({
   showShareTip?: boolean;
 }) {
   return (
-    <div className="dashboard-layout min-h-screen bg-bg">
-      {/* ── Nav ──────────────────────────────────────────── */}
-      <nav className="border-b-[3px] border-line bg-panel">
+    <div className="dashboard-layout relative min-h-screen bg-bg">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-32 top-48 h-72 w-72 rounded-full bg-[#acf8e0]/15 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-24 bottom-48 h-64 w-64 rounded-full bg-[#ff9ecd]/10 blur-3xl"
+      />
+
+      <nav className="relative z-10 border-b-[3px] border-line bg-panel/90 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl border-[3px] border-line bg-[#ffbc8c] shadow-[0_3px_0_#000]">
@@ -445,7 +483,7 @@ function PageShell({
       </nav>
 
       {showShareStrip && onCopyLink ? (
-        <div className="border-b-[3px] border-line bg-accent-amber">
+        <div className="relative z-10 border-b-[3px] border-line bg-accent-amber">
           <div className="mx-auto max-w-5xl px-5 py-2.5 sm:px-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="font-dashboard text-xs font-bold">
@@ -468,25 +506,28 @@ function PageShell({
         </div>
       ) : null}
 
-      {/* ── Countdown bar ────────────────────────────────── */}
       {countdown && (
-        <div className="border-b-[3px] border-line bg-accent-amber">
-          <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-3 sm:px-8">
-            <div className="flex items-center gap-2">
-              <Timer size={16} className="shrink-0" />
+        <div className="relative z-10 border-b-[3px] border-line bg-[#1a1a1a] text-white">
+          <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-3.5 sm:px-8">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ff6b5a]">
+                <Timer size={15} />
+              </div>
               <span className="font-heading text-sm font-bold sm:text-base">
                 Replay closes in
               </span>
             </div>
-            <span className="font-dashboard text-xl font-black tabular-nums sm:text-2xl">
-              {countdown}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[#ff6b5a]" />
+              <span className="font-dashboard text-2xl font-black tabular-nums sm:text-3xl">
+                {countdown}
+              </span>
+            </div>
           </div>
         </div>
       )}
 
-      {/* ── Main content ─────────────────────────────────── */}
-      <main className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
+      <main className="relative z-10 mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
         {children}
       </main>
     </div>
@@ -542,21 +583,30 @@ function ProductCard({
 
   return (
     <div
-      className={`rounded-xl border-[3px] border-line p-4 shadow-[0_3px_0_#000] ${
-        outOfStock ? "bg-panel-strong opacity-60" : "bg-white"
+      className={`group rounded-xl border-[3px] border-line p-4 shadow-[0_3px_0_#000] transition-all sm:p-5 ${
+        outOfStock
+          ? "bg-panel-strong opacity-60"
+          : "bg-white hover:-translate-y-0.5 hover:shadow-[0_5px_0_#000]"
       }`}
     >
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-4">
+        <div
+          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border-[3px] border-line shadow-[0_2px_0_#000] ${
+            outOfStock ? "bg-panel-strong" : "bg-accent-amber"
+          }`}
+        >
+          <ShoppingBag size={20} />
+        </div>
         <div className="min-w-0 flex-1">
           <p className="font-heading text-lg font-extrabold leading-tight">{product.name}</p>
           <div className="mt-1.5 flex items-center gap-3">
             <span className="font-heading text-xl font-black">${product.price.toFixed(2)}</span>
             <span
               className={`rounded-full border-2 border-line px-2.5 py-0.5 font-dashboard text-[10px] font-bold shadow-[0_1px_0_#000] ${
-                outOfStock ? "bg-panel-strong" : "bg-accent"
+                outOfStock ? "bg-panel-strong" : product.stock <= 5 ? "bg-[#ff6b5a]/20" : "bg-accent"
               }`}
             >
-              {outOfStock ? "Sold out" : `${product.stock} left`}
+              {outOfStock ? "Sold out" : product.stock <= 5 ? `Only ${product.stock} left` : `${product.stock} left`}
             </span>
           </div>
         </div>
@@ -581,7 +631,7 @@ function ProductCard({
       </div>
 
       {!isSignedIn && (
-        <p className="mt-2 text-xs font-semibold text-text-muted">
+        <p className="mt-2.5 pl-[4.5rem] text-xs font-semibold text-text-muted">
           Create an account to buy and track your order history.
         </p>
       )}
@@ -641,12 +691,18 @@ function PreferenceToggle({
 function AlertChip({ label, active }: { label: string; active: boolean }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border-2 border-line px-3 py-1.5 font-dashboard text-xs font-bold shadow-[0_2px_0_#000] ${
-        active ? "bg-white" : "bg-white/50"
+      className={`inline-flex items-center gap-1.5 rounded-full border-2 border-line px-3.5 py-1.5 font-dashboard text-xs font-bold shadow-[0_2px_0_#000] transition-all ${
+        active ? "bg-white" : "bg-white/40 opacity-60"
       }`}
     >
-      {active && <Check size={11} strokeWidth={3} />}
-      {label} {active ? "ON" : "OFF"}
+      {active ? (
+        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#1a1a1a]">
+          <Check size={10} strokeWidth={3} className="text-white" />
+        </span>
+      ) : (
+        <span className="h-4 w-4 rounded-full border-2 border-line" />
+      )}
+      {label}
     </span>
   );
 }
