@@ -325,11 +325,11 @@ function SellerBillingGate({
         </span>
       </div>
 
-      {(subscription.plan ||
-        subscription.trialEndsAt ||
-        subscription.currentPeriodEnd) && (
+      {(subscription.hasAccess && subscription.plan) ||
+      subscription.trialEndsAt ||
+      subscription.currentPeriodEnd ? (
         <div className="mb-6 rounded-xl border-2 border-line bg-panel-strong px-4 py-3 text-xs font-semibold text-text-muted">
-          {subscription.plan ? (
+          {subscription.hasAccess && subscription.plan ? (
             <p>Current plan: {formatSellerPlan(subscription.plan)}</p>
           ) : null}
           {subscription.trialEndsAt ? (
@@ -338,7 +338,7 @@ function SellerBillingGate({
             <p>Current period ends: {formatBillingDate(subscription.currentPeriodEnd)}</p>
           ) : null}
         </div>
-      )}
+      ) : null}
 
       <div className="grid gap-4 md:grid-cols-3">
         {SELLER_PLAN_OPTIONS.map((plan) => (
