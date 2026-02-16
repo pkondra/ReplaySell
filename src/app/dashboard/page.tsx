@@ -2,9 +2,10 @@
 
 import type { Doc } from "@convex/_generated/dataModel";
 import { UserButton } from "@clerk/nextjs";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import {
   CalendarClock,
+  CreditCard,
   DollarSign,
   Layers2,
   Mail,
@@ -15,12 +16,40 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { api } from "@convex/_generated/api";
 import { useToast } from "@/components/ui/toast-provider";
 import { validateReplayUrl } from "@/lib/embed";
 import { formatTimestamp } from "@/lib/time";
+
+type SellerPlanId = "starter" | "growth" | "boutique";
+
+const SELLER_PLAN_OPTIONS: Array<{
+  id: SellerPlanId;
+  name: string;
+  price: number;
+  tagline: string;
+}> = [
+  {
+    id: "starter",
+    name: "Starter",
+    price: 49,
+    tagline: "For solo sellers launching replay sales.",
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    price: 99,
+    tagline: "For sellers going live every week.",
+  },
+  {
+    id: "boutique",
+    name: "Boutique",
+    price: 149,
+    tagline: "For teams and high-volume brands.",
+  },
+];
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -28,16 +57,45 @@ export default function DashboardPage() {
   const toast = useToast();
   const stats = useQuery(api.replays.getDashboardStats);
   const replays = useQuery(api.replays.listMyReplays);
-  const createReplay = useMutation(api.replays.createReplay);
-  const [showCreate, setShowCreate] = useState(false);
-  const [renderNow] = useState(() => Date.now());
+  const sellerSubscription = useQuery(api.sellerBilling.getMySellerSubscription);
+  const createSellerCheckoutSession = useAction(
+    api.sellerBillingActions.createSellerCheckoutSession,
+  );
   const initialUrl = searchParams.get("url") ?? "";
+  const billingState = searchParams.get("billing");
+  const preferredPlan = parseSellerPlan(searchParams.get("plan"));
+  const createReplay = useMutation(api.replays.createReplay);
+  const [showCreate, setShowCreate] = useState(() => Boolean(initialUrl));
+  const [renderNow] = useState(() => Date.now());
+  const [checkoutPlan, setCheckoutPlan] = useState<SellerPlanId | null>(null);
+  const billingGateRef = useRef<HTMLDivElement | null>(null);
+  const handledBillingStateRef = useRef<string | null>(null);
+  const hasSellerAccess = sellerSubscription?.hasAccess ?? false;
 
   useEffect(() => {
-    if (initialUrl) {
-      setShowCreate(true);
+    if (!billingState || handledBillingStateRef.current === billingState) return;
+
+    if (billingState === "success") {
+      toast.success("Checkout complete. We are activating your seller access.");
+    } else if (billingState === "canceled") {
+      toast.error("Checkout canceled. Start your 7-day trial to continue.");
     }
-  }, [initialUrl]);
+
+    handledBillingStateRef.current = billingState;
+  }, [billingState, toast]);
+
+  async function handleStartTrial(plan: SellerPlanId) {
+    setCheckoutPlan(plan);
+    try {
+      const { url } = await createSellerCheckoutSession({ plan });
+      if (typeof window !== "undefined") {
+        window.location.href = url;
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Could not start Stripe checkout."));
+      setCheckoutPlan(null);
+    }
+  }
 
   return (
     <main className="dashboard-layout page-fade-in min-h-screen px-4 py-6 sm:px-6">
@@ -71,8 +129,28 @@ export default function DashboardPage() {
           </nav>
 
           <div className="mt-6 rounded-xl border-[3px] border-line bg-accent p-4 shadow-[0_4px_0_#000]">
-            <p className="font-heading text-lg font-black">Fixed Monthly Plan</p>
-            <p className="text-sm font-semibold text-text-muted">Billing via Stripe Subscriptions</p>
+            <p className="font-heading text-lg font-black">
+              {sellerSubscription?.hasAccess
+                ? `${formatSellerPlan(sellerSubscription.plan)} plan`
+                : "Seller billing required"}
+            </p>
+            <p className="text-sm font-semibold text-text-muted">
+              {sellerSubscription === undefined
+                ? "Checking seller access..."
+                : sellerSubscription.hasAccess
+                  ? `Status: ${formatSellerStatus(sellerSubscription.status)}`
+                  : "Start a 7-day trial to unlock replay and product creation."}
+            </p>
+            {(sellerSubscription?.trialEndsAt ??
+              sellerSubscription?.currentPeriodEnd) && (
+              <p className="mt-1 text-xs font-semibold text-text-muted">
+                {sellerSubscription.status === "trialing" ? "Trial ends" : "Next billing"}{" "}
+                {formatBillingDate(
+                  sellerSubscription.trialEndsAt ??
+                    sellerSubscription.currentPeriodEnd,
+                )}
+              </p>
+            )}
           </div>
         </aside>
 
@@ -87,11 +165,28 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setShowCreate((v) => !v)}
-                className="brutal-btn-primary inline-flex h-11 cursor-pointer items-center gap-2 px-5 font-dashboard text-sm"
+                onClick={() => {
+                  if (!hasSellerAccess) {
+                    billingGateRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                    toast.error("Start your 7-day trial to create replays.");
+                    return;
+                  }
+                  setShowCreate((v) => !v);
+                }}
+                disabled={sellerSubscription === undefined || checkoutPlan !== null}
+                className="brutal-btn-primary inline-flex h-11 cursor-pointer items-center gap-2 px-5 font-dashboard text-sm disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Plus size={14} />
-                {showCreate ? "Close" : "Add Replay"}
+                {sellerSubscription === undefined
+                  ? "Checking plan..."
+                  : !hasSellerAccess
+                    ? "Start Trial"
+                    : showCreate
+                      ? "Close"
+                      : "Add Replay"}
               </button>
               <UserButton
                 afterSignOutUrl="/"
@@ -99,6 +194,17 @@ export default function DashboardPage() {
               />
             </div>
           </header>
+
+          {sellerSubscription && !sellerSubscription.hasAccess && (
+            <div ref={billingGateRef} className="mb-6">
+              <SellerBillingGate
+                subscription={sellerSubscription}
+                preferredPlan={preferredPlan}
+                checkoutPlan={checkoutPlan}
+                onStartTrial={handleStartTrial}
+              />
+            </div>
+          )}
 
           {stats && (
             <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
@@ -110,7 +216,7 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {showCreate && (
+          {showCreate && hasSellerAccess && (
             <CreateReplayCard
               initialUrl={initialUrl}
               onCreated={(id) => {
@@ -175,6 +281,96 @@ export default function DashboardPage() {
   );
 }
 
+function SellerBillingGate({
+  subscription,
+  preferredPlan,
+  checkoutPlan,
+  onStartTrial,
+}: {
+  subscription: {
+    status: string;
+    plan: string | null;
+    hasAccess: boolean;
+    trialEndsAt: number | null;
+    currentPeriodEnd: number | null;
+    cancelAtPeriodEnd: boolean;
+  };
+  preferredPlan: SellerPlanId | null;
+  checkoutPlan: SellerPlanId | null;
+  onStartTrial: (plan: SellerPlanId) => Promise<void>;
+}) {
+  return (
+    <section className="rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_6px_0_#000] sm:p-6">
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="font-heading text-3xl font-black leading-tight">
+            Activate seller access
+          </h2>
+          <p className="mt-2 text-sm font-semibold text-text-muted">
+            Pick a monthly plan, enter your card in Stripe Checkout, and your
+            7-day trial starts immediately.
+          </p>
+          <p className="mt-1 text-xs font-semibold text-text-muted">
+            Replay and product creation stay locked until your subscription is
+            trialing or active.
+          </p>
+        </div>
+        <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-line bg-accent-amber px-3 py-1 font-dashboard text-[11px] font-bold shadow-[0_2px_0_#000]">
+          <CreditCard size={13} />
+          {formatSellerStatus(subscription.status)}
+        </span>
+      </div>
+
+      {(subscription.plan ||
+        subscription.trialEndsAt ||
+        subscription.currentPeriodEnd) && (
+        <div className="mb-5 rounded-xl border-2 border-line bg-panel-strong px-4 py-3 text-xs font-semibold text-text-muted">
+          {subscription.plan ? (
+            <p>Current plan: {formatSellerPlan(subscription.plan)}</p>
+          ) : null}
+          {subscription.trialEndsAt ? (
+            <p>Trial ends: {formatBillingDate(subscription.trialEndsAt)}</p>
+          ) : subscription.currentPeriodEnd ? (
+            <p>Current period ends: {formatBillingDate(subscription.currentPeriodEnd)}</p>
+          ) : null}
+        </div>
+      )}
+
+      <div className="grid gap-3 md:grid-cols-3">
+        {SELLER_PLAN_OPTIONS.map((plan) => (
+          <article
+            key={plan.id}
+            className={`rounded-xl border-[3px] border-line p-4 shadow-[0_3px_0_#000] ${
+              preferredPlan === plan.id ? "bg-accent" : "bg-panel"
+            }`}
+          >
+            <p className="font-heading text-xl font-black">{plan.name}</p>
+            <p className="mt-1 font-heading text-4xl font-black text-[#ff6b5a]">
+              ${plan.price}
+              <span className="ml-1 font-dashboard text-sm font-semibold text-text-muted">
+                /mo
+              </span>
+            </p>
+            <p className="mt-2 text-xs font-semibold text-text-muted">
+              {plan.tagline}
+            </p>
+            <button
+              type="button"
+              onClick={() => void onStartTrial(plan.id)}
+              disabled={checkoutPlan !== null}
+              className="brutal-btn-primary mt-4 inline-flex h-10 w-full items-center justify-center text-sm disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {checkoutPlan === plan.id
+                ? "Redirecting..."
+                : "Start 7-Day Trial"}
+            </button>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function StatCard({
   label,
   value,
@@ -234,8 +430,9 @@ function CreateReplayCard({
       });
       toast.success("Replay created. Add products next.");
       onCreated(id);
-    } catch {
-      toast.error("Could not create replay.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Could not create replay."));
+    } finally {
       setPending(false);
     }
   }
@@ -284,4 +481,50 @@ function CreateReplayCard({
       </button>
     </form>
   );
+}
+
+function parseSellerPlan(value: string | null): SellerPlanId | null {
+  if (!value) return null;
+  if (value === "starter" || value === "growth" || value === "boutique") {
+    return value;
+  }
+  return null;
+}
+
+function formatSellerPlan(plan: string | null) {
+  if (plan === "starter") return "Starter";
+  if (plan === "growth") return "Growth";
+  if (plan === "boutique") return "Boutique";
+  return "Unknown";
+}
+
+function formatSellerStatus(status: string) {
+  if (status === "trialing") return "Trialing";
+  if (status === "active") return "Active";
+  if (status === "canceled") return "Canceled";
+  if (status === "checkout_pending") return "Checkout pending";
+  if (status === "past_due") return "Past due";
+  return "Inactive";
+}
+
+function formatBillingDate(timestamp: number | null) {
+  if (timestamp == null) return "—";
+  return new Date(timestamp).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (!(error instanceof Error) || !error.message) {
+    return fallback;
+  }
+
+  const stripped = error.message.replace(
+    /^(\[CONVEX [^\]]+\]\s*)?Uncaught Error:\s*/i,
+    "",
+  );
+
+  return stripped || fallback;
 }

@@ -11,6 +11,10 @@
 import type * as orders from "../orders.js";
 import type * as products from "../products.js";
 import type * as replays from "../replays.js";
+import type * as sellerAccess from "../sellerAccess.js";
+import type * as sellerBilling from "../sellerBilling.js";
+import type * as sellerBillingActions from "../sellerBillingActions.js";
+import type * as sellerBillingTypes from "../sellerBillingTypes.js";
 import type * as subscribers from "../subscribers.js";
 
 import type {
@@ -23,6 +27,10 @@ declare const fullApi: ApiFromModules<{
   orders: typeof orders;
   products: typeof products;
   replays: typeof replays;
+  sellerAccess: typeof sellerAccess;
+  sellerBilling: typeof sellerBilling;
+  sellerBillingActions: typeof sellerBillingActions;
+  sellerBillingTypes: typeof sellerBillingTypes;
   subscribers: typeof subscribers;
 }>;
 

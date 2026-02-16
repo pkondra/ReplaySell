@@ -8,6 +8,7 @@ ReplaySell is a replay-commerce app where sellers create shoppable replay pages 
 - Tailwind CSS v4
 - Clerk (auth for seller and buyer accounts)
 - Convex (database + mutations/queries)
+- Stripe Billing (seller subscriptions + webhook sync)
 - Resend (transactional email scaffold)
 
 ## Product Model
@@ -30,6 +31,7 @@ ReplaySell is a replay-commerce app where sellers create shoppable replay pages 
   - notification preference toggles (timer / stock / price change)
   - sign-in prompt before purchase
 - Buyer purchase history page (`/dashboard/purchases`)
+- Seller billing gate (7-day Stripe trial before replay/product creation)
 - Resend helper at `src/lib/email/resend.ts` using:
   - `noreply@hello.ringreceptionist.com`
 
@@ -47,6 +49,13 @@ Required:
 - `CLERK_SECRET_KEY`
 - `CLERK_JWT_ISSUER_DOMAIN`
 - `NEXT_PUBLIC_CONVEX_URL`
+- `NEXT_PUBLIC_APP_URL` (for Stripe success/cancel redirects)
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_WEBHOOK_INGEST_SECRET`
+- `STRIPE_SELLER_STARTER_MONTHLY_PRICE_ID`
+- `STRIPE_SELLER_GROWTH_MONTHLY_PRICE_ID`
+- `STRIPE_SELLER_BOUTIQUE_MONTHLY_PRICE_ID`
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL` (default is already set)
 
@@ -54,6 +63,18 @@ Convex CLI also sets:
 
 - `CONVEX_DEPLOYMENT`
 - `NEXT_PUBLIC_CONVEX_SITE_URL`
+
+Stripe values are also required in the Convex deployment runtime because
+checkout/session creation and webhook state writes run in Convex actions:
+
+```bash
+npx convex env set STRIPE_SECRET_KEY <value>
+npx convex env set STRIPE_WEBHOOK_INGEST_SECRET <value>
+npx convex env set STRIPE_SELLER_STARTER_MONTHLY_PRICE_ID <value>
+npx convex env set STRIPE_SELLER_GROWTH_MONTHLY_PRICE_ID <value>
+npx convex env set STRIPE_SELLER_BOUTIQUE_MONTHLY_PRICE_ID <value>
+npx convex env set NEXT_PUBLIC_APP_URL http://localhost:4000
+```
 
 ## Setup
 
@@ -86,8 +107,11 @@ App runs on [http://localhost:4000](http://localhost:4000).
 - [ ] Signed-in buyer can place order
 - [ ] Buyer sees purchase in `/dashboard/purchases`
 - [ ] Seller sees order in replay detail orders tab
+- [ ] Seller cannot create replay/product before starting trial
+- [ ] Seller starts plan checkout with 7-day trial in Stripe Checkout
+- [ ] Webhook updates seller status (`trialing`, `active`, `canceled`)
 
 ## Notes
 
-- Stripe flows are represented at product/design level in this version; production billing/checkout API wiring is the next step.
+- Stripe seller billing webhook endpoint: `POST /api/stripe/webhook` on your app URL.
 - Resend helper is scaffolded and ready for route handlers/server actions.

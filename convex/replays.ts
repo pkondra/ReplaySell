@@ -1,15 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-
-type Identity = { subject: string };
-
-async function requireIdentity(ctx: {
-  auth: { getUserIdentity: () => Promise<Identity | null> };
-}) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) throw new Error("Unauthorized");
-  return identity;
-}
+import { assertSellerAccess, requireIdentity } from "./sellerAccess";
 
 function normalizeHttpUrl(value: string) {
   const trimmed = value.trim();
@@ -31,6 +22,7 @@ export const createReplay = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await requireIdentity(ctx);
+    await assertSellerAccess(ctx, identity.subject);
     const now = Date.now();
     const normalizedUrl = normalizeHttpUrl(args.url);
     const hours = args.durationHours ?? 48;

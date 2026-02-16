@@ -402,6 +402,7 @@ const mobileTestimonials = testimonials.slice(0, 2);
 
 const plans = [
   {
+    id: "starter",
     name: "Starter",
     price: 49,
     tagline: "For solo sellers getting started with replay sales.",
@@ -418,6 +419,7 @@ const plans = [
     ],
   },
   {
+    id: "growth",
     name: "Growth",
     price: 99,
     tagline: "For sellers going live weekly.",
@@ -434,6 +436,7 @@ const plans = [
     ],
   },
   {
+    id: "boutique",
     name: "Boutique",
     price: 149,
     tagline: "For teams & high-volume brands.",
@@ -778,7 +781,7 @@ export default function HomePage() {
 
                 {/* CTA */}
                 <Link
-                  href="/sign-up"
+                  href={`/dashboard?plan=${plan.id}`}
                   className={`mt-8 inline-flex h-13 w-full items-center justify-center rounded-xl border-[3px] border-line font-heading text-base font-bold shadow-[0_4px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_6px_0_#000] ${
                     plan.popular
                       ? "bg-[#ff9ecd] hover:bg-[#ffb8da]"

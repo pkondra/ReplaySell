@@ -42,6 +42,7 @@ export default function ReplayDetailPage() {
   const products = useQuery(api.products.listByReplay, { replayId });
   const subscribers = useQuery(api.subscribers.listByReplay, { replayId });
   const orders = useQuery(api.orders.listByReplay, { replayId });
+  const sellerSubscription = useQuery(api.sellerBilling.getMySellerSubscription);
   const updateReplay = useMutation(api.replays.updateReplay);
   const addProduct = useMutation(api.products.addProduct);
   const removeProduct = useMutation(api.products.removeProduct);
@@ -233,6 +234,8 @@ export default function ReplayDetailPage() {
               products={products ?? []}
               addProduct={addProduct}
               removeProduct={removeProduct}
+              canManageProducts={sellerSubscription?.hasAccess ?? false}
+              billingLoading={sellerSubscription === undefined}
               toast={toast}
             />
           )}
@@ -439,6 +442,8 @@ function ProductsTab({
   products,
   addProduct,
   removeProduct,
+  canManageProducts,
+  billingLoading,
   toast,
 }: {
   replayId: Id<"replays">;
@@ -450,6 +455,8 @@ function ProductsTab({
     stock: number;
   }) => Promise<Id<"products">>;
   removeProduct: (args: { id: Id<"products"> }) => Promise<void | null>;
+  canManageProducts: boolean;
+  billingLoading: boolean;
   toast: { success: (m: string) => void; error: (m: string) => void };
 }) {
   const [name, setName] = useState("");
@@ -459,6 +466,11 @@ function ProductsTab({
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
+    if (billingLoading) return;
+    if (!canManageProducts) {
+      toast.error("Start your seller trial first to add products.");
+      return;
+    }
     if (!name.trim() || !price || !stock) return;
     setAdding(true);
     try {
@@ -472,8 +484,8 @@ function ProductsTab({
       setPrice("");
       setStock("");
       toast.success("Product added.");
-    } catch {
-      toast.error("Could not add product.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Could not add product."));
     } finally {
       setAdding(false);
     }
@@ -486,12 +498,19 @@ function ProductsTab({
         <p className="mb-4 flex items-center gap-2 font-heading text-lg font-black">
           <Plus size={16} /> Add product
         </p>
+        {!canManageProducts && !billingLoading && (
+          <p className="mb-4 rounded-xl border-2 border-line bg-panel-strong px-3 py-2 text-xs font-semibold text-text-muted">
+            Billing required: your seller plan must be trialing or active to add
+            products.
+          </p>
+        )}
         <form onSubmit={handleAdd} className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-3">
             <input
               placeholder="Product name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              disabled={!canManageProducts || billingLoading}
               required
               className="brutal-input"
             />
@@ -502,6 +521,7 @@ function ProductsTab({
               placeholder="Price"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
+              disabled={!canManageProducts || billingLoading}
               required
               className="brutal-input"
             />
@@ -511,17 +531,24 @@ function ProductsTab({
               placeholder="Stock qty"
               value={stock}
               onChange={(e) => setStock(e.target.value)}
+              disabled={!canManageProducts || billingLoading}
               required
               className="brutal-input"
             />
           </div>
           <button
             type="submit"
-            disabled={adding}
+            disabled={adding || !canManageProducts || billingLoading}
             className="brutal-btn-primary inline-flex h-10 items-center gap-2 px-5 text-sm disabled:opacity-60"
           >
             <Plus size={14} />
-            {adding ? "Adding..." : "Add product"}
+            {billingLoading
+              ? "Checking plan..."
+              : adding
+                ? "Adding..."
+                : !canManageProducts
+                  ? "Billing required"
+                  : "Add product"}
           </button>
         </form>
       </div>
@@ -743,4 +770,17 @@ function timeLeft(expiresAt: number, now: number) {
   const h = Math.floor(diff / 3_600_000);
   const m = Math.floor((diff % 3_600_000) / 60_000);
   return `${h}h ${m}m`;
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (!(error instanceof Error) || !error.message) {
+    return fallback;
+  }
+
+  const stripped = error.message.replace(
+    /^(\[CONVEX [^\]]+\]\s*)?Uncaught Error:\s*/i,
+    "",
+  );
+
+  return stripped || fallback;
 }

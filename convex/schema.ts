@@ -54,4 +54,22 @@ export default defineSchema({
     .index("by_replayId", ["replayId"])
     .index("by_sellerId", ["sellerId"])
     .index("by_buyerId", ["buyerId"]),
+
+  sellerSubscriptions: defineTable({
+    userId: v.string(),
+    plan: v.optional(v.string()),
+    status: v.string(),
+    stripeCustomerId: v.optional(v.string()),
+    stripeSubscriptionId: v.optional(v.string()),
+    stripePriceId: v.optional(v.string()),
+    trialEndsAt: v.optional(v.number()),
+    currentPeriodEnd: v.optional(v.number()),
+    canceledAt: v.optional(v.number()),
+    cancelAtPeriodEnd: v.optional(v.boolean()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_stripeCustomerId", ["stripeCustomerId"])
+    .index("by_stripeSubscriptionId", ["stripeSubscriptionId"]),
 });

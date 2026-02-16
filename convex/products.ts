@@ -1,15 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-
-type Identity = { subject: string };
-
-async function requireIdentity(ctx: {
-  auth: { getUserIdentity: () => Promise<Identity | null> };
-}) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) throw new Error("Unauthorized");
-  return identity;
-}
+import { assertSellerAccess, requireIdentity } from "./sellerAccess";
 
 export const addProduct = mutation({
   args: {
@@ -20,6 +11,7 @@ export const addProduct = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await requireIdentity(ctx);
+    await assertSellerAccess(ctx, identity.subject);
     const replay = await ctx.db.get(args.replayId);
     if (!replay || replay.userId !== identity.subject)
       throw new Error("Replay not found");

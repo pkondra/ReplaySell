@@ -39,8 +39,15 @@ export function HeroReplayCta() {
       const replayId = await createReplay({ url: normalizedUrl });
       toast.success("Replay created. Add products next.");
       router.push(`/dashboard/replays/${replayId}`);
-    } catch {
-      toast.error("Could not start your replay. Try again.");
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message.replace(
+              /^(\[CONVEX [^\]]+\]\s*)?Uncaught Error:\s*/i,
+              "",
+            )
+          : "Could not start your replay. Try again.";
+      toast.error(message || "Could not start your replay. Try again.");
     } finally {
       setPending(false);
     }
