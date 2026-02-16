@@ -103,10 +103,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="dashboard-layout page-fade-in min-h-screen px-4 py-6 sm:px-6">
-      <div className="mx-auto flex w-full max-w-7xl flex-col overflow-hidden rounded-[24px] border-[3px] border-line bg-panel shadow-[0_8px_0_#000] lg:flex-row">
-        <aside className="w-full border-b-[3px] border-line bg-panel-strong p-5 lg:w-72 lg:border-b-0 lg:border-r-[3px]">
-          <div className="mb-6 flex items-center gap-3">
+    <main className="dashboard-layout page-fade-in min-h-screen px-5 py-8 sm:px-8 sm:py-10">
+      <div className="mx-auto flex w-full max-w-[104rem] flex-col overflow-hidden rounded-[28px] border-[3px] border-line bg-panel shadow-[0_8px_0_#000] lg:flex-row">
+        <aside className="w-full border-b-[3px] border-line bg-panel-strong p-6 sm:p-7 lg:w-80 lg:border-b-0 lg:border-r-[3px] lg:p-8">
+          <div className="mb-8 flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl border-[3px] border-line bg-[#ffbc8c] shadow-[0_4px_0_#000]">
               <RadioTower size={18} />
             </div>
@@ -116,24 +116,24 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <nav className="space-y-2">
+          <nav className="space-y-3">
             <Link
               href="/dashboard"
-              className="flex items-center gap-2 rounded-xl border-[3px] border-line bg-[#ffbc8c] px-4 py-3 text-sm font-bold shadow-[0_4px_0_#000]"
+              className="flex items-center gap-2 rounded-xl border-[3px] border-line bg-[#ffbc8c] px-4 py-3.5 text-sm font-bold shadow-[0_4px_0_#000]"
             >
               <Layers2 size={15} />
               Dashboard
             </Link>
             <Link
               href="/dashboard/purchases"
-              className="flex items-center gap-2 rounded-xl border-2 border-line bg-white px-4 py-3 text-sm font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5"
+              className="flex items-center gap-2 rounded-xl border-2 border-line bg-white px-4 py-3.5 text-sm font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5"
             >
               <UserRound size={15} />
               Buyer history
             </Link>
           </nav>
 
-          <div className="mt-6 rounded-xl border-[3px] border-line bg-accent p-4 shadow-[0_4px_0_#000]">
+          <div className="mt-7 rounded-xl border-[3px] border-line bg-accent p-5 shadow-[0_4px_0_#000]">
             <p className="font-heading text-lg font-black">
               {sellerSubscription?.hasAccess
                 ? `${formatSellerPlan(sellerSubscription.plan)} plan`
@@ -159,11 +159,11 @@ export default function DashboardPage() {
           </div>
         </aside>
 
-        <section className="min-w-0 flex-1 bg-bg p-5 sm:p-6">
-          <header className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <section className="min-w-0 flex-1 bg-bg p-6 sm:p-8 lg:p-10">
+          <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 className="font-heading text-4xl font-black">Dashboard</h1>
-              <p className="text-sm font-semibold text-text-muted">
+              <h1 className="font-heading text-4xl font-black sm:text-5xl">Dashboard</h1>
+              <p className="mt-1 text-sm font-semibold text-text-muted">
                 Replay metrics, product inventory, subscribers, and campaigns.
               </p>
             </div>
@@ -200,7 +200,7 @@ export default function DashboardPage() {
           </header>
 
           {sellerSubscription && !sellerSubscription.hasAccess && (
-            <div ref={billingGateRef} className="mb-6">
+            <div ref={billingGateRef} className="mb-8">
               <SellerBillingGate
                 subscription={sellerSubscription}
                 preferredPlan={preferredPlan}
@@ -211,7 +211,7 @@ export default function DashboardPage() {
           )}
 
           {stats && (
-            <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
               <StatCard label="Monthly Total" value={`$${stats.totalRevenue.toFixed(2)}`} icon={DollarSign} tone="bg-accent" />
               <StatCard label="Active" value={stats.liveReplays} icon={CalendarClock} tone="bg-[#ff9ecd]" />
               <StatCard label="Renewals" value={stats.totalReplays} icon={ShoppingBag} tone="bg-[#ff6b5a]" />
@@ -232,29 +232,29 @@ export default function DashboardPage() {
             />
           )}
 
-          <section className="space-y-3">
+          <section className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-heading text-2xl font-black">Your replays</h2>
+              <h2 className="font-heading text-3xl font-black">Your replays</h2>
               <span className="rounded-full border-2 border-line bg-accent-amber px-3 py-1 text-xs font-bold shadow-[0_2px_0_#000]">
                 {replays ? `${replays.length} items` : "Loading"}
               </span>
             </div>
 
             {replays === undefined ? (
-              <div className="brutal-card p-6 text-sm font-semibold text-text-muted">Loading replays...</div>
+              <div className="brutal-card p-8 text-sm font-semibold text-text-muted">Loading replays...</div>
             ) : replays.length === 0 ? (
-              <div className="brutal-card p-6 text-sm font-semibold text-text-muted">
+              <div className="brutal-card p-8 text-sm font-semibold text-text-muted">
                 No replays yet. Create your first replay above.
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {replays.map((replay: Doc<"replays">) => {
                   const isLive = replay.status === "live" && (replay.expiresAt ?? 0) > renderNow;
                   return (
                     <Link
                       key={replay._id}
                       href={`/dashboard/replays/${replay._id}`}
-                      className="group block rounded-2xl border-[3px] border-line bg-white p-4 shadow-[0_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[0_6px_0_#000]"
+                      className="group block rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[0_6px_0_#000]"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
@@ -304,17 +304,17 @@ function SellerBillingGate({
   onStartTrial: (plan: SellerPlanId) => Promise<void>;
 }) {
   return (
-    <section className="rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_6px_0_#000] sm:p-6">
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+    <section className="rounded-2xl border-[3px] border-line bg-white p-6 shadow-[0_6px_0_#000] sm:p-7 lg:p-8">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="font-heading text-3xl font-black leading-tight">
+          <h2 className="font-heading text-3xl font-black leading-tight sm:text-4xl">
             Activate seller access
           </h2>
-          <p className="mt-2 text-sm font-semibold text-text-muted">
+          <p className="mt-3 text-sm font-semibold text-text-muted">
             Pick a monthly plan, enter your card in Stripe Checkout, and your
             7-day trial starts immediately.
           </p>
-          <p className="mt-1 text-xs font-semibold text-text-muted">
+          <p className="mt-2 text-xs font-semibold text-text-muted">
             Replay and product creation stay locked until your subscription is
             trialing or active.
           </p>
@@ -328,7 +328,7 @@ function SellerBillingGate({
       {(subscription.plan ||
         subscription.trialEndsAt ||
         subscription.currentPeriodEnd) && (
-        <div className="mb-5 rounded-xl border-2 border-line bg-panel-strong px-4 py-3 text-xs font-semibold text-text-muted">
+        <div className="mb-6 rounded-xl border-2 border-line bg-panel-strong px-4 py-3 text-xs font-semibold text-text-muted">
           {subscription.plan ? (
             <p>Current plan: {formatSellerPlan(subscription.plan)}</p>
           ) : null}
@@ -340,11 +340,11 @@ function SellerBillingGate({
         </div>
       )}
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3">
         {SELLER_PLAN_OPTIONS.map((plan) => (
           <article
             key={plan.id}
-            className={`rounded-xl border-[3px] border-line p-4 shadow-[0_3px_0_#000] ${
+            className={`rounded-xl border-[3px] border-line p-5 shadow-[0_3px_0_#000] ${
               preferredPlan === plan.id ? "bg-accent" : "bg-panel"
             }`}
           >
@@ -362,7 +362,7 @@ function SellerBillingGate({
               type="button"
               onClick={() => void onStartTrial(plan.id)}
               disabled={checkoutPlan !== null}
-              className="brutal-btn-primary mt-4 inline-flex h-10 w-full items-center justify-center text-sm disabled:cursor-not-allowed disabled:opacity-60"
+              className="brutal-btn-primary mt-5 inline-flex h-11 w-full items-center justify-center text-sm disabled:cursor-not-allowed disabled:opacity-60"
             >
               {checkoutPlan === plan.id
                 ? "Redirecting..."
@@ -387,12 +387,12 @@ function StatCard({
   tone: string;
 }) {
   return (
-    <div className={`rounded-2xl border-[3px] border-line p-4 shadow-[0_4px_0_#000] ${tone}`}>
+    <div className={`rounded-2xl border-[3px] border-line p-5 shadow-[0_4px_0_#000] ${tone}`}>
       <div className="flex items-center gap-2 text-text-muted">
         <Icon size={14} />
         <span className="text-sm font-semibold">{label}</span>
       </div>
-      <p className="mt-1 font-heading text-4xl font-black leading-none">{value}</p>
+      <p className="mt-2 font-heading text-5xl font-black leading-none">{value}</p>
     </div>
   );
 }
@@ -442,9 +442,9 @@ function CreateReplayCard({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6 rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_6px_0_#000]">
-      <p className="mb-3 font-heading text-xl font-black">Create replay</p>
-      <div className="grid gap-3 md:grid-cols-2">
+    <form onSubmit={handleSubmit} className="mb-8 rounded-2xl border-[3px] border-line bg-white p-6 shadow-[0_6px_0_#000]">
+      <p className="mb-4 font-heading text-2xl font-black">Create replay</p>
+      <div className="grid gap-4 md:grid-cols-2">
         <input
           type="url"
           placeholder="Replay URL (TikTok, YouTube, etc.)"
@@ -461,7 +461,7 @@ function CreateReplayCard({
           className="brutal-input"
         />
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2.5">
         <span className="text-xs font-bold uppercase tracking-[0.06em] text-text-muted">Duration</span>
         {[24, 48, 72].map((h) => (
           <button
@@ -479,7 +479,7 @@ function CreateReplayCard({
       <button
         type="submit"
         disabled={pending}
-        className="brutal-btn-primary mt-4 inline-flex h-11 items-center px-6 font-heading text-sm disabled:opacity-60"
+        className="brutal-btn-primary mt-5 inline-flex h-12 items-center px-7 font-heading text-sm disabled:opacity-60"
       >
         {pending ? "Creating..." : "Create & add products"}
       </button>

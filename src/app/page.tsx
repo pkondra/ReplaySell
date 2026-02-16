@@ -554,10 +554,6 @@ export default function HomePage() {
 
           {/* Right — Replay page mockup */}
           <div className="relative hidden lg:block">
-            {/* Decorative dots */}
-            <div className="absolute -right-4 -top-4 h-20 w-20 rounded-2xl border-[3px] border-line bg-accent-amber shadow-[0_4px_0_#000]" />
-            <div className="absolute -bottom-3 -left-3 h-14 w-14 rounded-xl border-[3px] border-line bg-[#b794f6] shadow-[0_3px_0_#000]" />
-
             {/* Main mockup card */}
             <div className="relative rounded-2xl border-[3px] border-line bg-white shadow-[0_8px_0_#000]">
               {/* Mock nav */}
@@ -628,27 +624,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Social proof bar ──────────────────────────────────── */}
-      <section className="border-y-[3px] border-line bg-panel-strong">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-5 py-5 sm:px-8">
-          {[
-            "No integrations needed",
-            "Works with TikTok, Instagram & Facebook",
-            "Stripe-powered checkout",
-            "Setup in under 2 min",
-          ].map((item) => (
-            <div key={item} className="flex items-center gap-2 text-sm font-semibold">
-              <div className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-line bg-accent">
-                <Check size={11} strokeWidth={3} />
-              </div>
-              <span>{item}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ── How it works ─────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-6xl px-5 pt-20 sm:px-8 sm:pt-28">
+      <section className="mx-auto w-full max-w-6xl px-5 pt-18 sm:px-8 sm:pt-24">
         <div className="mb-12 max-w-2xl">
           <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
             How it works

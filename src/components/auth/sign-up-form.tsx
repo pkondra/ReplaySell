@@ -86,11 +86,10 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
         <span className="font-dashboard text-xs font-bold uppercase tracking-[0.1em] text-text-muted">
           Full name
         </span>
-        <div className="relative">
-          <UserRound
-            size={16}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
-          />
+        <div className="grid h-12 grid-cols-[2.75rem_1fr] items-center overflow-hidden rounded-xl border-2 border-line bg-[#fcfaf7] shadow-[0_2px_0_#000] transition-all focus-within:-translate-y-0.5 focus-within:shadow-[0_3px_0_#000]">
+          <div className="flex h-full items-center justify-center border-r-2 border-line bg-white text-text-muted">
+            <UserRound size={16} />
+          </div>
           <input
             type="text"
             autoComplete="name"
@@ -98,7 +97,7 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
             onChange={(event) => setName(event.target.value)}
             placeholder="Your name"
             required
-            className="brutal-input h-12 pl-10"
+            className="h-full w-full border-0 bg-transparent px-3 text-sm font-semibold text-text outline-none placeholder:text-[rgba(26,26,26,0.5)]"
           />
         </div>
       </label>
@@ -107,11 +106,10 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
         <span className="font-dashboard text-xs font-bold uppercase tracking-[0.1em] text-text-muted">
           Email
         </span>
-        <div className="relative">
-          <Mail
-            size={16}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
-          />
+        <div className="grid h-12 grid-cols-[2.75rem_1fr] items-center overflow-hidden rounded-xl border-2 border-line bg-[#fcfaf7] shadow-[0_2px_0_#000] transition-all focus-within:-translate-y-0.5 focus-within:shadow-[0_3px_0_#000]">
+          <div className="flex h-full items-center justify-center border-r-2 border-line bg-white text-text-muted">
+            <Mail size={16} />
+          </div>
           <input
             type="email"
             inputMode="email"
@@ -120,7 +118,7 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@email.com"
             required
-            className="brutal-input h-12 pl-10"
+            className="h-full w-full border-0 bg-transparent px-3 text-sm font-semibold text-text outline-none placeholder:text-[rgba(26,26,26,0.5)]"
           />
         </div>
       </label>
@@ -129,11 +127,10 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
         <span className="font-dashboard text-xs font-bold uppercase tracking-[0.1em] text-text-muted">
           Password
         </span>
-        <div className="relative">
-          <KeyRound
-            size={16}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
-          />
+        <div className="grid h-12 grid-cols-[2.75rem_1fr] items-center overflow-hidden rounded-xl border-2 border-line bg-[#fcfaf7] shadow-[0_2px_0_#000] transition-all focus-within:-translate-y-0.5 focus-within:shadow-[0_3px_0_#000]">
+          <div className="flex h-full items-center justify-center border-r-2 border-line bg-white text-text-muted">
+            <KeyRound size={16} />
+          </div>
           <input
             type="password"
             autoComplete="new-password"
@@ -141,7 +138,7 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Minimum 8 characters"
             required
-            className="brutal-input h-12 pl-10"
+            className="h-full w-full border-0 bg-transparent px-3 text-sm font-semibold text-text outline-none placeholder:text-[rgba(26,26,26,0.5)]"
           />
         </div>
       </label>
@@ -150,11 +147,10 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
         <span className="font-dashboard text-xs font-bold uppercase tracking-[0.1em] text-text-muted">
           Confirm password
         </span>
-        <div className="relative">
-          <KeyRound
-            size={16}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
-          />
+        <div className="grid h-12 grid-cols-[2.75rem_1fr] items-center overflow-hidden rounded-xl border-2 border-line bg-[#fcfaf7] shadow-[0_2px_0_#000] transition-all focus-within:-translate-y-0.5 focus-within:shadow-[0_3px_0_#000]">
+          <div className="flex h-full items-center justify-center border-r-2 border-line bg-white text-text-muted">
+            <KeyRound size={16} />
+          </div>
           <input
             type="password"
             autoComplete="new-password"
@@ -162,7 +158,7 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
             onChange={(event) => setConfirmPassword(event.target.value)}
             placeholder="Repeat password"
             required
-            className="brutal-input h-12 pl-10"
+            className="h-full w-full border-0 bg-transparent px-3 text-sm font-semibold text-text outline-none placeholder:text-[rgba(26,26,26,0.5)]"
           />
         </div>
       </label>

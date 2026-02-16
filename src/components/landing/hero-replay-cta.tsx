@@ -65,11 +65,10 @@ export function HeroReplayCta() {
     <div className="mt-8 max-w-lg">
       <form onSubmit={handleSubmit} noValidate>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
-            <Link2
-              size={18}
-              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"
-            />
+          <div className="flex h-14 flex-1 items-center overflow-hidden rounded-xl border-2 border-line bg-[#fcfaf7] shadow-[0_3px_0_#000] transition-all focus-within:-translate-y-0.5 focus-within:shadow-[0_4px_0_#000]">
+            <div className="flex h-full w-11 shrink-0 items-center justify-center border-r-2 border-line bg-white text-text-muted">
+              <Link2 size={16} />
+            </div>
             <input
               type="url"
               inputMode="url"
@@ -80,7 +79,7 @@ export function HeroReplayCta() {
               placeholder="Paste your TikTok / IG / FB replay link"
               value={url}
               onChange={(event) => setUrl(event.target.value)}
-              className="brutal-input h-14 pl-11 text-base"
+              className="h-full w-full border-0 bg-transparent px-3 text-base font-semibold text-text outline-none placeholder:text-[rgba(26,26,26,0.5)]"
               required
             />
           </div>
