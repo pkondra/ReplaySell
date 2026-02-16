@@ -1,19 +1,14 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
+import { authConfig } from "@/auth.config";
 import { getAuthUserByEmail } from "@/lib/auth/convex-users";
 import { issueConvexToken } from "@/lib/auth/convex-token";
 import { verifyPassword } from "@/lib/auth/password";
 import { normalizeEmail, signInSchema } from "@/lib/auth/validators";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true,
-  session: {
-    strategy: "jwt",
-  },
-  pages: {
-    signIn: "/sign-in",
-  },
+  ...authConfig,
   providers: [
     Credentials({
       name: "Email + Password",
