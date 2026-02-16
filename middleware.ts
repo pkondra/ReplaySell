@@ -1,26 +1,18 @@
-import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 
-function isDashboardRoute(pathname: string) {
-  return pathname === "/dashboard" || pathname.startsWith("/dashboard/");
-}
+import { auth } from "@/auth";
 
-export default async function middleware(request: NextRequest) {
-  if (!isDashboardRoute(request.nextUrl.pathname)) {
-    return NextResponse.next();
-  }
+export default auth((request) => {
+  const { pathname, search, origin } = request.nextUrl;
+  const isDashboard = pathname === "/dashboard" || pathname.startsWith("/dashboard/");
 
-  const token = await getToken({ req: request, secret: process.env.AUTH_SECRET });
-  if (token) {
-    return NextResponse.next();
-  }
+  if (!isDashboard) return NextResponse.next();
+  if (request.auth) return NextResponse.next();
 
-  const signInUrl = new URL("/sign-in", request.nextUrl.origin);
-  const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
-  signInUrl.searchParams.set("next", nextPath);
+  const signInUrl = new URL("/sign-in", origin);
+  signInUrl.searchParams.set("next", `${pathname}${search}`);
   return NextResponse.redirect(signInUrl);
-}
+});
 
 export const config = {
   matcher: [
