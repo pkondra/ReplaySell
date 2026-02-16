@@ -1,7 +1,7 @@
 "use client";
 
 import type { Doc } from "@convex/_generated/dataModel";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { useAction, useMutation, useQuery } from "convex/react";
 import {
   CalendarClock,
@@ -52,12 +52,17 @@ const SELLER_PLAN_OPTIONS: Array<{
 ];
 
 export default function DashboardPage() {
+  const { isLoaded, userId } = useAuth();
+  const canQuery = isLoaded && !!userId;
   const router = useRouter();
   const searchParams = useSearchParams();
   const toast = useToast();
-  const stats = useQuery(api.replays.getDashboardStats);
-  const replays = useQuery(api.replays.listMyReplays);
-  const sellerSubscription = useQuery(api.sellerBilling.getMySellerSubscription);
+  const stats = useQuery(api.replays.getDashboardStats, canQuery ? {} : "skip");
+  const replays = useQuery(api.replays.listMyReplays, canQuery ? {} : "skip");
+  const sellerSubscription = useQuery(
+    api.sellerBilling.getMySellerSubscription,
+    canQuery ? {} : "skip",
+  );
   const createSellerCheckoutSession = useAction(
     api.sellerBillingActions.createSellerCheckoutSession,
   );
@@ -176,7 +181,9 @@ export default function DashboardPage() {
                   }
                   setShowCreate((v) => !v);
                 }}
-                disabled={sellerSubscription === undefined || checkoutPlan !== null}
+                disabled={
+                  !canQuery || sellerSubscription === undefined || checkoutPlan !== null
+                }
                 className="brutal-btn-primary inline-flex h-11 cursor-pointer items-center gap-2 px-5 font-dashboard text-sm disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Plus size={14} />

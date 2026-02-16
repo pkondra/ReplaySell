@@ -1,6 +1,21 @@
 import { SignUp } from "@clerk/nextjs";
 
-export default function SignUpPage() {
+function sanitizeNextPath(next: string | string[] | undefined) {
+  const raw = Array.isArray(next) ? next[0] : next;
+  if (!raw) return "/dashboard";
+  if (!raw.startsWith("/") || raw.startsWith("//")) return "/dashboard";
+  return raw;
+}
+
+export default async function SignUpPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const nextPath = sanitizeNextPath(params.next);
+  const signInUrl = `/sign-in?next=${encodeURIComponent(nextPath)}`;
+
   return (
     <main className="dashboard-layout min-h-screen px-4 py-8 sm:px-6">
       <div className="mx-auto grid w-full max-w-5xl gap-6 rounded-[24px] border-[3px] border-line bg-panel p-6 shadow-[0_8px_0_#000] lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
@@ -16,8 +31,8 @@ export default function SignUpPage() {
           <SignUp
             path="/sign-up"
             routing="path"
-            signInUrl="/sign-in"
-            fallbackRedirectUrl="/dashboard"
+            signInUrl={signInUrl}
+            fallbackRedirectUrl={nextPath}
           />
         </div>
       </div>

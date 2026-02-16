@@ -1,7 +1,7 @@
 "use client";
 
 import type { Doc, Id } from "@convex/_generated/dataModel";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import {
   ArrowLeft,
@@ -34,15 +34,32 @@ import { formatTimestamp } from "@/lib/time";
 /* ------------------------------------------------------------------ */
 
 export default function ReplayDetailPage() {
+  const { isLoaded, userId } = useAuth();
+  const canQuery = isLoaded && !!userId;
   const params = useParams<{ id: string }>();
   const replayId = params.id as Id<"replays">;
   const toast = useToast();
 
-  const replay = useQuery(api.replays.getReplayById, { id: replayId });
-  const products = useQuery(api.products.listByReplay, { replayId });
-  const subscribers = useQuery(api.subscribers.listByReplay, { replayId });
-  const orders = useQuery(api.orders.listByReplay, { replayId });
-  const sellerSubscription = useQuery(api.sellerBilling.getMySellerSubscription);
+  const replay = useQuery(
+    api.replays.getReplayById,
+    canQuery ? { id: replayId } : "skip",
+  );
+  const products = useQuery(
+    api.products.listByReplay,
+    canQuery ? { replayId } : "skip",
+  );
+  const subscribers = useQuery(
+    api.subscribers.listByReplay,
+    canQuery ? { replayId } : "skip",
+  );
+  const orders = useQuery(
+    api.orders.listByReplay,
+    canQuery ? { replayId } : "skip",
+  );
+  const sellerSubscription = useQuery(
+    api.sellerBilling.getMySellerSubscription,
+    canQuery ? {} : "skip",
+  );
   const updateReplay = useMutation(api.replays.updateReplay);
   const addProduct = useMutation(api.products.addProduct);
   const removeProduct = useMutation(api.products.removeProduct);

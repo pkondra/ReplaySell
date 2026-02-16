@@ -28,11 +28,12 @@ export function HeroReplayCta() {
     }
 
     const normalizedUrl = check.parsed.normalizedUrl;
+    const sellerOnboardingPath = `/dashboard?plan=starter&url=${encodeURIComponent(normalizedUrl)}`;
     setPending(true);
 
     try {
       if (!userId) {
-        router.push(`/dashboard?url=${encodeURIComponent(normalizedUrl)}`);
+        router.push(`/sign-up?next=${encodeURIComponent(sellerOnboardingPath)}`);
         return;
       }
 
@@ -47,6 +48,12 @@ export function HeroReplayCta() {
               "",
             )
           : "Could not start your replay. Try again.";
+
+      if (message.toLowerCase().includes("seller subscription required")) {
+        router.push(sellerOnboardingPath);
+        return;
+      }
+
       toast.error(message || "Could not start your replay. Try again.");
     } finally {
       setPending(false);

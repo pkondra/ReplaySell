@@ -53,9 +53,9 @@ Required:
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `STRIPE_WEBHOOK_INGEST_SECRET`
-- `STRIPE_SELLER_STARTER_MONTHLY_PRICE_ID`
-- `STRIPE_SELLER_GROWTH_MONTHLY_PRICE_ID`
-- `STRIPE_SELLER_BOUTIQUE_MONTHLY_PRICE_ID`
+- `STRIPE_SELLER_STARTER_MONTHLY_PRICE_ID` (`price_...` preferred, `prod_...` supported)
+- `STRIPE_SELLER_GROWTH_MONTHLY_PRICE_ID` (`price_...` preferred, `prod_...` supported)
+- `STRIPE_SELLER_BOUTIQUE_MONTHLY_PRICE_ID` (`price_...` preferred, `prod_...` supported)
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL` (default is already set)
 

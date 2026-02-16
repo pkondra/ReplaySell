@@ -1,6 +1,6 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { ReceiptText, RadioTower } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +9,11 @@ import { api } from "@convex/_generated/api";
 import { formatTimestamp } from "@/lib/time";
 
 export default function PurchasesPage() {
-  const purchases = useQuery(api.orders.listMyPurchasesDetailed);
+  const { isLoaded, userId } = useAuth();
+  const purchases = useQuery(
+    api.orders.listMyPurchasesDetailed,
+    isLoaded && userId ? {} : "skip",
+  );
 
   return (
     <main className="dashboard-layout page-fade-in min-h-screen px-4 py-6 sm:px-6">

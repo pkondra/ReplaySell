@@ -44,22 +44,34 @@ function isSellerPlanId(value: string | undefined | null): value is SellerPlanId
   return value === "starter" || value === "growth" || value === "boutique";
 }
 
-function getPlanFromPriceId(priceId: string | undefined) {
-  if (!priceId) return undefined;
+function getPlanFromPriceOrProduct({
+  priceId,
+  productId,
+}: {
+  priceId?: string;
+  productId?: string;
+}) {
+  if (!priceId && !productId) return undefined;
 
   const starter = process.env[PLAN_PRICE_ENV_KEYS.starter];
   const growth = process.env[PLAN_PRICE_ENV_KEYS.growth];
   const boutique = process.env[PLAN_PRICE_ENV_KEYS.boutique];
 
-  if (starter && starter === priceId) return "starter";
-  if (growth && growth === priceId) return "growth";
-  if (boutique && boutique === priceId) return "boutique";
+  if (starter && (starter === priceId || starter === productId)) {
+    return "starter";
+  }
+  if (growth && (growth === priceId || growth === productId)) {
+    return "growth";
+  }
+  if (boutique && (boutique === priceId || boutique === productId)) {
+    return "boutique";
+  }
 
   return undefined;
 }
 
-function getPrimaryPriceId(subscription: Stripe.Subscription) {
-  return subscription.items.data[0]?.price?.id;
+function getPrimaryPrice(subscription: Stripe.Subscription) {
+  return subscription.items.data[0]?.price;
 }
 
 function getCurrentPeriodEnd(subscription: Stripe.Subscription) {
@@ -82,11 +94,22 @@ async function syncSubscriptionState({
   plan?: SellerPlanId;
   statusOverride?: string;
 }) {
-  const priceId = getPrimaryPriceId(subscription);
+  const primaryPrice = getPrimaryPrice(subscription);
+  const priceId = primaryPrice?.id;
+  const productId =
+    typeof primaryPrice?.product === "string"
+      ? primaryPrice.product
+      : primaryPrice?.product?.id;
   const metadataPlan = isSellerPlanId(subscription.metadata?.sellerPlan)
     ? subscription.metadata.sellerPlan
     : undefined;
-  const resolvedPlan = plan ?? metadataPlan ?? getPlanFromPriceId(priceId);
+  const resolvedPlan =
+    plan ??
+    metadataPlan ??
+    getPlanFromPriceOrProduct({
+      priceId,
+      productId,
+    });
 
   await fetchAction(api.sellerBillingActions.ingestStripeSubscriptionState, {
     ingestSecret: getRequiredEnv("STRIPE_WEBHOOK_INGEST_SECRET"),

@@ -35,6 +35,65 @@ function getMonthlyPriceId(plan: SellerPlanId) {
   return getRequiredEnv(PLAN_PRICE_ENV_KEYS[plan]);
 }
 
+async function resolveMonthlyRecurringPriceId(
+  stripe: Stripe,
+  plan: SellerPlanId,
+) {
+  const configuredId = getMonthlyPriceId(plan);
+
+  if (configuredId.startsWith("price_")) {
+    return configuredId;
+  }
+
+  if (!configuredId.startsWith("prod_")) {
+    throw new Error(
+      `${PLAN_PRICE_ENV_KEYS[plan]} must be a Stripe price_ or prod_ ID.`,
+    );
+  }
+
+  const product = await stripe.products.retrieve(configuredId, {
+    expand: ["default_price"],
+  });
+
+  const defaultPrice =
+    typeof product.default_price === "object" &&
+    product.default_price !== null &&
+    !("deleted" in product.default_price)
+      ? product.default_price
+      : null;
+
+  if (
+    defaultPrice &&
+    defaultPrice.active &&
+    defaultPrice.recurring?.interval === "month"
+  ) {
+    return defaultPrice.id;
+  }
+
+  const prices = await stripe.prices.list({
+    product: configuredId,
+    active: true,
+    type: "recurring",
+    limit: 100,
+  });
+
+  const monthlyPrice = prices.data
+    .filter(
+      (price) =>
+        price.recurring?.interval === "month" &&
+        (price.recurring.interval_count ?? 1) === 1,
+    )
+    .sort((a, b) => b.created - a.created)[0];
+
+  if (!monthlyPrice) {
+    throw new Error(
+      `No active monthly recurring price found for product ${configuredId}.`,
+    );
+  }
+
+  return monthlyPrice.id;
+}
+
 function getAppUrl() {
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
@@ -68,7 +127,7 @@ export const createSellerCheckoutSession = action({
     }
 
     const stripe = getStripe();
-    const priceId = getMonthlyPriceId(args.plan);
+    const priceId = await resolveMonthlyRecurringPriceId(stripe, args.plan);
     const appUrl = getAppUrl();
 
     const session: Stripe.Checkout.Session = await stripe.checkout.sessions.create(
