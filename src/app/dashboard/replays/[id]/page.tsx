@@ -164,7 +164,7 @@ export default function ReplayDetailPage() {
                 try {
                   await deleteReplay({ id: replayId });
                   toast.success("Replay deleted.");
-                  router.push("/dashboard");
+                  window.location.href = "/dashboard";
                 } catch {
                   toast.error("Could not delete replay.");
                   setDeleting(false);
@@ -369,7 +369,7 @@ export default function ReplayDetailPage() {
           {tab === "subscribers" && <SubscribersTab subscribers={subscribers ?? []} />}
           {tab === "orders" && <OrdersTab orders={orders ?? []} products={products ?? []} />}
           {tab === "campaigns" && (
-            <CampaignsTab subscriberCount={subscribers?.length ?? 0} toast={toast} />
+            <CampaignsTab replayId={replayId} subscriberCount={subscribers?.length ?? 0} toast={toast} />
           )}
         </div>
       </div>
@@ -850,17 +850,46 @@ function OrdersTab({ orders, products }: { orders: Doc<"orders">[]; products: Do
 /* ------------------------------------------------------------------ */
 
 function CampaignsTab({
+  replayId,
   subscriberCount,
   toast,
 }: {
+  replayId: Id<"replays">;
   subscriberCount: number;
   toast: { success: (m: string) => void; error: (m: string) => void };
 }) {
+  const [sending, setSending] = useState<string | null>(null);
+
   const templates = [
-    { label: "Replay is live now", description: "Notify all subscribers the replay is available" },
-    { label: "Only X items left", description: "Create urgency with low-stock alerts" },
-    { label: "Replay closes in 6 hours", description: "Last-chance countdown reminder" },
+    { key: "live_now", label: "Replay is live now", description: "Notify all subscribers the replay is available" },
+    { key: "low_stock", label: "Only X items left", description: "Create urgency with low-stock alerts" },
+    { key: "closing_soon", label: "Replay closes in 6 hours", description: "Last-chance countdown reminder" },
   ];
+
+  async function handleSend(templateKey: string) {
+    if (subscriberCount === 0) {
+      toast.error("No subscribers to send to.");
+      return;
+    }
+    setSending(templateKey);
+    try {
+      const res = await fetch("/api/campaigns/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ replayId, template: templateKey }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "Failed to send campaign.");
+        return;
+      }
+      toast.success(`Sent to ${data.sent} subscriber${data.sent !== 1 ? "s" : ""}${data.failed ? ` (${data.failed} failed)` : ""}.`);
+    } catch {
+      toast.error("Failed to send campaign.");
+    } finally {
+      setSending(null);
+    }
+  }
 
   return (
     <div className="rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000] sm:p-6">
@@ -876,15 +905,20 @@ function CampaignsTab({
       <div className="space-y-3">
         {templates.map((template) => (
           <button
-            key={template.label}
-            onClick={() => toast.success(`Template sent: ${template.label}`)}
-            className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-xl border-[3px] border-line bg-panel-strong px-5 py-4 text-left shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[0_5px_0_#000]"
+            key={template.key}
+            onClick={() => handleSend(template.key)}
+            disabled={sending !== null}
+            className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-xl border-[3px] border-line bg-panel-strong px-5 py-4 text-left shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[0_5px_0_#000] disabled:opacity-60"
           >
             <div>
               <p className="font-heading text-base font-bold">{template.label}</p>
               <p className="mt-0.5 text-xs font-semibold text-text-muted">{template.description}</p>
             </div>
-            <Send size={16} className="shrink-0" />
+            {sending === template.key ? (
+              <span className="shrink-0 font-dashboard text-[10px] font-bold text-text-muted">Sending...</span>
+            ) : (
+              <Send size={16} className="shrink-0" />
+            )}
           </button>
         ))}
       </div>

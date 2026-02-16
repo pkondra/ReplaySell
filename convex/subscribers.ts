@@ -56,6 +56,19 @@ export const listByReplay = query({
   },
 });
 
+export const listEmailsByReplay = query({
+  args: { replayId: v.id("replays"), userId: v.string() },
+  handler: async (ctx, args) => {
+    const replay = await ctx.db.get(args.replayId);
+    if (!replay || replay.userId !== args.userId) return [];
+    const subs = await ctx.db
+      .query("subscribers")
+      .withIndex("by_replayId", (q) => q.eq("replayId", args.replayId))
+      .collect();
+    return subs.map((s) => ({ email: s.email }));
+  },
+});
+
 export const listMySubs = query({
   args: {},
   handler: async (ctx) => {
