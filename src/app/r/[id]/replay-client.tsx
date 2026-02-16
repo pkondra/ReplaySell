@@ -1,7 +1,6 @@
 "use client";
 
 import type { Doc, Id } from "@convex/_generated/dataModel";
-import { useAuth, useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import {
   Bell,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 
 import { api } from "@convex/_generated/api";
@@ -32,9 +32,10 @@ export default function PublicReplayClient() {
   const replayId = params.id as Id<"replays">;
   const toast = useToast();
 
-  const { isSignedIn } = useAuth();
-  const { user } = useUser();
-  const buyerEmail = user?.primaryEmailAddress?.emailAddress ?? "";
+  const { data: session, status } = useSession();
+  const isSignedIn = status === "authenticated";
+  const buyerEmail = session?.user?.email ?? "";
+  const accountUserId = session?.user?.id;
 
   const replay = useQuery(api.replays.getPublicReplay, { id: replayId });
   const products = useQuery(api.products.listByReplay, { replayId });
@@ -83,7 +84,7 @@ export default function PublicReplayClient() {
   }, [isSignedIn, buyerEmail]);
 
   const signInHref = useMemo(
-    () => `/sign-in?redirect_url=${encodeURIComponent(pathname)}`,
+    () => `/sign-in?next=${encodeURIComponent(pathname)}`,
     [pathname],
   );
   const publicShareUrl =
@@ -202,7 +203,7 @@ export default function PublicReplayClient() {
                       email: email.trim(),
                       phone: phone.trim() || undefined,
                       smsConsent,
-                      accountUserId: isSignedIn ? user?.id : undefined,
+                      accountUserId: isSignedIn ? accountUserId : undefined,
                       notifyTimer,
                       notifyStock,
                       notifyPriceChange,
@@ -362,7 +363,7 @@ export default function PublicReplayClient() {
                       product={product}
                       replayId={replayId}
                       email={email}
-                      isSignedIn={Boolean(isSignedIn)}
+                      isSignedIn={isSignedIn}
                       signInHref={signInHref}
                       placeOrder={placeOrder}
                       toast={toast}
@@ -374,7 +375,7 @@ export default function PublicReplayClient() {
                       product={product}
                       replayId={replayId}
                       email={email}
-                      isSignedIn={Boolean(isSignedIn)}
+                      isSignedIn={isSignedIn}
                       signInHref={signInHref}
                       placeOrder={placeOrder}
                       toast={toast}

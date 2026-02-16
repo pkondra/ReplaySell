@@ -1,8 +1,7 @@
 "use client";
 
 import type { Doc, Id } from "@convex/_generated/dataModel";
-import { UserButton, useAuth } from "@clerk/nextjs";
-import { useMutation, useQuery } from "convex/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import {
   ArrowLeft,
   Bell,
@@ -24,6 +23,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { api } from "@convex/_generated/api";
+import { AuthUserChip } from "@/components/auth/auth-user-chip";
 import { EmbedPreview } from "@/components/replay/embed-preview";
 import { useToast } from "@/components/ui/toast-provider";
 import { validateReplayUrl } from "@/lib/embed";
@@ -34,8 +34,8 @@ import { formatTimestamp } from "@/lib/time";
 /* ------------------------------------------------------------------ */
 
 export default function ReplayDetailPage() {
-  const { isLoaded, userId } = useAuth();
-  const canQuery = isLoaded && !!userId;
+  const { isAuthenticated } = useConvexAuth();
+  const canQuery = isAuthenticated;
   const params = useParams<{ id: string }>();
   const replayId = params.id as Id<"replays">;
   const toast = useToast();
@@ -290,12 +290,7 @@ function Shell({ children }: { children: React.ReactNode }) {
               </p>
             </div>
           </Link>
-          <UserButton
-            afterSignOutUrl="/"
-            appearance={{
-              elements: { userButtonAvatarBox: "h-10 w-10 border-2 border-[#1A1A1A]" },
-            }}
-          />
+          <AuthUserChip compact />
         </div>
       </header>
 

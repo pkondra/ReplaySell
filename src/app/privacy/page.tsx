@@ -57,7 +57,7 @@ export default function PrivacyPolicyPage() {
             <h4>Account Information</h4>
             <p>
               When you create an account (as a seller or buyer), we collect your name, email address,
-              and authentication credentials through our authentication provider (Clerk).
+              and authentication credentials through our authentication stack (Auth.js).
             </p>
             <h4>Transaction Data</h4>
             <p>
@@ -90,7 +90,7 @@ export default function PrivacyPolicyPage() {
           <Section title="4. Third-Party Services">
             <p>We use the following third-party services that may process your data:</p>
             <ul>
-              <li><strong>Clerk</strong> — Authentication and user management</li>
+              <li><strong>Auth.js</strong> — Authentication and session management</li>
               <li><strong>Stripe</strong> — Payment processing (seller subscriptions and buyer checkout via Stripe Connect)</li>
               <li><strong>Convex</strong> — Real-time database and backend infrastructure</li>
               <li><strong>Resend</strong> — Transactional email delivery for alerts and notifications</li>

@@ -64,7 +64,7 @@ export default function CookiesPage() {
 
             <h4>Authentication Cookies</h4>
             <p>
-              We use Clerk for authentication, which sets cookies to maintain your login session
+              We use Auth.js for authentication, which sets cookies to maintain your login session
               and manage secure access to your account.
             </p>
 
@@ -80,7 +80,7 @@ export default function CookiesPage() {
               Some cookies are set by third-party services we use:
             </p>
             <ul>
-              <li><strong>Clerk</strong> — Authentication session management</li>
+              <li><strong>Auth.js</strong> — Authentication session management</li>
               <li><strong>Stripe</strong> — Fraud prevention and payment security during checkout</li>
               <li><strong>Vercel</strong> — Performance analytics and deployment optimization</li>
             </ul>

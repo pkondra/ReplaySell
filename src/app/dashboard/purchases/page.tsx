@@ -1,18 +1,18 @@
 "use client";
 
-import { UserButton, useAuth } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { ReceiptText, RadioTower } from "lucide-react";
 import Link from "next/link";
 
 import { api } from "@convex/_generated/api";
+import { AuthUserChip } from "@/components/auth/auth-user-chip";
 import { formatTimestamp } from "@/lib/time";
 
 export default function PurchasesPage() {
-  const { isLoaded, userId } = useAuth();
+  const { isAuthenticated } = useConvexAuth();
   const purchases = useQuery(
     api.orders.listMyPurchasesDetailed,
-    isLoaded && userId ? {} : "skip",
+    isAuthenticated ? {} : "skip",
   );
 
   return (
@@ -34,10 +34,7 @@ export default function PurchasesPage() {
             <Link href="/dashboard" className="brutal-btn-secondary inline-flex h-10 items-center px-4 text-sm">
               Seller dashboard
             </Link>
-            <UserButton
-              afterSignOutUrl="/"
-              appearance={{ elements: { userButtonAvatarBox: "h-10 w-10 border-2 border-[#1A1A1A]" } }}
-            />
+            <AuthUserChip compact />
           </div>
         </header>
 

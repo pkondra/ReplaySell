@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as http from "../http.js";
 import type * as orders from "../orders.js";
 import type * as products from "../products.js";
 import type * as replays from "../replays.js";
@@ -16,6 +17,7 @@ import type * as sellerBilling from "../sellerBilling.js";
 import type * as sellerBillingActions from "../sellerBillingActions.js";
 import type * as sellerBillingTypes from "../sellerBillingTypes.js";
 import type * as subscribers from "../subscribers.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -24,6 +26,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  http: typeof http;
   orders: typeof orders;
   products: typeof products;
   replays: typeof replays;
@@ -32,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   sellerBillingActions: typeof sellerBillingActions;
   sellerBillingTypes: typeof sellerBillingTypes;
   subscribers: typeof subscribers;
+  users: typeof users;
 }>;
 
 /**

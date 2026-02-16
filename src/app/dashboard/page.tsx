@@ -1,8 +1,7 @@
 "use client";
 
 import type { Doc } from "@convex/_generated/dataModel";
-import { UserButton, useAuth } from "@clerk/nextjs";
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useAction, useConvexAuth, useMutation, useQuery } from "convex/react";
 import {
   CalendarClock,
   CreditCard,
@@ -19,6 +18,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { api } from "@convex/_generated/api";
+import { AuthUserChip } from "@/components/auth/auth-user-chip";
 import { useToast } from "@/components/ui/toast-provider";
 import { validateReplayUrl } from "@/lib/embed";
 import { formatTimestamp } from "@/lib/time";
@@ -52,8 +52,8 @@ const SELLER_PLAN_OPTIONS: Array<{
 ];
 
 export default function DashboardPage() {
-  const { isLoaded, userId } = useAuth();
-  const canQuery = isLoaded && !!userId;
+  const { isAuthenticated } = useConvexAuth();
+  const canQuery = isAuthenticated;
   const router = useRouter();
   const searchParams = useSearchParams();
   const toast = useToast();
@@ -195,10 +195,7 @@ export default function DashboardPage() {
                       ? "Close"
                       : "Add Replay"}
               </button>
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{ elements: { userButtonAvatarBox: "h-11 w-11 border-2 border-[#1A1A1A]" } }}
-              />
+              <AuthUserChip compact />
             </div>
           </header>
 

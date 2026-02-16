@@ -1,11 +1,9 @@
-import { SignIn } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
-function sanitizeNextPath(next: string | string[] | undefined) {
-  const raw = Array.isArray(next) ? next[0] : next;
-  if (!raw) return "/dashboard";
-  if (!raw.startsWith("/") || raw.startsWith("//")) return "/dashboard";
-  return raw;
-}
+import { auth } from "@/auth";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { SignInForm } from "@/components/auth/sign-in-form";
+import { sanitizeNextPath } from "@/lib/auth/validators";
 
 export default async function SignInPage({
   searchParams,
@@ -14,28 +12,19 @@ export default async function SignInPage({
 }) {
   const params = await searchParams;
   const nextPath = sanitizeNextPath(params.next);
-  const signUpUrl = `/sign-up?next=${encodeURIComponent(nextPath)}`;
+  const session = await auth();
+
+  if (session?.user?.id) {
+    redirect(nextPath);
+  }
 
   return (
-    <main className="dashboard-layout min-h-screen px-4 py-8 sm:px-6">
-      <div className="mx-auto grid w-full max-w-5xl gap-6 rounded-[24px] border-[3px] border-line bg-panel p-6 shadow-[0_8px_0_#000] lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-        <section className="rounded-2xl border-[3px] border-line bg-accent p-6 shadow-[0_4px_0_#000]">
-          <h1 className="font-heading text-5xl font-black leading-[0.95]">
-            Buyer + Seller Login
-          </h1>
-          <p className="mt-3 text-sm font-semibold text-text-muted">
-            Sign in to manage replays, place orders, and view purchase history.
-          </p>
-        </section>
-        <div className="w-full max-w-[420px] justify-self-center">
-          <SignIn
-            path="/sign-in"
-            routing="path"
-            signUpUrl={signUpUrl}
-            fallbackRedirectUrl={nextPath}
-          />
-        </div>
-      </div>
-    </main>
+    <AuthShell
+      badge="Buyer + Seller Login"
+      title="Welcome back."
+      subtitle="Sign in to launch replays, manage products, and track every purchase in one place."
+    >
+      <SignInForm nextPath={nextPath} />
+    </AuthShell>
   );
 }

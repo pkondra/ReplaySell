@@ -6,7 +6,7 @@ ReplaySell is a replay-commerce app where sellers create shoppable replay pages 
 
 - Next.js 16 (App Router, TypeScript, ESLint)
 - Tailwind CSS v4
-- Clerk (auth for seller and buyer accounts)
+- Auth.js (email/password auth for seller and buyer accounts)
 - Convex (database + mutations/queries)
 - Stripe Billing (seller subscriptions + webhook sync)
 - Resend (transactional email scaffold)
@@ -45,11 +45,12 @@ cp .env.example .env.local
 
 Required:
 
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
-- `CLERK_SECRET_KEY`
-- `CLERK_JWT_ISSUER_DOMAIN`
+- `AUTH_SECRET`
+- `AUTH_INTERNAL_SECRET`
+- `CONVEX_AUTH_PRIVATE_KEY` (RS256 private key in PEM format, with `\n` escapes)
+- `CONVEX_AUTH_ISSUER` (recommended: `https://replay-sell.vercel.app`)
 - `NEXT_PUBLIC_CONVEX_URL`
-- `NEXT_PUBLIC_APP_URL` (for Stripe success/cancel redirects)
+- `NEXT_PUBLIC_APP_URL` (for Stripe success/cancel redirects, recommended: `https://replay-sell.vercel.app`)
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `STRIPE_WEBHOOK_INGEST_SECRET`
@@ -64,8 +65,8 @@ Convex CLI also sets:
 - `CONVEX_DEPLOYMENT`
 - `NEXT_PUBLIC_CONVEX_SITE_URL`
 
-Stripe values are also required in the Convex deployment runtime because
-checkout/session creation and webhook state writes run in Convex actions:
+Stripe + auth values are also required in the Convex deployment runtime because
+checkout/session creation, webhook state writes, and JWT verification run in Convex:
 
 ```bash
 npx convex env set STRIPE_SECRET_KEY <value>
@@ -73,8 +74,14 @@ npx convex env set STRIPE_WEBHOOK_INGEST_SECRET <value>
 npx convex env set STRIPE_SELLER_STARTER_MONTHLY_PRICE_ID <value>
 npx convex env set STRIPE_SELLER_GROWTH_MONTHLY_PRICE_ID <value>
 npx convex env set STRIPE_SELLER_BOUTIQUE_MONTHLY_PRICE_ID <value>
-npx convex env set NEXT_PUBLIC_APP_URL http://localhost:4000
+npx convex env set NEXT_PUBLIC_APP_URL https://replay-sell.vercel.app
+npx convex env set AUTH_INTERNAL_SECRET <value>
+npx convex env set CONVEX_AUTH_ISSUER https://replay-sell.vercel.app
+npx convex env set CONVEX_AUTH_JWKS '<jwks-json>'
 ```
+
+`CONVEX_AUTH_JWKS` should be a JSON JWKS payload containing the public key
+matching `CONVEX_AUTH_PRIVATE_KEY` (served at `/auth/jwks` from Convex HTTP actions).
 
 ## Setup
 

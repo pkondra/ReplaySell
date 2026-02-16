@@ -1,9 +1,9 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
 import { ArrowRight, Link2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 import { api } from "@convex/_generated/api";
@@ -13,7 +13,8 @@ import { validateReplayUrl } from "@/lib/embed";
 export function HeroReplayCta() {
   const router = useRouter();
   const toast = useToast();
-  const { userId } = useAuth();
+  const { status } = useSession();
+  const isSignedIn = status === "authenticated";
   const createReplay = useMutation(api.replays.createReplay);
   const [url, setUrl] = useState("");
   const [pending, setPending] = useState(false);
@@ -32,7 +33,7 @@ export function HeroReplayCta() {
     setPending(true);
 
     try {
-      if (!userId) {
+      if (!isSignedIn) {
         router.push(`/sign-up?next=${encodeURIComponent(sellerOnboardingPath)}`);
         return;
       }
