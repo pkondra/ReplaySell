@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { HeroReplayCta } from "@/components/landing/hero-replay-cta";
+
 /* ------------------------------------------------------------------ */
 /*  Page-level SEO                                                      */
 /* ------------------------------------------------------------------ */
@@ -108,20 +110,20 @@ const steps = [
   {
     num: "01",
     title: "Paste your replay link",
-    body: "Paste your replay link and post it anywhere: Instagram, TikTok bio, WhatsApp, Facebook. We handle the rest — no integrations, no code, no Shopify needed.",
+    body: "Paste your replay link and post it on Instagram, TikTok bio, stories, WhatsApp, or Facebook. We handle the rest — no integrations, no code, no Shopify needed.",
     color: "bg-accent",
     icon: Link2,
   },
   {
     num: "02",
-    title: "Add products & set a timer",
+    title: "Add your products",
     body: "Import your products, set a 48-hour countdown, and your shoppable replay page is live in under 2 minutes.",
     color: "bg-[#ff9ecd]",
     icon: Timer,
   },
   {
     num: "03",
-    title: "Buyers shop & you get paid",
+    title: "Get paid",
     body: "Shoppers browse, get alerts, and checkout via Stripe. You keep selling long after the live ends.",
     color: "bg-accent-amber",
     icon: ShoppingBag,
@@ -396,6 +398,7 @@ const testimonialColumns = Array.from(
     ),
 );
 const loopingTestimonialColumns = [...testimonialColumns, ...testimonialColumns];
+const mobileTestimonials = testimonials.slice(0, 2);
 
 const plans = [
   {
@@ -527,7 +530,7 @@ export default function HomePage() {
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-line bg-accent-amber px-4 py-2 shadow-[0_2px_0_#000]">
               <Sparkles size={14} />
               <span className="font-dashboard text-xs font-bold uppercase tracking-[0.08em]">
-                Go live in 2 minutes &middot; No integrations
+                Launch your replay in 2 minutes
               </span>
             </div>
 
@@ -543,43 +546,7 @@ export default function HomePage() {
             </p>
 
             {/* Input + CTA */}
-            <div className="mt-8 max-w-lg">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <div className="relative flex-1">
-                  <Link2
-                    size={18}
-                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"
-                  />
-                  <input
-                    type="url"
-                    placeholder="Paste your TikTok / IG / FB replay link"
-                    className="brutal-input h-14 pl-11 text-base"
-                    readOnly
-                  />
-                </div>
-                <Link
-                  href="/sign-up"
-                  className="brutal-btn-primary inline-flex h-14 shrink-0 items-center justify-center gap-2 px-6 font-heading text-base sm:px-8"
-                >
-                  Start in 2 minutes
-                  <ArrowRight size={16} />
-                </Link>
-              </div>
-              <div className="mt-3 grid gap-2 text-xs font-bold sm:grid-cols-3">
-                <div className="rounded-lg border-2 border-line bg-white px-3 py-2 shadow-[0_2px_0_#000]">
-                  01 &middot; Paste link
-                </div>
-                <div className="rounded-lg border-2 border-line bg-white px-3 py-2 shadow-[0_2px_0_#000]">
-                  02 &middot; Add products
-                </div>
-                <div className="rounded-lg border-2 border-line bg-white px-3 py-2 shadow-[0_2px_0_#000]">
-                  03 &middot; Share everywhere
-                </div>
-              </div>
-              <p className="mt-3 font-dashboard text-xs font-semibold text-text-muted">
-                Post your replay link on Instagram, TikTok bio, WhatsApp, or Facebook and keep selling after the live.
-              </p>
-            </div>
+            <HeroReplayCta />
           </div>
 
           {/* Right — Replay page mockup */}
@@ -674,66 +641,6 @@ export default function HomePage() {
               <span>{item}</span>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* ── Testimonials ────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-6xl px-5 pt-16 sm:px-8 sm:pt-20">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
-              Seller stories
-            </p>
-            <h2 className="mt-3 font-heading text-4xl font-black tracking-tight sm:text-5xl">
-              Replay pages that keep selling
-            </h2>
-          </div>
-          <p className="text-sm font-semibold text-text-muted">
-            Auto-scrolls continuously. Hover to pause.
-          </p>
-        </div>
-
-        <div className="testimonial-marquee relative overflow-hidden rounded-3xl border-[3px] border-line bg-panel-strong/40 p-3 sm:p-4">
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-bg to-transparent sm:w-12" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-bg to-transparent sm:w-12" />
-          <div className="testimonial-marquee-track">
-            {loopingTestimonialColumns.map((column, columnIndex) => (
-              <div
-                key={`testimonial-column-${columnIndex}`}
-                className="testimonial-column grid gap-4"
-              >
-                {column.map((item) => (
-                  <article
-                    key={`${item.name}-${item.metric}-${columnIndex}`}
-                    className="rounded-2xl border-[3px] border-line bg-panel p-5 shadow-[0_4px_0_#000]"
-                  >
-                    <div className="mb-3 flex items-center gap-1">
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <Star
-                          key={`${item.name}-star-${index}`}
-                          size={14}
-                          className="text-[#ff6b5a]"
-                          fill="currentColor"
-                        />
-                      ))}
-                    </div>
-                    <p className="text-sm font-semibold leading-relaxed text-text-muted">
-                      &quot;{item.quote}&quot;
-                    </p>
-                    <div className="mt-4 border-t-2 border-line/20 pt-3">
-                      <p className="font-heading text-lg font-black">{item.name}</p>
-                      <p className="text-xs font-semibold text-text-muted">{item.role}</p>
-                      <div
-                        className={`mt-2 inline-flex rounded-full border-2 border-line px-2.5 py-1 font-dashboard text-[10px] font-bold shadow-[0_2px_0_#000] ${item.tone}`}
-                      >
-                        {item.metric}
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -917,6 +824,98 @@ export default function HomePage() {
               </p>
             </details>
           ))}
+        </div>
+      </section>
+
+      {/* ── Testimonials ────────────────────────────────────── */}
+      <section className="mx-auto w-full max-w-6xl px-5 pt-20 sm:px-8 sm:pt-28">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
+              Seller stories
+            </p>
+            <h2 className="mt-3 font-heading text-4xl font-black tracking-tight sm:text-5xl">
+              Replay pages that keep selling
+            </h2>
+          </div>
+          <p className="hidden text-sm font-semibold text-text-muted sm:block">
+            Auto-scrolls continuously. Hover to pause.
+          </p>
+        </div>
+
+        <div className="space-y-4 sm:hidden">
+          {mobileTestimonials.map((item) => (
+            <article
+              key={`mobile-${item.name}-${item.metric}`}
+              className="rounded-2xl border-[3px] border-line bg-panel p-5 shadow-[0_4px_0_#000]"
+            >
+              <div className="mb-3 flex items-center gap-1">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star
+                    key={`${item.name}-mobile-star-${index}`}
+                    size={14}
+                    className="text-[#ff6b5a]"
+                    fill="currentColor"
+                  />
+                ))}
+              </div>
+              <p className="text-sm font-semibold leading-relaxed text-text-muted">
+                &quot;{item.quote}&quot;
+              </p>
+              <div className="mt-4 border-t-2 border-line/20 pt-3">
+                <p className="font-heading text-lg font-black">{item.name}</p>
+                <p className="text-xs font-semibold text-text-muted">{item.role}</p>
+                <div
+                  className={`mt-2 inline-flex rounded-full border-2 border-line px-2.5 py-1 font-dashboard text-[10px] font-bold shadow-[0_2px_0_#000] ${item.tone}`}
+                >
+                  {item.metric}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="testimonial-marquee relative hidden overflow-hidden rounded-3xl border-[3px] border-line bg-panel-strong/40 p-3 sm:block sm:p-4">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-bg to-transparent sm:w-12" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-bg to-transparent sm:w-12" />
+          <div className="testimonial-marquee-track">
+            {loopingTestimonialColumns.map((column, columnIndex) => (
+              <div
+                key={`testimonial-column-${columnIndex}`}
+                className="testimonial-column grid gap-4"
+              >
+                {column.map((item) => (
+                  <article
+                    key={`${item.name}-${item.metric}-${columnIndex}`}
+                    className="rounded-2xl border-[3px] border-line bg-panel p-5 shadow-[0_4px_0_#000]"
+                  >
+                    <div className="mb-3 flex items-center gap-1">
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <Star
+                          key={`${item.name}-star-${index}`}
+                          size={14}
+                          className="text-[#ff6b5a]"
+                          fill="currentColor"
+                        />
+                      ))}
+                    </div>
+                    <p className="text-sm font-semibold leading-relaxed text-text-muted">
+                      &quot;{item.quote}&quot;
+                    </p>
+                    <div className="mt-4 border-t-2 border-line/20 pt-3">
+                      <p className="font-heading text-lg font-black">{item.name}</p>
+                      <p className="text-xs font-semibold text-text-muted">{item.role}</p>
+                      <div
+                        className={`mt-2 inline-flex rounded-full border-2 border-line px-2.5 py-1 font-dashboard text-[10px] font-bold shadow-[0_2px_0_#000] ${item.tone}`}
+                      >
+                        {item.metric}
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

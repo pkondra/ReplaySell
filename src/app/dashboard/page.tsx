@@ -14,21 +14,30 @@ import {
   UserRound,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { api } from "@convex/_generated/api";
 import { useToast } from "@/components/ui/toast-provider";
+import { validateReplayUrl } from "@/lib/embed";
 import { formatTimestamp } from "@/lib/time";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const toast = useToast();
   const stats = useQuery(api.replays.getDashboardStats);
   const replays = useQuery(api.replays.listMyReplays);
   const createReplay = useMutation(api.replays.createReplay);
   const [showCreate, setShowCreate] = useState(false);
   const [renderNow] = useState(() => Date.now());
+  const initialUrl = searchParams.get("url") ?? "";
+
+  useEffect(() => {
+    if (initialUrl) {
+      setShowCreate(true);
+    }
+  }, [initialUrl]);
 
   return (
     <main className="dashboard-layout page-fade-in min-h-screen px-4 py-6 sm:px-6">
@@ -103,6 +112,7 @@ export default function DashboardPage() {
 
           {showCreate && (
             <CreateReplayCard
+              initialUrl={initialUrl}
               onCreated={(id) => {
                 setShowCreate(false);
                 router.push(`/dashboard/replays/${id}`);
@@ -188,26 +198,37 @@ function StatCard({
 }
 
 function CreateReplayCard({
+  initialUrl = "",
   onCreated,
   createReplay,
   toast,
 }: {
+  initialUrl?: string;
   onCreated: (id: string) => void;
   createReplay: (args: { url: string; title?: string; durationHours?: number }) => Promise<string>;
   toast: { success: (m: string) => void; error: (m: string) => void };
 }) {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(initialUrl);
   const [title, setTitle] = useState("");
   const [hours, setHours] = useState(48);
   const [pending, setPending] = useState(false);
 
+  useEffect(() => {
+    setUrl(initialUrl);
+  }, [initialUrl]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!url.trim()) return;
+    const check = validateReplayUrl(url);
+    if (!check.valid || !check.parsed) {
+      toast.error(check.message ?? "Enter a valid replay URL.");
+      return;
+    }
+
     setPending(true);
     try {
       const id = await createReplay({
-        url: url.trim(),
+        url: check.parsed.normalizedUrl,
         title: title.trim() || undefined,
         durationHours: hours,
       });
