@@ -1,174 +1,193 @@
-import { ArrowLeft, Package } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+
+import { LegalPageShell, LegalSection } from "@/components/legal/legal-page-shell";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "How ReplaySell collects, uses, and protects your personal information.",
+  description: "How ReplaySell collects, uses, and protects personal information.",
 };
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="min-h-screen">
-      {/* Nav */}
-      <nav className="border-b-[3px] border-line bg-panel">
-        <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-5 py-4 sm:px-8">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border-[3px] border-line bg-[#ffbc8c] shadow-[0_3px_0_#000]">
-              <Package size={16} />
-            </div>
-            <p className="font-heading text-xl font-black leading-none sm:text-2xl">ReplaySell</p>
-          </Link>
-          <Link
-            href="/"
-            className="brutal-btn-secondary inline-flex h-10 items-center gap-2 px-4 font-dashboard text-xs"
-          >
-            <ArrowLeft size={13} />
-            Home
-          </Link>
-        </div>
-      </nav>
+    <LegalPageShell
+      title="Privacy Policy"
+      lastUpdated="February 17, 2026"
+      summary="This policy explains what personal data ReplaySell collects, why we process it, when we share it, and what rights you can exercise. This document is a product policy summary and not legal advice."
+    >
+      <LegalSection title="1. Scope and Roles">
+        <p>
+          This Privacy Policy applies to ReplaySell products, websites, checkout flows, and account
+          dashboards that link to this policy.
+        </p>
+        <p>
+          ReplaySell generally acts as a data controller for platform account data and product usage
+          data. Sellers using ReplaySell may act as independent controllers for their storefront and
+          customer communications.
+        </p>
+      </LegalSection>
 
-      {/* Content */}
-      <article className="mx-auto w-full max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
-        <div className="mb-10">
-          <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
-            Legal
-          </p>
-          <h1 className="mt-2 font-heading text-4xl font-black tracking-tight sm:text-5xl">
-            Privacy Policy
-          </h1>
-          <p className="mt-3 text-sm font-semibold text-text-muted">
-            Last updated: June 14, 2025
-          </p>
-        </div>
+      <LegalSection title="2. Data We Collect">
+        <h4>Account Data</h4>
+        <p>
+          Name, email address, hashed password, login/session metadata, and account timestamps.
+        </p>
+        <h4>Commerce Data</h4>
+        <p>
+          Replay information, product details, order records, connected account IDs, subscription
+          status, and billing identifiers.
+        </p>
+        <h4>Communication Data</h4>
+        <p>
+          Email and optional phone details used for timer reminders, stock alerts, and price-change
+          notifications.
+        </p>
+        <h4>Technical Data</h4>
+        <p>
+          Device/browser metadata, IP-derived telemetry, logs, and security signals used to protect
+          the service.
+        </p>
+      </LegalSection>
 
-        <div className="legal-content space-y-8">
-          <Section title="1. Introduction">
-            <p>
-              ReplaySell (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) operates the replaysell.com website and
-              platform. This Privacy Policy explains how we collect, use, disclose, and safeguard your
-              information when you use our service.
-            </p>
-          </Section>
+      <LegalSection title="3. How We Collect Data">
+        <ul>
+          <li>Directly from you during signup, checkout, onboarding, and support requests.</li>
+          <li>Automatically through cookies, logs, and security monitoring.</li>
+          <li>From service providers that process payments, auth, hosting, and email delivery.</li>
+        </ul>
+      </LegalSection>
 
-          <Section title="2. Information We Collect">
-            <p>We collect information in the following ways:</p>
-            <h4>Account Information</h4>
-            <p>
-              When you create an account (as a seller or buyer), we collect your name, email address,
-              and authentication credentials through our authentication stack (Auth.js).
-            </p>
-            <h4>Transaction Data</h4>
-            <p>
-              When you make a purchase or subscribe to a seller plan, we process payment information
-              through Stripe. We do not store your full credit card number on our servers.
-            </p>
-            <h4>Usage Data</h4>
-            <p>
-              We automatically collect information about how you interact with our platform, including
-              pages visited, features used, replay pages viewed, and alert preferences.
-            </p>
-            <h4>Communication Data</h4>
-            <p>
-              If you subscribe to alerts for a replay page, we collect your email address and
-              optionally your phone number to deliver notifications.
-            </p>
-          </Section>
+      <LegalSection title="4. Why We Process Data">
+        <ul>
+          <li>Provide account access, storefront features, and replay commerce workflows.</li>
+          <li>Process payments and subscription billing through Stripe.</li>
+          <li>Send platform notifications and transactional communications.</li>
+          <li>Prevent abuse, fraud, unauthorized access, and policy violations.</li>
+          <li>Comply with legal, tax, accounting, and regulatory obligations.</li>
+          <li>Improve product reliability and performance.</li>
+        </ul>
+      </LegalSection>
 
-          <Section title="3. How We Use Your Information">
-            <ul>
-              <li>To provide and maintain our platform</li>
-              <li>To process transactions and send related information</li>
-              <li>To send you timer reminders, stock alerts, and price change notifications you&apos;ve opted into</li>
-              <li>To manage your account and provide customer support</li>
-              <li>To improve and personalize your experience</li>
-              <li>To comply with legal obligations</li>
-            </ul>
-          </Section>
+      <LegalSection title="5. Legal Bases (Where Applicable)">
+        <ul>
+          <li>
+            <strong>Contract</strong> — to provide the services you request.
+          </li>
+          <li>
+            <strong>Legitimate interests</strong> — to secure and improve the platform.
+          </li>
+          <li>
+            <strong>Legal obligation</strong> — to comply with applicable law.
+          </li>
+          <li>
+            <strong>Consent</strong> — where required for optional cookies or communications.
+          </li>
+        </ul>
+      </LegalSection>
 
-          <Section title="4. Third-Party Services">
-            <p>We use the following third-party services that may process your data:</p>
-            <ul>
-              <li><strong>Auth.js</strong> — Authentication and session management</li>
-              <li><strong>Stripe</strong> — Payment processing (seller subscriptions and buyer checkout via Stripe Connect)</li>
-              <li><strong>Convex</strong> — Real-time database and backend infrastructure</li>
-              <li><strong>Resend</strong> — Transactional email delivery for alerts and notifications</li>
-              <li><strong>Vercel</strong> — Hosting and deployment</li>
-            </ul>
-            <p>
-              Each of these services has their own privacy policy and data handling practices. We
-              encourage you to review their respective policies.
-            </p>
-          </Section>
+      <LegalSection title="6. Payments and Stripe Connect">
+        <p>
+          ReplaySell uses Stripe for platform subscription billing and Stripe Connect for seller
+          onboarding and direct checkout on connected accounts.
+        </p>
+        <ul>
+          <li>ReplaySell does not store full card numbers on its own servers.</li>
+          <li>
+            Buyer payment data is processed by Stripe under Stripe terms and privacy notices.
+          </li>
+          <li>
+            Seller connected account compliance status may be synced to ReplaySell for operational
+            purposes.
+          </li>
+        </ul>
+      </LegalSection>
 
-          <Section title="5. Data Retention">
-            <p>
-              We retain your personal information for as long as your account is active or as needed
-              to provide you services. You can request deletion of your account and associated data by
-              contacting us at support@replaysell.com.
-            </p>
-          </Section>
+      <LegalSection title="7. Sharing and Recipients">
+        <p>We share data only as needed to operate the platform and meet legal obligations.</p>
+        <ul>
+          <li>
+            <strong>Auth.js</strong> for authentication and session management.
+          </li>
+          <li>
+            <strong>Stripe</strong> for payment processing, subscriptions, and Connect onboarding.
+          </li>
+          <li>
+            <strong>Convex</strong> for backend database and API workflows.
+          </li>
+          <li>
+            <strong>Resend</strong> for transactional notification delivery.
+          </li>
+          <li>
+            <strong>Vercel</strong> for hosting, deployment, and runtime operations.
+          </li>
+          <li>Advisors, law enforcement, or regulators when legally required.</li>
+        </ul>
+      </LegalSection>
 
-          <Section title="6. Data Security">
-            <p>
-              We implement appropriate technical and organizational measures to protect your personal
-              data. All data is transmitted over HTTPS, and we use industry-standard encryption for
-              data at rest. However, no method of transmission over the Internet is 100% secure.
-            </p>
-          </Section>
+      <LegalSection title="8. International Transfers">
+        <p>
+          ReplaySell and its providers may process data in multiple countries. When required, we use
+          appropriate safeguards for cross-border transfers.
+        </p>
+      </LegalSection>
 
-          <Section title="7. Your Rights">
-            <p>Depending on your jurisdiction, you may have the right to:</p>
-            <ul>
-              <li>Access the personal data we hold about you</li>
-              <li>Request correction of inaccurate data</li>
-              <li>Request deletion of your data</li>
-              <li>Opt out of marketing communications</li>
-              <li>Withdraw consent for data processing</li>
-              <li>Data portability</li>
-            </ul>
-            <p>
-              To exercise any of these rights, please contact us at support@replaysell.com.
-            </p>
-          </Section>
+      <LegalSection title="9. Retention">
+        <p>
+          We retain data for as long as needed to provide services, maintain records, resolve
+          disputes, and satisfy legal obligations.
+        </p>
+        <ul>
+          <li>Account records: retained while account is active and for compliance afterward.</li>
+          <li>Transaction records: retained for tax, accounting, and fraud-prevention purposes.</li>
+          <li>Support and security logs: retained according to operational security needs.</li>
+        </ul>
+      </LegalSection>
 
-          <Section title="8. Children's Privacy">
-            <p>
-              Our service is not intended for individuals under the age of 16. We do not knowingly
-              collect personal information from children. If we become aware that we have collected
-              data from a child, we will take steps to delete it.
-            </p>
-          </Section>
+      <LegalSection title="10. Security">
+        <p>
+          We use administrative, technical, and physical safeguards, including encrypted transport,
+          access controls, and monitoring. No internet system is completely risk free.
+        </p>
+      </LegalSection>
 
-          <Section title="9. Changes to This Policy">
-            <p>
-              We may update this Privacy Policy from time to time. We will notify you of any changes
-              by posting the new policy on this page and updating the &quot;Last updated&quot; date.
-            </p>
-          </Section>
+      <LegalSection title="11. Your Rights">
+        <p>Depending on your location, you may have rights to:</p>
+        <ul>
+          <li>Access, correct, or delete personal data.</li>
+          <li>Request a portable copy of eligible data.</li>
+          <li>Object to or restrict certain processing.</li>
+          <li>Withdraw consent for optional processing.</li>
+          <li>Appeal a rights decision where local law permits.</li>
+        </ul>
+        <p>To exercise rights, contact support@replaysell.com.</p>
+      </LegalSection>
 
-          <Section title="10. Contact Us">
-            <p>
-              If you have questions about this Privacy Policy, please contact us:
-            </p>
-            <ul>
-              <li>Email: support@replaysell.com</li>
-            </ul>
-          </Section>
-        </div>
-      </article>
-    </main>
-  );
-}
+      <LegalSection title="12. Children">
+        <p>
+          ReplaySell is not intended for children under 16, and we do not knowingly collect data
+          from children under 16.
+        </p>
+      </LegalSection>
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-2xl border-[3px] border-line bg-white p-6 shadow-[0_4px_0_#000] sm:p-8">
-      <h2 className="mb-4 font-heading text-2xl font-black tracking-tight">{title}</h2>
-      <div className="space-y-3 text-sm font-semibold leading-relaxed text-text-muted [&_h4]:mt-4 [&_h4]:font-heading [&_h4]:text-base [&_h4]:font-bold [&_h4]:text-text [&_li]:ml-4 [&_li]:list-disc [&_strong]:text-text [&_ul]:space-y-1.5">
-        {children}
-      </div>
-    </section>
+      <LegalSection title="13. Cookies and Tracking">
+        <p>
+          We use essential cookies for security and login functionality, and optional cookies only
+          based on your consent preferences. See our Cookie Policy for details.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="14. Policy Updates">
+        <p>
+          We may update this policy from time to time. Material updates will be posted here with a
+          revised date.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="15. Contact">
+        <p>Questions or requests about privacy can be sent to:</p>
+        <ul>
+          <li>Email: support@replaysell.com</li>
+        </ul>
+      </LegalSection>
+    </LegalPageShell>
   );
 }

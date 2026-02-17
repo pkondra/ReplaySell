@@ -1,6 +1,6 @@
-import { ArrowLeft, Package } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+
+import { LegalPageShell, LegalSection } from "@/components/legal/legal-page-shell";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -9,182 +9,175 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen">
-      {/* Nav */}
-      <nav className="border-b-[3px] border-line bg-panel">
-        <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-5 py-4 sm:px-8">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border-[3px] border-line bg-[#ffbc8c] shadow-[0_3px_0_#000]">
-              <Package size={16} />
-            </div>
-            <p className="font-heading text-xl font-black leading-none sm:text-2xl">ReplaySell</p>
-          </Link>
-          <Link
-            href="/"
-            className="brutal-btn-secondary inline-flex h-10 items-center gap-2 px-4 font-dashboard text-xs"
-          >
-            <ArrowLeft size={13} />
-            Home
-          </Link>
-        </div>
-      </nav>
+    <LegalPageShell
+      title="Terms of Service"
+      lastUpdated="February 17, 2026"
+      summary="These Terms govern use of ReplaySell by sellers and buyers. They define account rules, billing and checkout responsibilities, prohibited behavior, and legal limits. This document is a policy template and not legal advice."
+    >
+      <LegalSection title="1. Acceptance of Terms">
+        <p>
+          By accessing or using ReplaySell, you agree to be bound by these Terms. If you do not
+          agree, do not use the platform.
+        </p>
+        <p>
+          If you use ReplaySell on behalf of a business, you represent that you are authorized to
+          bind that business to these Terms.
+        </p>
+      </LegalSection>
 
-      {/* Content */}
-      <article className="mx-auto w-full max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
-        <div className="mb-10">
-          <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
-            Legal
-          </p>
-          <h1 className="mt-2 font-heading text-4xl font-black tracking-tight sm:text-5xl">
-            Terms of Service
-          </h1>
-          <p className="mt-3 text-sm font-semibold text-text-muted">
-            Last updated: June 14, 2025
-          </p>
-        </div>
+      <LegalSection title="2. Eligibility and Accounts">
+        <ul>
+          <li>You must provide accurate account information and keep it up to date.</li>
+          <li>You are responsible for all actions under your account credentials.</li>
+          <li>
+            You must promptly notify ReplaySell of suspected account compromise or unauthorized
+            access.
+          </li>
+        </ul>
+      </LegalSection>
 
-        <div className="legal-content space-y-8">
-          <Section title="1. Agreement to Terms">
-            <p>
-              By accessing or using ReplaySell (&quot;the Service&quot;), you agree to be bound by these Terms of
-              Service. If you do not agree to these terms, do not use the Service.
-            </p>
-          </Section>
+      <LegalSection title="3. Platform Description and Role">
+        <p>
+          ReplaySell provides tools for replay storefronts, product listings, buyer alerts, and
+          checkout orchestration.
+        </p>
+        <p>
+          Buyer purchases are processed on seller connected Stripe accounts. ReplaySell is a
+          software platform provider and is not the merchant of record for seller catalog items.
+        </p>
+      </LegalSection>
 
-          <Section title="2. Description of Service">
-            <p>
-              ReplaySell is a platform that enables sellers to create shoppable replay storefronts from
-              live shopping events. The platform facilitates:
-            </p>
-            <ul>
-              <li>Creation and management of replay storefronts with countdown timers</li>
-              <li>Product listing and inventory management</li>
-              <li>Buyer account creation, order placement, and purchase history</li>
-              <li>Email and SMS alert subscriptions for buyers</li>
-              <li>Payment processing through Stripe</li>
-            </ul>
-          </Section>
+      <LegalSection title="4. Seller Subscription Billing">
+        <ul>
+          <li>Seller plans are billed through Stripe and renew automatically unless canceled.</li>
+          <li>Any trial period, if offered, transitions to paid billing unless canceled in time.</li>
+          <li>
+            Plan prices, features, and billing terms may change with prior notice where required by
+            law.
+          </li>
+        </ul>
+      </LegalSection>
 
-          <Section title="3. User Accounts">
-            <h4>Seller Accounts</h4>
-            <p>
-              Sellers must create an account and subscribe to a monthly plan to access platform features.
-              You are responsible for maintaining the confidentiality of your account credentials and
-              for all activity that occurs under your account.
-            </p>
-            <h4>Buyer Accounts</h4>
-            <p>
-              Buyers are required to create an account before making purchases. This allows order
-              tracking, purchase history, and notification preference management.
-            </p>
-          </Section>
+      <LegalSection title="5. Seller Responsibilities">
+        <p>Sellers are responsible for all catalog and transaction conduct on their storefront.</p>
+        <ul>
+          <li>Provide truthful and lawful product descriptions, pricing, and inventory.</li>
+          <li>Fulfill orders and customer support obligations in a timely manner.</li>
+          <li>Comply with tax, consumer, advertising, and product safety laws.</li>
+          <li>Maintain valid Stripe onboarding and payout eligibility information.</li>
+          <li>Handle refunds, exchanges, and disputes according to applicable law.</li>
+        </ul>
+      </LegalSection>
 
-          <Section title="4. Payments and Billing">
-            <h4>Seller Subscriptions</h4>
-            <p>
-              Seller plans are billed monthly at the stated rate via Stripe Billing. Subscriptions
-              automatically renew unless cancelled. You may cancel at any time through your account
-              settings.
-            </p>
-            <h4>Buyer Transactions</h4>
-            <p>
-              Buyer purchases are processed through Stripe Connect Express. Payments are directed to
-              the seller&apos;s connected Stripe account. ReplaySell facilitates the transaction but is
-              not the merchant of record.
-            </p>
-            <h4>Refunds</h4>
-            <p>
-              Refund policies are set by individual sellers. Disputes should be directed to the
-              seller first. If unresolved, you may contact us at support@replaysell.com.
-            </p>
-          </Section>
+      <LegalSection title="6. Buyer Responsibilities">
+        <ul>
+          <li>Use accurate account and payment details.</li>
+          <li>Do not attempt fraudulent purchases or charge abuse.</li>
+          <li>Respect seller-specific terms, shipping windows, and return policies.</li>
+          <li>Do not misuse notifications, messaging, or checkout flows.</li>
+        </ul>
+      </LegalSection>
 
-          <Section title="5. Seller Obligations">
-            <p>As a seller on ReplaySell, you agree to:</p>
-            <ul>
-              <li>Provide accurate product descriptions, pricing, and stock information</li>
-              <li>Fulfill orders promptly and in good faith</li>
-              <li>Comply with all applicable consumer protection and e-commerce laws</li>
-              <li>Not list prohibited, illegal, or fraudulent products</li>
-              <li>Maintain accurate business and tax information</li>
-            </ul>
-          </Section>
+      <LegalSection title="7. Payments, Refunds, and Chargebacks">
+        <p>
+          Payment processing is provided by Stripe. Sellers are primarily responsible for
+          transaction-level customer outcomes, including refunds and order issues.
+        </p>
+        <ul>
+          <li>
+            ReplaySell may share transaction metadata with Stripe and other providers as required.
+          </li>
+          <li>
+            Chargebacks, disputes, and payment reversals may affect seller account standing and
+            access.
+          </li>
+        </ul>
+      </LegalSection>
 
-          <Section title="6. Buyer Obligations">
-            <p>As a buyer on ReplaySell, you agree to:</p>
-            <ul>
-              <li>Provide accurate personal and payment information</li>
-              <li>Not engage in fraudulent transactions</li>
-              <li>Respect the terms set by individual sellers</li>
-              <li>Not abuse the alert or notification system</li>
-            </ul>
-          </Section>
+      <LegalSection title="8. Fees and Taxes">
+        <p>
+          Sellers are responsible for taxes, duties, and reporting obligations related to their
+          sales, unless law requires otherwise.
+        </p>
+        <p>
+          ReplaySell currently configures no platform fee for connected-account purchases in your
+          current setup, but reserved rights in these Terms still apply if fee models change later.
+        </p>
+      </LegalSection>
 
-          <Section title="7. Intellectual Property">
-            <p>
-              The ReplaySell platform, including its design, code, and branding, is the intellectual
-              property of ReplaySell. Sellers retain ownership of their product content, images, and
-              replay media.
-            </p>
-          </Section>
+      <LegalSection title="9. Prohibited Conduct">
+        <p>You may not use ReplaySell to:</p>
+        <ul>
+          <li>Sell illegal, stolen, counterfeit, unsafe, or prohibited goods.</li>
+          <li>Commit fraud, impersonation, phishing, or deceptive practices.</li>
+          <li>Interfere with platform reliability, security, or availability.</li>
+          <li>Reverse engineer or scrape data beyond permitted usage.</li>
+          <li>Violate intellectual property, privacy, or contractual rights.</li>
+        </ul>
+      </LegalSection>
 
-          <Section title="8. Prohibited Activities">
-            <p>You may not use the Service to:</p>
-            <ul>
-              <li>Violate any applicable laws or regulations</li>
-              <li>Sell counterfeit, stolen, or illegal goods</li>
-              <li>Engage in fraud, phishing, or other deceptive practices</li>
-              <li>Interfere with or disrupt the Service&apos;s infrastructure</li>
-              <li>Scrape, crawl, or otherwise extract data without permission</li>
-              <li>Impersonate another person or entity</li>
-            </ul>
-          </Section>
+      <LegalSection title="10. Intellectual Property and Content Rights">
+        <p>
+          ReplaySell owns the platform software, branding, and service design. Sellers retain
+          ownership of their content but grant ReplaySell a limited license to host, display, and
+          process that content to provide the service.
+        </p>
+      </LegalSection>
 
-          <Section title="9. Limitation of Liability">
-            <p>
-              ReplaySell is provided &quot;as is&quot; without warranties of any kind. To the maximum extent
-              permitted by law, ReplaySell shall not be liable for any indirect, incidental, special,
-              consequential, or punitive damages arising from your use of the Service.
-            </p>
-          </Section>
+      <LegalSection title="11. Suspension and Termination">
+        <p>
+          ReplaySell may suspend or terminate accounts for violations, fraud risk, legal risk,
+          non-payment, or abuse. You may stop using ReplaySell at any time.
+        </p>
+      </LegalSection>
 
-          <Section title="10. Termination">
-            <p>
-              We reserve the right to suspend or terminate your account at any time for violation of
-              these terms, fraudulent activity, or any other reason we deem appropriate. You may
-              terminate your account at any time by contacting support@replaysell.com.
-            </p>
-          </Section>
+      <LegalSection title="12. Disclaimers">
+        <p>
+          ReplaySell is provided on an &quot;as is&quot; and &quot;as available&quot; basis. To the extent permitted by
+          law, ReplaySell disclaims warranties of merchantability, fitness for a particular purpose,
+          and non-infringement.
+        </p>
+      </LegalSection>
 
-          <Section title="11. Changes to Terms">
-            <p>
-              We may update these Terms of Service from time to time. We will notify registered users
-              of material changes via email. Continued use of the Service after changes constitutes
-              acceptance of the updated terms.
-            </p>
-          </Section>
+      <LegalSection title="13. Limitation of Liability">
+        <p>
+          To the maximum extent permitted by law, ReplaySell is not liable for indirect, incidental,
+          special, consequential, exemplary, or punitive damages, or for loss of profits, revenue,
+          data, or goodwill.
+        </p>
+      </LegalSection>
 
-          <Section title="12. Contact">
-            <p>
-              For questions about these Terms of Service, contact us:
-            </p>
-            <ul>
-              <li>Email: support@replaysell.com</li>
-            </ul>
-          </Section>
-        </div>
-      </article>
-    </main>
-  );
-}
+      <LegalSection title="14. Indemnification">
+        <p>
+          You agree to indemnify and hold ReplaySell harmless from claims, liabilities, losses, and
+          costs arising from your content, sales, legal violations, or misuse of the platform.
+        </p>
+      </LegalSection>
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-2xl border-[3px] border-line bg-white p-6 shadow-[0_4px_0_#000] sm:p-8">
-      <h2 className="mb-4 font-heading text-2xl font-black tracking-tight">{title}</h2>
-      <div className="space-y-3 text-sm font-semibold leading-relaxed text-text-muted [&_h4]:mt-4 [&_h4]:font-heading [&_h4]:text-base [&_h4]:font-bold [&_h4]:text-text [&_li]:ml-4 [&_li]:list-disc [&_strong]:text-text [&_ul]:space-y-1.5">
-        {children}
-      </div>
-    </section>
+      <LegalSection title="15. Governing Law and Disputes">
+        <p>
+          These Terms are governed by applicable law in the jurisdiction where ReplaySell operates,
+          unless mandatory law in your jurisdiction requires otherwise.
+        </p>
+        <p>
+          Before filing a legal claim, both parties agree to attempt good-faith informal resolution
+          by contacting support@replaysell.com.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="16. Changes to Terms">
+        <p>
+          We may update these Terms periodically. Updated Terms become effective when posted, unless
+          a later date is specified.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="17. Contact">
+        <p>Questions about these Terms can be sent to:</p>
+        <ul>
+          <li>Email: support@replaysell.com</li>
+        </ul>
+      </LegalSection>
+    </LegalPageShell>
   );
 }

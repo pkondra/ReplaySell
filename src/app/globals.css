@@ -244,3 +244,41 @@ a {
     transform: translateY(0);
   }
 }
+
+.replaysell-confetti-piece {
+  position: absolute;
+  top: -15vh;
+  opacity: 0;
+  animation-name: replaysellConfettiFall;
+  animation-timing-function: cubic-bezier(0.13, 0.86, 0.21, 0.99);
+  animation-fill-mode: forwards;
+}
+
+.replaysell-celebration-badge {
+  animation: replaysellCelebrationBadge 0.45s ease-out both;
+}
+
+@keyframes replaysellConfettiFall {
+  0% {
+    transform: translate3d(0, -8vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift, 0px), 112vh, 0) rotate(var(--spin, 360deg));
+    opacity: 0;
+  }
+}
+
+@keyframes replaysellCelebrationBadge {
+  from {
+    transform: translate3d(-50%, 14px, 0) scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(-50%, 0, 0) scale(1);
+    opacity: 1;
+  }
+}

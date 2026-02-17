@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Manrope, Outfit, Space_Grotesk } from "next/font/google";
 
+import { NewAccountCelebration } from "@/components/auth/new-account-celebration";
+import { CookieConsentBanner } from "@/components/legal/cookie-consent-banner";
 import { AppProviders } from "@/components/providers/app-providers";
 
 import "./globals.css";
@@ -113,6 +115,8 @@ export default function RootLayout({
       >
         <AppProviders>
           <div className="relative z-10 min-h-screen overflow-x-hidden">{children}</div>
+          <CookieConsentBanner />
+          <NewAccountCelebration />
         </AppProviders>
       </body>
     </html>

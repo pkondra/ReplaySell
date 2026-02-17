@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
+import {
+  NEW_ACCOUNT_CELEBRATION_EVENT,
+  NEW_ACCOUNT_CELEBRATION_SESSION_KEY,
+} from "@/lib/auth/celebration";
 import { normalizeEmail, signUpSchema } from "@/lib/auth/validators";
 
 export function SignUpForm({ nextPath }: { nextPath: string }) {
@@ -60,6 +64,10 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
         return;
       }
 
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem(NEW_ACCOUNT_CELEBRATION_SESSION_KEY, "1");
+      }
+
       const loginResult = await signIn("credentials", {
         email: normalizeEmail(parsed.data.email),
         password: parsed.data.password,
@@ -67,11 +75,17 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
       });
 
       if (!loginResult || loginResult.error) {
+        if (typeof window !== "undefined") {
+          window.sessionStorage.removeItem(NEW_ACCOUNT_CELEBRATION_SESSION_KEY);
+        }
         setError("Account created, but sign-in failed. Please sign in manually.");
         router.push(`/sign-in?next=${encodeURIComponent(nextPath)}`);
         return;
       }
 
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event(NEW_ACCOUNT_CELEBRATION_EVENT));
+      }
       router.replace(nextPath);
       router.refresh();
     } catch {

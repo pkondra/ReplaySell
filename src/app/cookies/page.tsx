@@ -1,153 +1,120 @@
-import { ArrowLeft, Package } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+
+import { LegalPageShell, LegalSection } from "@/components/legal/legal-page-shell";
+import {
+  COOKIE_CONSENT_COOKIE_NAME,
+  COOKIE_OPTIONAL_FEATURES_COOKIE_NAME,
+} from "@/lib/cookies/consent";
 
 export const metadata: Metadata = {
   title: "Cookie Policy",
-  description: "How ReplaySell uses cookies and similar technologies.",
+  description: "How ReplaySell uses cookies and how you can manage preferences.",
 };
 
 export default function CookiesPage() {
   return (
-    <main className="min-h-screen">
-      {/* Nav */}
-      <nav className="border-b-[3px] border-line bg-panel">
-        <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-5 py-4 sm:px-8">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border-[3px] border-line bg-[#ffbc8c] shadow-[0_3px_0_#000]">
-              <Package size={16} />
-            </div>
-            <p className="font-heading text-xl font-black leading-none sm:text-2xl">ReplaySell</p>
-          </Link>
-          <Link
-            href="/"
-            className="brutal-btn-secondary inline-flex h-10 items-center gap-2 px-4 font-dashboard text-xs"
-          >
-            <ArrowLeft size={13} />
-            Home
-          </Link>
-        </div>
-      </nav>
+    <LegalPageShell
+      title="Cookie Policy"
+      lastUpdated="February 17, 2026"
+      summary="This Cookie Policy describes the cookies and similar technologies used by ReplaySell, including what is essential, what is optional, and how your first-visit consent choices are applied."
+    >
+      <LegalSection title="1. What Cookies Are">
+        <p>
+          Cookies are small text files stored in your browser. They help keep you signed in,
+          maintain security controls, remember settings, and understand service performance.
+        </p>
+      </LegalSection>
 
-      {/* Content */}
-      <article className="mx-auto w-full max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
-        <div className="mb-10">
-          <p className="font-dashboard text-xs font-bold uppercase tracking-[0.12em] text-text-muted">
-            Legal
-          </p>
-          <h1 className="mt-2 font-heading text-4xl font-black tracking-tight sm:text-5xl">
-            Cookie Policy
-          </h1>
-          <p className="mt-3 text-sm font-semibold text-text-muted">
-            Last updated: June 14, 2025
-          </p>
-        </div>
+      <LegalSection title="2. Cookie Categories We Use">
+        <h4>Strictly Essential</h4>
+        <p>
+          Required for login sessions, checkout flows, fraud prevention, and core service operation.
+          These cookies cannot be disabled through the consent banner.
+        </p>
+        <h4>Optional/Preference Cookies</h4>
+        <p>
+          Used only when you choose &quot;Accept all&quot;. They support optional experience and future
+          optimization features.
+        </p>
+      </LegalSection>
 
-        <div className="legal-content space-y-8">
-          <Section title="1. What Are Cookies?">
-            <p>
-              Cookies are small text files placed on your device when you visit a website. They help
-              the website remember your preferences, keep you signed in, and understand how you use
-              the site.
-            </p>
-          </Section>
+      <LegalSection title="3. First-Visit Cookie Consent">
+        <p>When you first visit ReplaySell, you are asked to choose:</p>
+        <ul>
+          <li>
+            <strong>Essential only</strong> — only required cookies are used.
+          </li>
+          <li>
+            <strong>Accept all</strong> — required cookies plus optional cookies are enabled.
+          </li>
+        </ul>
+        <p>
+          Your selection is saved and reused on later visits unless you clear browser storage or
+          cookies.
+        </p>
+      </LegalSection>
 
-          <Section title="2. How We Use Cookies">
-            <p>ReplaySell uses cookies for the following purposes:</p>
+      <LegalSection title="4. First-Party Cookies Currently Used">
+        <ul>
+          <li>
+            <strong>{COOKIE_CONSENT_COOKIE_NAME}</strong> — stores your cookie consent choice.
+          </li>
+          <li>
+            <strong>{COOKIE_OPTIONAL_FEATURES_COOKIE_NAME}</strong> — indicates whether optional
+            cookies are enabled.
+          </li>
+          <li>
+            <strong>Auth.js security/session cookies</strong> — used for authentication and CSRF
+            protection (cookie names may vary by environment).
+          </li>
+        </ul>
+      </LegalSection>
 
-            <h4>Essential Cookies</h4>
-            <p>
-              These cookies are required for the platform to function. They handle authentication
-              sessions, security tokens, and basic platform functionality. You cannot opt out of
-              essential cookies.
-            </p>
+      <LegalSection title="5. Third-Party Cookies and Technologies">
+        <ul>
+          <li>
+            <strong>Stripe</strong> may set cookies related to payment and fraud detection during
+            checkout.
+          </li>
+          <li>
+            <strong>Auth.js / hosting stack</strong> may set service cookies needed for secure
+            session behavior.
+          </li>
+        </ul>
+        <p>
+          Third-party cookie behavior is governed by the third party&apos;s own policies and controls.
+        </p>
+      </LegalSection>
 
-            <h4>Authentication Cookies</h4>
-            <p>
-              We use Auth.js for authentication, which sets cookies to maintain your login session
-              and manage secure access to your account.
-            </p>
+      <LegalSection title="6. How to Manage Cookies">
+        <ul>
+          <li>Use the ReplaySell consent banner when first prompted.</li>
+          <li>Delete browser cookies to reset your consent prompt.</li>
+          <li>Manage cookie blocking and deletion in browser settings.</li>
+          <li>Use private/incognito mode to reduce persistence across sessions.</li>
+        </ul>
+      </LegalSection>
 
-            <h4>Functional Cookies</h4>
-            <p>
-              These cookies remember your preferences, such as notification settings and UI
-              preferences, to provide a better experience.
-            </p>
-          </Section>
+      <LegalSection title="7. Do Not Track">
+        <p>
+          Browser &quot;Do Not Track&quot; signals are not currently interpreted as a separate consent
+          framework in this product.
+        </p>
+      </LegalSection>
 
-          <Section title="3. Third-Party Cookies">
-            <p>
-              Some cookies are set by third-party services we use:
-            </p>
-            <ul>
-              <li><strong>Auth.js</strong> — Authentication session management</li>
-              <li><strong>Stripe</strong> — Fraud prevention and payment security during checkout</li>
-              <li><strong>Vercel</strong> — Performance analytics and deployment optimization</li>
-            </ul>
-            <p>
-              These services set their own cookies according to their respective cookie policies.
-            </p>
-          </Section>
+      <LegalSection title="8. Policy Updates">
+        <p>
+          We may update this Cookie Policy from time to time. Any updates are published here with a
+          revised date.
+        </p>
+      </LegalSection>
 
-          <Section title="4. Cookie Duration">
-            <p>We use two types of cookies based on duration:</p>
-            <ul>
-              <li>
-                <strong>Session cookies</strong> — Temporary cookies that are deleted when you close
-                your browser. Used for authentication and security.
-              </li>
-              <li>
-                <strong>Persistent cookies</strong> — Cookies that remain on your device for a set
-                period. Used for remembering your preferences and login state.
-              </li>
-            </ul>
-          </Section>
-
-          <Section title="5. Managing Cookies">
-            <p>
-              You can control cookies through your browser settings. Most browsers allow you to:
-            </p>
-            <ul>
-              <li>View what cookies are stored on your device</li>
-              <li>Delete individual or all cookies</li>
-              <li>Block cookies from specific or all websites</li>
-              <li>Set preferences for first-party vs. third-party cookies</li>
-            </ul>
-            <p>
-              Please note that disabling essential cookies may prevent you from using core platform
-              features like signing in or making purchases.
-            </p>
-          </Section>
-
-          <Section title="6. Updates to This Policy">
-            <p>
-              We may update this Cookie Policy from time to time to reflect changes in our practices
-              or applicable regulations. The &quot;Last updated&quot; date at the top indicates when
-              the policy was last revised.
-            </p>
-          </Section>
-
-          <Section title="7. Contact Us">
-            <p>
-              If you have questions about our use of cookies, please contact us:
-            </p>
-            <ul>
-              <li>Email: support@replaysell.com</li>
-            </ul>
-          </Section>
-        </div>
-      </article>
-    </main>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-2xl border-[3px] border-line bg-white p-6 shadow-[0_4px_0_#000] sm:p-8">
-      <h2 className="mb-4 font-heading text-2xl font-black tracking-tight">{title}</h2>
-      <div className="space-y-3 text-sm font-semibold leading-relaxed text-text-muted [&_h4]:mt-4 [&_h4]:font-heading [&_h4]:text-base [&_h4]:font-bold [&_h4]:text-text [&_li]:ml-4 [&_li]:list-disc [&_strong]:text-text [&_ul]:space-y-1.5">
-        {children}
-      </div>
-    </section>
+      <LegalSection title="9. Contact">
+        <p>Questions about cookie usage can be sent to:</p>
+        <ul>
+          <li>Email: support@replaysell.com</li>
+        </ul>
+      </LegalSection>
+    </LegalPageShell>
   );
 }
