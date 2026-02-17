@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { requireSessionUser } from "@/lib/connect/auth";
+import {
+  DEFAULT_CONNECT_ONBOARDING_COUNTRY,
+  normalizeConnectOnboardingCountry,
+} from "@/lib/connect/countries";
 import { getErrorMessage, jsonError } from "@/lib/connect/http";
 import {
   getConnectedAccountByUserId,
@@ -9,6 +13,28 @@ import {
 import { getAppBaseUrl, getStripeClient } from "@/lib/connect/stripe-client";
 
 export const runtime = "nodejs";
+
+type OnboardRequestBody = {
+  country?: unknown;
+};
+
+async function readOnboardRequestBody(request: Request): Promise<OnboardRequestBody> {
+  const contentType = request.headers.get("content-type") ?? "";
+  if (!contentType.toLowerCase().includes("application/json")) {
+    return {};
+  }
+
+  try {
+    const parsed = await request.json();
+    if (parsed && typeof parsed === "object") {
+      return parsed as OnboardRequestBody;
+    }
+  } catch {
+    // Gracefully ignore malformed JSON and let validation below return a clear error.
+  }
+
+  return {};
+}
 
 export async function POST(request: Request) {
   try {
@@ -22,6 +48,18 @@ export async function POST(request: Request) {
 
     // Step 3: Create a V2 connected account if this is the seller's first time.
     if (!connectedAccountId) {
+      const requestBody = await readOnboardRequestBody(request);
+      const requestedCountry = normalizeConnectOnboardingCountry(
+        requestBody.country ?? DEFAULT_CONNECT_ONBOARDING_COUNTRY,
+      );
+
+      if (!requestedCountry) {
+        return jsonError(
+          "Unsupported country. Choose one of: US, CA, GB, AE.",
+          400,
+        );
+      }
+
       const displayName =
         sessionUser.name?.trim() ||
         sessionUser.email?.trim() ||
@@ -36,7 +74,7 @@ export async function POST(request: Request) {
         display_name: displayName,
         contact_email: contactEmail,
         identity: {
-          country: "us",
+          country: requestedCountry,
         },
         dashboard: "full",
         defaults: {

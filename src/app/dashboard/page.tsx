@@ -22,6 +22,11 @@ import { api } from "@convex/_generated/api";
 import { AuthUserChip } from "@/components/auth/auth-user-chip";
 import { useToast } from "@/components/ui/toast-provider";
 import { validateReplayUrl } from "@/lib/embed";
+import {
+  CONNECT_ONBOARDING_COUNTRIES,
+  DEFAULT_CONNECT_ONBOARDING_COUNTRY,
+  type ConnectOnboardingCountry,
+} from "@/lib/connect/countries";
 import { formatTimestamp } from "@/lib/time";
 
 type SellerPlanId = "starter" | "growth" | "boutique";
@@ -97,6 +102,8 @@ export default function DashboardPage() {
   const [stripeConnectLoading, setStripeConnectLoading] = useState(false);
   const [stripeConnectOnboardingLoading, setStripeConnectOnboardingLoading] =
     useState(false);
+  const [selectedConnectCountry, setSelectedConnectCountry] =
+    useState<ConnectOnboardingCountry>(DEFAULT_CONNECT_ONBOARDING_COUNTRY);
 
   const refreshStripeConnectStatus = useCallback(async () => {
     setStripeConnectLoading(true);
@@ -181,7 +188,15 @@ export default function DashboardPage() {
   async function handleConnectToStripe() {
     setStripeConnectOnboardingLoading(true);
     try {
-      const response = await fetch("/api/connect/onboard", { method: "POST" });
+      const response = await fetch("/api/connect/onboard", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          country: selectedConnectCountry,
+        }),
+      });
       const json = (await response.json()) as { url?: string; error?: string };
       if (!response.ok || !json.url) {
         throw new Error(json.error ?? "Could not open Stripe onboarding.");
@@ -319,6 +334,30 @@ export default function DashboardPage() {
                 Card payments: {stripeConnectStatus.status.cardPaymentsStatus ?? "unknown"}
               </p>
             ) : null}
+            <label className="mt-4 block text-xs font-bold text-text-muted">
+              Seller country
+            </label>
+            <select
+              value={selectedConnectCountry}
+              onChange={(event) =>
+                setSelectedConnectCountry(event.target.value as ConnectOnboardingCountry)
+              }
+              disabled={
+                stripeConnectOnboardingLoading ||
+                stripeConnectLoading ||
+                Boolean(stripeConnectStatus?.connectedAccountId)
+              }
+              className="mt-1 w-full rounded-xl border-[3px] border-line bg-white px-3 py-2 text-sm font-semibold text-text outline-none disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {CONNECT_ONBOARDING_COUNTRIES.map((country) => (
+                <option key={country.code} value={country.code}>
+                  {country.label}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-[11px] font-semibold text-text-muted">
+              Country is used when creating your first Stripe connected account.
+            </p>
             <button
               onClick={handleConnectToStripe}
               disabled={stripeConnectOnboardingLoading}
