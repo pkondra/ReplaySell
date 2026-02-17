@@ -22,7 +22,7 @@ function authSecret() {
 }
 
 export async function getConnectedAccountByUserId(userId: string) {
-  return await fetchQuery(api.connectDemo.getConnectedStripeAccountByUserIdInternal, {
+  return await fetchQuery(api.connect.getConnectedStripeAccountByUserIdInternal, {
     userId,
     authSecret: authSecret(),
   });
@@ -30,7 +30,7 @@ export async function getConnectedAccountByUserId(userId: string) {
 
 export async function getConnectedAccountByStripeAccountId(stripeAccountId: string) {
   return await fetchQuery(
-    api.connectDemo.getConnectedStripeAccountByStripeAccountIdInternal,
+    api.connect.getConnectedStripeAccountByStripeAccountIdInternal,
     {
       stripeAccountId,
       authSecret: authSecret(),
@@ -40,7 +40,7 @@ export async function getConnectedAccountByStripeAccountId(stripeAccountId: stri
 
 export async function getConnectedSubscriptionByUserId(userId: string) {
   return await fetchQuery(
-    api.connectDemo.getConnectedStripeSubscriptionByUserIdInternal,
+    api.connect.getConnectedStripeSubscriptionByUserIdInternal,
     {
       userId,
       authSecret: authSecret(),
@@ -52,7 +52,7 @@ export async function getReplayProductCheckoutContext(args: {
   replayId: Id<"replays">;
   productId: Id<"products">;
 }) {
-  return await fetchQuery(api.connectDemo.getReplayProductCheckoutContext, {
+  return await fetchQuery(api.connect.getReplayProductCheckoutContext, {
     replayId: args.replayId,
     productId: args.productId,
     authSecret: authSecret(),
@@ -65,7 +65,7 @@ export async function upsertConnectedAccountMapping(args: {
   displayName?: string | null;
   contactEmail?: string | null;
 }) {
-  return await fetchMutation(api.connectDemo.upsertConnectedStripeAccountMapping, {
+  return await fetchMutation(api.connect.upsertConnectedStripeAccountMapping, {
     ...args,
     authSecret: authSecret(),
   });
@@ -79,7 +79,7 @@ export async function syncConnectedAccountSignals(args: {
   lastThinEventType?: string | null;
   lastThinEventCreatedAt?: number | null;
 }) {
-  return await fetchMutation(api.connectDemo.syncConnectedStripeAccountSignals, {
+  return await fetchMutation(api.connect.syncConnectedStripeAccountSignals, {
     ...args,
     authSecret: authSecret(),
   });
@@ -94,7 +94,7 @@ export async function syncConnectedSubscriptionState(args: {
   currentPeriodEnd?: number | null;
   lastEventType?: string | null;
 }) {
-  return await fetchMutation(api.connectDemo.syncConnectedStripeSubscriptionState, {
+  return await fetchMutation(api.connect.syncConnectedStripeSubscriptionState, {
     ...args,
     authSecret: authSecret(),
   });

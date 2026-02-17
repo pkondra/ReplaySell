@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 
-import { requireSessionUser } from "@/lib/connect-demo/auth";
-import { getErrorMessage, jsonError } from "@/lib/connect-demo/http";
+import { requireSessionUser } from "@/lib/connect/auth";
+import { getErrorMessage, jsonError } from "@/lib/connect/http";
 import {
   getConnectedAccountByUserId,
   getConnectedSubscriptionByUserId,
-} from "@/lib/connect-demo/store";
-import { getStripeClient } from "@/lib/connect-demo/stripe-client";
+} from "@/lib/connect/store";
+import { getStripeClient } from "@/lib/connect/stripe-client";
 
 export const runtime = "nodejs";
 
