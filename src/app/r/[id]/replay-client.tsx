@@ -14,9 +14,9 @@ import {
   Timer,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { api } from "@convex/_generated/api";
 import { EmbedPreview } from "@/components/replay/embed-preview";
@@ -29,6 +29,7 @@ import { useToast } from "@/components/ui/toast-provider";
 export default function PublicReplayClient() {
   const params = useParams<{ id: string }>();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const replayId = params.id as Id<"replays">;
   const toast = useToast();
 
@@ -40,7 +41,7 @@ export default function PublicReplayClient() {
   const replay = useQuery(api.replays.getPublicReplay, { id: replayId });
   const products = useQuery(api.products.listByReplay, { replayId });
   const subscribe = useMutation(api.subscribers.subscribe);
-  const placeOrder = useMutation(api.orders.placeOrder);
+  const handledCheckoutSessionRef = useRef<string | null>(null);
 
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -54,6 +55,10 @@ export default function PublicReplayClient() {
   const [nowTs, setNowTs] = useState(() => Date.now());
   const [copied, setCopied] = useState(false);
   const [showShareTip, setShowShareTip] = useState(false);
+  const [confirmingCheckout, setConfirmingCheckout] = useState(false);
+  const checkoutState = searchParams.get("checkout");
+  const checkoutSessionId = searchParams.get("session_id");
+  const checkoutProductId = searchParams.get("product_id");
 
   useEffect(() => {
     if (!replay?.expiresAt) return;
@@ -82,6 +87,70 @@ export default function PublicReplayClient() {
       setEmail((current) => current || buyerEmail);
     }
   }, [isSignedIn, buyerEmail]);
+
+  useEffect(() => {
+    if (
+      checkoutState !== "success" ||
+      !checkoutSessionId ||
+      !checkoutProductId ||
+      !isSignedIn
+    ) {
+      return;
+    }
+
+    if (handledCheckoutSessionRef.current === checkoutSessionId) {
+      return;
+    }
+    handledCheckoutSessionRef.current = checkoutSessionId;
+
+    let cancelled = false;
+    void (async () => {
+      setConfirmingCheckout(true);
+      try {
+        const response = await fetch("/api/connect/replay-checkout/confirm", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            replayId,
+            productId: checkoutProductId,
+            sessionId: checkoutSessionId,
+          }),
+        });
+
+        const payload = (await response.json()) as {
+          created?: boolean;
+          error?: string;
+        };
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? "Could not confirm payment.");
+        }
+
+        toast.success(
+          payload.created ? "Payment confirmed. Order saved." : "Order already confirmed.",
+        );
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Could not confirm payment.",
+        );
+      } finally {
+        if (!cancelled) {
+          setConfirmingCheckout(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    checkoutProductId,
+    checkoutSessionId,
+    checkoutState,
+    isSignedIn,
+    replayId,
+    toast,
+  ]);
 
   const signInHref = useMemo(
     () => `/sign-in?next=${encodeURIComponent(pathname)}`,
@@ -349,6 +418,12 @@ export default function PublicReplayClient() {
           </h1>
         ) : null}
 
+        {confirmingCheckout ? (
+          <p className="rounded-xl border-2 border-line bg-accent px-4 py-2 text-sm font-semibold shadow-[0_2px_0_#000]">
+            Confirming your Stripe payment...
+          </p>
+        ) : null}
+
         {/* Main content grid */}
         <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
           {/* Left — Video */}
@@ -389,7 +464,6 @@ export default function PublicReplayClient() {
                       email={email}
                       isSignedIn={isSignedIn}
                       signInHref={signInHref}
-                      placeOrder={placeOrder}
                       toast={toast}
                     />
                   ))}
@@ -401,7 +475,6 @@ export default function PublicReplayClient() {
                       email={email}
                       isSignedIn={isSignedIn}
                       signInHref={signInHref}
-                      placeOrder={placeOrder}
                       toast={toast}
                     />
                   ))}
@@ -544,7 +617,6 @@ function ProductCard({
   email,
   isSignedIn,
   signInHref,
-  placeOrder,
   toast,
 }: {
   product: Doc<"products">;
@@ -552,12 +624,6 @@ function ProductCard({
   email: string;
   isSignedIn: boolean;
   signInHref: string;
-  placeOrder: (args: {
-    replayId: Id<"replays">;
-    productId: Id<"products">;
-    email: string;
-    quantity: number;
-  }) => Promise<Id<"orders">>;
   toast: { success: (m: string) => void; error: (m: string) => void };
 }) {
   const [buying, setBuying] = useState(false);
@@ -567,17 +633,32 @@ function ProductCard({
     if (!isSignedIn) return;
     setBuying(true);
     try {
-      await placeOrder({
-        replayId,
-        productId: product._id,
-        email,
-        quantity: 1,
+      const response = await fetch("/api/connect/replay-checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          replayId,
+          productId: product._id,
+          quantity: 1,
+          email,
+        }),
       });
-      toast.success(`Purchased ${product.name}`);
+
+      const payload = (await response.json()) as {
+        url?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !payload.url) {
+        throw new Error(payload.error ?? "Could not start Stripe checkout.");
+      }
+
+      window.location.href = payload.url;
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not place order.");
-    } finally {
       setBuying(false);
+    } finally {
+      // If redirect succeeds, this won't run in practice.
     }
   }
 

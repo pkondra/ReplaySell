@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { api } from "@convex/_generated/api";
 import { AuthUserChip } from "@/components/auth/auth-user-chip";
@@ -25,6 +25,15 @@ import { validateReplayUrl } from "@/lib/embed";
 import { formatTimestamp } from "@/lib/time";
 
 type SellerPlanId = "starter" | "growth" | "boutique";
+type StripeConnectStatus = {
+  connectedAccountId: string | null;
+  status: {
+    cardPaymentsStatus: string | null;
+    requirementsStatus: string | null;
+    readyToProcessPayments: boolean;
+    onboardingComplete: boolean;
+  } | null;
+};
 
 const SELLER_PLAN_OPTIONS: Array<{
   id: SellerPlanId;
@@ -72,6 +81,7 @@ export default function DashboardPage() {
   );
   const initialUrl = searchParams.get("url") ?? "";
   const billingState = searchParams.get("billing");
+  const onboardingState = searchParams.get("stripe_onboarding");
   const preferredPlan = parseSellerPlan(searchParams.get("plan"));
   const createReplay = useMutation(api.replays.createReplay);
   const [showCreate, setShowCreate] = useState(() => Boolean(initialUrl));
@@ -80,7 +90,37 @@ export default function DashboardPage() {
   const [portalLoading, setPortalLoading] = useState(false);
   const billingGateRef = useRef<HTMLDivElement | null>(null);
   const handledBillingStateRef = useRef<string | null>(null);
+  const handledOnboardingStateRef = useRef<string | null>(null);
   const hasSellerAccess = sellerSubscription?.hasAccess ?? false;
+  const [stripeConnectStatus, setStripeConnectStatus] =
+    useState<StripeConnectStatus | null>(null);
+  const [stripeConnectLoading, setStripeConnectLoading] = useState(false);
+  const [stripeConnectOnboardingLoading, setStripeConnectOnboardingLoading] =
+    useState(false);
+
+  const refreshStripeConnectStatus = useCallback(async () => {
+    setStripeConnectLoading(true);
+    try {
+      const response = await fetch("/api/connect/status");
+      const json = (await response.json()) as StripeConnectStatus & {
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(json.error ?? "Failed to load Stripe Connect status.");
+      }
+
+      setStripeConnectStatus({
+        connectedAccountId: json.connectedAccountId ?? null,
+        status: json.status ?? null,
+      });
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to load Stripe Connect status."));
+      setStripeConnectStatus(null);
+    } finally {
+      setStripeConnectLoading(false);
+    }
+  }, [toast]);
 
   useEffect(() => {
     if (!billingState || handledBillingStateRef.current === billingState) return;
@@ -93,6 +133,26 @@ export default function DashboardPage() {
 
     handledBillingStateRef.current = billingState;
   }, [billingState, toast]);
+
+  useEffect(() => {
+    if (!onboardingState || handledOnboardingStateRef.current === onboardingState) {
+      return;
+    }
+
+    if (onboardingState === "return") {
+      toast.success("Stripe onboarding returned. Refreshing status...");
+    } else if (onboardingState === "refresh") {
+      toast.error("Stripe onboarding expired. Please continue onboarding.");
+    }
+
+    handledOnboardingStateRef.current = onboardingState;
+    void refreshStripeConnectStatus();
+  }, [onboardingState, refreshStripeConnectStatus, toast]);
+
+  useEffect(() => {
+    if (!canQuery) return;
+    void refreshStripeConnectStatus();
+  }, [canQuery, refreshStripeConnectStatus]);
 
   async function handleManageSubscription() {
     setPortalLoading(true);
@@ -115,6 +175,21 @@ export default function DashboardPage() {
     } catch (error) {
       toast.error(getErrorMessage(error, "Could not start Stripe checkout."));
       setCheckoutPlan(null);
+    }
+  }
+
+  async function handleConnectToStripe() {
+    setStripeConnectOnboardingLoading(true);
+    try {
+      const response = await fetch("/api/connect/onboard", { method: "POST" });
+      const json = (await response.json()) as { url?: string; error?: string };
+      if (!response.ok || !json.url) {
+        throw new Error(json.error ?? "Could not open Stripe onboarding.");
+      }
+      window.location.href = json.url;
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Could not open Stripe onboarding."));
+      setStripeConnectOnboardingLoading(false);
     }
   }
 
@@ -146,13 +221,6 @@ export default function DashboardPage() {
             >
               <UserRound size={15} />
               Buyer history
-            </Link>
-            <Link
-              href="/dashboard/connect"
-              className="flex items-center gap-2 rounded-xl border-2 border-line bg-white px-4 py-3.5 text-sm font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5"
-            >
-              <CreditCard size={15} />
-              Connect sample
             </Link>
           </nav>
 
@@ -222,6 +290,49 @@ export default function DashboardPage() {
                   {portalLoading ? "Opening..." : "Manage Subscription"}
                 </button>
               )}
+          </div>
+
+          <div
+            className={`mt-4 rounded-xl border-[3px] border-line p-5 shadow-[0_4px_0_#000] ${
+              stripeConnectStatus?.status?.readyToProcessPayments
+                ? "bg-accent"
+                : "bg-white"
+            }`}
+          >
+            <p className="font-heading text-lg font-black">Stripe Connect</p>
+            <p className="text-sm font-semibold text-text-muted">
+              {stripeConnectLoading
+                ? "Checking Stripe onboarding..."
+                : stripeConnectStatus?.status?.readyToProcessPayments
+                  ? "Ready to accept payments on replay products."
+                  : stripeConnectStatus?.connectedAccountId
+                    ? "Finish Stripe onboarding to accept payments."
+                    : "Connect your Stripe account to accept payments."}
+            </p>
+            {stripeConnectStatus?.connectedAccountId ? (
+              <p className="mt-1 text-xs font-semibold text-text-muted">
+                Account: {stripeConnectStatus.connectedAccountId}
+              </p>
+            ) : null}
+            {stripeConnectStatus?.status ? (
+              <p className="mt-1 text-xs font-semibold text-text-muted">
+                Card payments: {stripeConnectStatus.status.cardPaymentsStatus ?? "unknown"}
+              </p>
+            ) : null}
+            <button
+              onClick={handleConnectToStripe}
+              disabled={stripeConnectOnboardingLoading}
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border-[3px] border-line bg-white px-4 py-2.5 text-xs font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_0_#000] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <CreditCard size={13} />
+              {stripeConnectOnboardingLoading
+                ? "Opening..."
+                : stripeConnectStatus?.status?.readyToProcessPayments
+                  ? "Review Stripe onboarding"
+                  : stripeConnectStatus?.connectedAccountId
+                    ? "Continue Stripe onboarding"
+                    : "Connect To Stripe"}
+            </button>
           </div>
         </aside>
 

@@ -77,6 +77,55 @@ export const getConnectedStripeSubscriptionByUserIdInternal = query({
   },
 });
 
+export const getReplayProductCheckoutContext = query({
+  args: {
+    replayId: v.id("replays"),
+    productId: v.id("products"),
+    authSecret: v.string(),
+  },
+  handler: async (ctx, args) => {
+    assertInternalSecret(args.authSecret);
+
+    const replay = await ctx.db.get(args.replayId);
+    if (!replay) {
+      throw new Error("Replay not found.");
+    }
+
+    const product = await ctx.db.get(args.productId);
+    if (!product) {
+      throw new Error("Product not found.");
+    }
+
+    if (product.replayId !== args.replayId) {
+      throw new Error("Product does not belong to this replay.");
+    }
+
+    const connectedAccount = await getConnectedStripeAccountByUserId(
+      ctx,
+      replay.userId,
+    );
+
+    return {
+      replay: {
+        id: replay._id,
+        sellerUserId: replay.userId,
+        status: replay.status ?? null,
+        expiresAt: replay.expiresAt ?? null,
+      },
+      product: {
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        currency: product.currency ?? "usd",
+        stock: product.stock,
+        stripeProductId: product.stripeProductId ?? null,
+        stripePriceId: product.stripePriceId ?? null,
+      },
+      connectedAccountId: connectedAccount?.stripeAccountId ?? null,
+    };
+  },
+});
+
 export const upsertConnectedStripeAccountMapping = mutation({
   args: {
     userId: v.string(),

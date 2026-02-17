@@ -3,6 +3,7 @@ import "server-only";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 
 function getInternalSecret() {
   // Placeholder setup reminder:
@@ -16,10 +17,14 @@ function getInternalSecret() {
   return secret;
 }
 
+function authSecret() {
+  return getInternalSecret();
+}
+
 export async function getConnectedAccountByUserId(userId: string) {
   return await fetchQuery(api.connectDemo.getConnectedStripeAccountByUserIdInternal, {
     userId,
-    authSecret: getInternalSecret(),
+    authSecret: authSecret(),
   });
 }
 
@@ -28,7 +33,7 @@ export async function getConnectedAccountByStripeAccountId(stripeAccountId: stri
     api.connectDemo.getConnectedStripeAccountByStripeAccountIdInternal,
     {
       stripeAccountId,
-      authSecret: getInternalSecret(),
+      authSecret: authSecret(),
     },
   );
 }
@@ -38,9 +43,20 @@ export async function getConnectedSubscriptionByUserId(userId: string) {
     api.connectDemo.getConnectedStripeSubscriptionByUserIdInternal,
     {
       userId,
-      authSecret: getInternalSecret(),
+      authSecret: authSecret(),
     },
   );
+}
+
+export async function getReplayProductCheckoutContext(args: {
+  replayId: Id<"replays">;
+  productId: Id<"products">;
+}) {
+  return await fetchQuery(api.connectDemo.getReplayProductCheckoutContext, {
+    replayId: args.replayId,
+    productId: args.productId,
+    authSecret: authSecret(),
+  });
 }
 
 export async function upsertConnectedAccountMapping(args: {
@@ -51,7 +67,7 @@ export async function upsertConnectedAccountMapping(args: {
 }) {
   return await fetchMutation(api.connectDemo.upsertConnectedStripeAccountMapping, {
     ...args,
-    authSecret: getInternalSecret(),
+    authSecret: authSecret(),
   });
 }
 
@@ -65,7 +81,7 @@ export async function syncConnectedAccountSignals(args: {
 }) {
   return await fetchMutation(api.connectDemo.syncConnectedStripeAccountSignals, {
     ...args,
-    authSecret: getInternalSecret(),
+    authSecret: authSecret(),
   });
 }
 
@@ -80,6 +96,52 @@ export async function syncConnectedSubscriptionState(args: {
 }) {
   return await fetchMutation(api.connectDemo.syncConnectedStripeSubscriptionState, {
     ...args,
-    authSecret: getInternalSecret(),
+    authSecret: authSecret(),
+  });
+}
+
+export async function addReplayProductWithStripeMapping(args: {
+  replayId: Id<"replays">;
+  userId: string;
+  name: string;
+  price: number;
+  currency: string;
+  stock: number;
+  stripeProductId?: string | null;
+  stripePriceId?: string | null;
+}) {
+  return await fetchMutation(api.products.addProductWithStripeMapping, {
+    replayId: args.replayId,
+    userId: args.userId,
+    name: args.name,
+    price: args.price,
+    currency: args.currency,
+    stock: args.stock,
+    stripeProductId: args.stripeProductId ?? undefined,
+    stripePriceId: args.stripePriceId ?? undefined,
+    authSecret: authSecret(),
+  });
+}
+
+export async function finalizePaidCheckoutOrder(args: {
+  replayId: Id<"replays">;
+  productId: Id<"products">;
+  buyerId: string;
+  email: string;
+  quantity: number;
+  stripeCheckoutSessionId: string;
+  stripePaymentIntentId?: string | null;
+  amountTotalCents?: number | null;
+}) {
+  return await fetchMutation(api.orders.finalizePaidCheckoutOrder, {
+    replayId: args.replayId,
+    productId: args.productId,
+    buyerId: args.buyerId,
+    email: args.email,
+    quantity: args.quantity,
+    stripeCheckoutSessionId: args.stripeCheckoutSessionId,
+    stripePaymentIntentId: args.stripePaymentIntentId ?? undefined,
+    amountTotalCents: args.amountTotalCents ?? undefined,
+    authSecret: authSecret(),
   });
 }

@@ -2,6 +2,17 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { assertSellerAccess, requireIdentity } from "./sellerAccess";
 
+function assertInternalSecret(secret: string) {
+  const expected = process.env.AUTH_INTERNAL_SECRET;
+  if (!expected || expected.trim() === "") {
+    throw new Error("AUTH_INTERNAL_SECRET is not configured in Convex.");
+  }
+
+  if (secret !== expected) {
+    throw new Error("Unauthorized");
+  }
+}
+
 export const addProduct = mutation({
   args: {
     replayId: v.id("replays"),
@@ -21,6 +32,7 @@ export const addProduct = mutation({
       userId: identity.subject,
       name: args.name,
       price: args.price,
+      currency: "usd",
       stock: args.stock,
       sold: 0,
       createdAt: Date.now(),
@@ -67,5 +79,40 @@ export const listByReplay = query({
       .query("products")
       .withIndex("by_replayId", (q) => q.eq("replayId", args.replayId))
       .collect();
+  },
+});
+
+export const addProductWithStripeMapping = mutation({
+  args: {
+    replayId: v.id("replays"),
+    userId: v.string(),
+    name: v.string(),
+    price: v.number(),
+    currency: v.string(),
+    stock: v.number(),
+    stripeProductId: v.optional(v.union(v.string(), v.null())),
+    stripePriceId: v.optional(v.union(v.string(), v.null())),
+    authSecret: v.string(),
+  },
+  handler: async (ctx, args) => {
+    assertInternalSecret(args.authSecret);
+
+    const replay = await ctx.db.get(args.replayId);
+    if (!replay || replay.userId !== args.userId) {
+      throw new Error("Replay not found.");
+    }
+
+    return await ctx.db.insert("products", {
+      replayId: args.replayId,
+      userId: args.userId,
+      name: args.name,
+      price: args.price,
+      currency: args.currency,
+      stock: args.stock,
+      sold: 0,
+      stripeProductId: args.stripeProductId ?? undefined,
+      stripePriceId: args.stripePriceId ?? undefined,
+      createdAt: Date.now(),
+    });
   },
 });

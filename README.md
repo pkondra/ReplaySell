@@ -9,13 +9,13 @@ ReplaySell is a replay-commerce app where sellers create shoppable replay pages 
 - Auth.js (email/password auth for seller and buyer accounts)
 - Convex (database + mutations/queries)
 - Stripe Billing (seller subscriptions + webhook sync)
-- Stripe Connect sample (V2 accounts + onboarding + storefront + webhooks)
+- Stripe Connect (V2 account onboarding + connected-account checkout)
 - Resend (transactional email scaffold)
 
 ## Product Model
 
 - Sellers: fixed monthly fee (recommended via Stripe Billing subscription on platform account)
-- Buyers: checkout against seller connected account (recommended via Stripe Connect Express destination charges)
+- Buyers: checkout against seller connected account (direct charge via hosted Stripe Checkout)
 - Buyers must sign in to purchase so order history is tied to account
 
 ## Current Features
@@ -33,13 +33,11 @@ ReplaySell is a replay-commerce app where sellers create shoppable replay pages 
   - sign-in prompt before purchase
 - Buyer purchase history page (`/dashboard/purchases`)
 - Seller billing gate (7-day Stripe trial before replay/product creation)
-- Connect sample dashboard at `/dashboard/connect`
-  - creates V2 connected accounts
-  - generates V2 account onboarding links
-  - creates connected-account products
-  - launches connected-account storefront checkout
-  - starts subscription checkout with `customer_account`
-  - opens Billing Portal with `customer_account`
+- Stripe Connect in core dashboard/replay flow
+  - sidebar button to connect + onboard seller Stripe account
+  - replay products are created on seller connected account
+  - buyers checkout from replay items with hosted Stripe Checkout
+  - paid sessions are confirmed back into local orders
 - Resend helper at `src/lib/email/resend.ts` using:
   - `noreply@hello.ringreceptionist.com`
 
@@ -65,9 +63,8 @@ Required:
 - `STRIPE_SELLER_STARTER_MONTHLY_PRICE_ID` (`price_...` preferred, `prod_...` supported)
 - `STRIPE_SELLER_GROWTH_MONTHLY_PRICE_ID` (`price_...` preferred, `prod_...` supported)
 - `STRIPE_SELLER_BOUTIQUE_MONTHLY_PRICE_ID` (`price_...` preferred, `prod_...` supported)
-- `STRIPE_CONNECT_PLATFORM_SUBSCRIPTION_PRICE_ID` (`price_...`, used by `/dashboard/connect`)
-- `STRIPE_CONNECT_THIN_WEBHOOK_SECRET` (`whsec_...`, for `/api/connect-demo/webhooks/thin`)
-- `STRIPE_CONNECT_BILLING_WEBHOOK_SECRET` (`whsec_...`, for `/api/connect-demo/webhooks/billing`)
+- `STRIPE_CONNECT_THIN_WEBHOOK_SECRET` (`whsec_...`, for `/api/connect/webhooks/thin`)
+- `STRIPE_CONNECT_BILLING_WEBHOOK_SECRET` (`whsec_...`, for `/api/connect/webhooks/billing`)
 - `STRIPE_CONNECT_PLATFORM_FEE_BPS` (optional, default `0` = no platform fee)
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL` (default is already set)
@@ -129,12 +126,16 @@ App runs on [http://localhost:4000](http://localhost:4000).
 - [ ] Seller cannot create replay/product before starting trial
 - [ ] Seller starts plan checkout with 7-day trial in Stripe Checkout
 - [ ] Webhook updates seller status (`trialing`, `active`, `canceled`)
+- [ ] Seller clicks "Connect To Stripe" and completes onboarding
+- [ ] Seller adds replay product and Stripe product/price are created
+- [ ] Buyer signs in and completes hosted checkout from replay page
+- [ ] Success redirect confirms order and deducts stock once
 
 ## Notes
 
 - Stripe seller billing webhook endpoint: `POST /api/stripe/webhook` on your app URL.
-- Stripe Connect thin webhook endpoint: `POST /api/connect-demo/webhooks/thin`
-- Stripe Connect billing webhook endpoint: `POST /api/connect-demo/webhooks/billing`
+- Stripe Connect thin webhook endpoint: `POST /api/connect/webhooks/thin`
+- Stripe Connect billing webhook endpoint: `POST /api/connect/webhooks/billing`
 - Example thin-event local forwarding:
-  - `stripe listen --thin-events 'v2.core.account[requirements].updated,v2.core.account[configuration.merchant].capability_status_updated,v2.core.account[configuration.customer].capability_status_updated,v2.core.account[configuration.recipient].capability_status_updated' --forward-thin-to http://localhost:4000/api/connect-demo/webhooks/thin`
+  - `stripe listen --thin-events 'v2.core.account[requirements].updated,v2.core.account[configuration.merchant].capability_status_updated,v2.core.account[configuration.customer].capability_status_updated,v2.core.account[configuration.recipient].capability_status_updated' --forward-thin-to http://localhost:4000/api/connect/webhooks/thin`
 - Resend helper is scaffolded and ready for route handlers/server actions.

@@ -13,7 +13,7 @@ export async function requireSessionUser(): Promise<ConnectDemoSessionUser> {
   const user = session?.user;
 
   if (!user?.id) {
-    throw new Error("Unauthorized. Please sign in to use Stripe Connect demo flows.");
+    throw new Error("Unauthorized. Please sign in to use Stripe Connect flows.");
   }
 
   return {

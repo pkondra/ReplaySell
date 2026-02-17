@@ -26,8 +26,11 @@ export default defineSchema({
     userId: v.string(),
     name: v.string(),
     price: v.number(),
+    currency: v.optional(v.string()),
     stock: v.number(),
     sold: v.number(),
+    stripeProductId: v.optional(v.string()),
+    stripePriceId: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index("by_replayId", ["replayId"])
@@ -58,11 +61,14 @@ export default defineSchema({
     quantity: v.number(),
     total: v.number(),
     status: v.string(),
+    stripeCheckoutSessionId: v.optional(v.string()),
+    stripePaymentIntentId: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index("by_replayId", ["replayId"])
     .index("by_sellerId", ["sellerId"])
-    .index("by_buyerId", ["buyerId"]),
+    .index("by_buyerId", ["buyerId"])
+    .index("by_stripeCheckoutSessionId", ["stripeCheckoutSessionId"]),
 
   sellerSubscriptions: defineTable({
     userId: v.string(),

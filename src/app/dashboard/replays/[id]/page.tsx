@@ -21,7 +21,7 @@ import {
   UserRound,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { api } from "@convex/_generated/api";
@@ -66,9 +66,7 @@ export default function ReplayDetailPage() {
   const deleteReplay = useMutation(api.replays.deleteReplay);
   const archiveReplay = useMutation(api.replays.archiveReplay);
   const unarchiveReplay = useMutation(api.replays.unarchiveReplay);
-  const addProduct = useMutation(api.products.addProduct);
   const removeProduct = useMutation(api.products.removeProduct);
-  const router = useRouter();
 
   const [tab, setTab] = useState<"products" | "subscribers" | "orders" | "campaigns">("products");
   const [renderNow] = useState(() => Date.now());
@@ -359,7 +357,6 @@ export default function ReplayDetailPage() {
             <ProductsTab
               replayId={replayId}
               products={products ?? []}
-              addProduct={addProduct}
               removeProduct={removeProduct}
               canManageProducts={sellerSubscription?.hasAccess ?? false}
               billingLoading={sellerSubscription === undefined}
@@ -575,7 +572,6 @@ function ReplaySettingsCard({
 function ProductsTab({
   replayId,
   products,
-  addProduct,
   removeProduct,
   canManageProducts,
   billingLoading,
@@ -583,12 +579,6 @@ function ProductsTab({
 }: {
   replayId: Id<"replays">;
   products: Doc<"products">[];
-  addProduct: (args: {
-    replayId: Id<"replays">;
-    name: string;
-    price: number;
-    stock: number;
-  }) => Promise<Id<"products">>;
   removeProduct: (args: { id: Id<"products"> }) => Promise<void | null>;
   canManageProducts: boolean;
   billingLoading: boolean;
@@ -609,16 +599,27 @@ function ProductsTab({
     if (!name.trim() || !price || !stock) return;
     setAdding(true);
     try {
-      await addProduct({
-        replayId,
-        name: name.trim(),
-        price: parseFloat(price),
-        stock: parseInt(stock, 10),
+      const response = await fetch("/api/connect/replay-products", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          replayId,
+          name: name.trim(),
+          price: parseFloat(price),
+          stock: parseInt(stock, 10),
+          currency: "usd",
+        }),
       });
+
+      const payload = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Could not add product.");
+      }
+
       setName("");
       setPrice("");
       setStock("");
-      toast.success("Product added.");
+      toast.success("Product added and connected to Stripe.");
     } catch (error) {
       toast.error(getErrorMessage(error, "Could not add product."));
     } finally {
