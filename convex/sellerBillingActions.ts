@@ -98,7 +98,7 @@ function getAppUrl() {
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_SITE_URL ??
-    "https://replay-sell.vercel.app";
+    "https://replaysell.com";
 
   return baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
 }

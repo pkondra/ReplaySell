@@ -54,9 +54,9 @@ Required:
 - `AUTH_SECRET`
 - `AUTH_INTERNAL_SECRET`
 - `CONVEX_AUTH_PRIVATE_KEY` (RS256 private key in PEM format, with `\n` escapes)
-- `CONVEX_AUTH_ISSUER` (recommended: `https://replay-sell.vercel.app`)
+- `CONVEX_AUTH_ISSUER` (recommended: `https://replaysell.com`)
 - `NEXT_PUBLIC_CONVEX_URL`
-- `NEXT_PUBLIC_APP_URL` (for Stripe success/cancel redirects, recommended: `https://replay-sell.vercel.app`)
+- `NEXT_PUBLIC_APP_URL` (for Stripe success/cancel redirects, recommended: `https://replaysell.com`)
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `STRIPE_WEBHOOK_INGEST_SECRET`
@@ -83,9 +83,9 @@ npx convex env set STRIPE_WEBHOOK_INGEST_SECRET <value>
 npx convex env set STRIPE_SELLER_STARTER_MONTHLY_PRICE_ID <value>
 npx convex env set STRIPE_SELLER_GROWTH_MONTHLY_PRICE_ID <value>
 npx convex env set STRIPE_SELLER_BOUTIQUE_MONTHLY_PRICE_ID <value>
-npx convex env set NEXT_PUBLIC_APP_URL https://replay-sell.vercel.app
+npx convex env set NEXT_PUBLIC_APP_URL https://replaysell.com
 npx convex env set AUTH_INTERNAL_SECRET <value>
-npx convex env set CONVEX_AUTH_ISSUER https://replay-sell.vercel.app
+npx convex env set CONVEX_AUTH_ISSUER https://replaysell.com
 npx convex env set CONVEX_AUTH_JWKS '<jwks-json>'
 ```
 
@@ -133,9 +133,9 @@ App runs on [http://localhost:4000](http://localhost:4000).
 
 ## Notes
 
-- Stripe seller billing webhook endpoint: `POST /api/stripe/webhook` on your app URL.
-- Stripe Connect thin webhook endpoint: `POST /api/connect/webhooks/thin`
-- Stripe Connect billing webhook endpoint: `POST /api/connect/webhooks/billing`
+- Stripe seller billing webhook endpoint: `POST https://replaysell.com/api/stripe/webhook`
+- Stripe Connect thin webhook endpoint: `POST https://replaysell.com/api/connect/webhooks/thin`
+- Stripe Connect billing webhook endpoint: `POST https://replaysell.com/api/connect/webhooks/billing`
 - Example thin-event local forwarding:
   - `stripe listen --thin-events 'v2.core.account[requirements].updated,v2.core.account[configuration.merchant].capability_status_updated,v2.core.account[configuration.customer].capability_status_updated,v2.core.account[configuration.recipient].capability_status_updated' --forward-thin-to http://localhost:4000/api/connect/webhooks/thin`
 - Resend helper is scaffolded and ready for route handlers/server actions.

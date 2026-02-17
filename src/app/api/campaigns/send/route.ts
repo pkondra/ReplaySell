@@ -76,7 +76,11 @@ export async function POST(request: Request) {
   }
 
   const title = replay.title || "Replay";
-  const publicUrl = `${process.env.NEXTAUTH_URL || "https://replay-sell.vercel.app"}/r/${replayId}`;
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+    process.env.NEXTAUTH_URL?.trim() ||
+    "https://replaysell.com";
+  const publicUrl = `${appUrl.replace(/\/+$/, "")}/r/${replayId}`;
   const tmpl = TEMPLATES[template]({ title });
 
   let sent = 0;

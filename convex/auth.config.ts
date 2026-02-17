@@ -7,7 +7,7 @@ function trimTrailingSlash(value: string) {
 const issuer = trimTrailingSlash(
   process.env.CONVEX_AUTH_ISSUER ??
     process.env.AUTH_ISSUER_URL ??
-    "https://replay-sell.vercel.app",
+    "https://replaysell.com",
 );
 
 const convexSiteUrl = trimTrailingSlash(

@@ -36,7 +36,7 @@ export function getConvexAuthIssuer() {
     process.env.CONVEX_AUTH_ISSUER ??
     process.env.AUTH_ISSUER_URL ??
     process.env.NEXT_PUBLIC_APP_URL ??
-    "https://replay-sell.vercel.app";
+    "https://replaysell.com";
 
   return trimTrailingSlash(rawIssuer);
 }
