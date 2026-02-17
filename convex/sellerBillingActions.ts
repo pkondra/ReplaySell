@@ -133,6 +133,9 @@ export const createSellerCheckoutSession = action({
     const session: Stripe.Checkout.Session = await stripe.checkout.sessions.create(
       {
         mode: "subscription",
+        // Require a payment method during Checkout even though day-0 is a free trial.
+        // This ensures Stripe can automatically charge after the 7-day trial ends.
+        payment_method_collection: "always",
         line_items: [{ price: priceId, quantity: 1 }],
         success_url: `${appUrl}/dashboard?billing=success`,
         cancel_url: `${appUrl}/dashboard?billing=canceled`,

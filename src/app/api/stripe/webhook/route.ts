@@ -204,6 +204,20 @@ export async function POST(request: Request) {
         break;
       }
 
+      case "invoice.payment_succeeded":
+      case "invoice.paid": {
+        const invoice = event.data.object as Stripe.Invoice;
+        const rawSub = (invoice as unknown as Record<string, unknown>)["subscription"];
+        const subscriptionId = getId(
+          rawSub as string | { id: string } | null | undefined,
+        );
+        if (subscriptionId) {
+          const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+          await syncSubscriptionState({ subscription });
+        }
+        break;
+      }
+
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
         const rawSub = (invoice as unknown as Record<string, unknown>)["subscription"];
