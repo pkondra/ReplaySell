@@ -28,6 +28,17 @@ const EMBED_ATTEMPT_HOSTS = [
   "fb.watch",
 ];
 
+function buildEmbedUrl(
+  baseUrl: string,
+  params: Record<string, string | number | boolean>,
+) {
+  const url = new URL(baseUrl);
+  for (const [key, value] of Object.entries(params)) {
+    url.searchParams.set(key, String(value));
+  }
+  return url.toString();
+}
+
 function normalizeHostname(hostname: string) {
   return hostname.toLowerCase().replace(/^www\./, "");
 }
@@ -96,9 +107,13 @@ function isFacebookVideoUrl(url: URL) {
 function buildFacebookEmbedUrl(url: URL) {
   const normalized = new URL(url.toString());
   normalized.hash = "";
-  return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
-    normalized.toString(),
-  )}&show_text=false&width=1280`;
+  return buildEmbedUrl("https://www.facebook.com/plugins/video.php", {
+    href: normalized.toString(),
+    show_text: false,
+    width: 1280,
+    autoplay: true,
+    mute: true,
+  });
 }
 
 export function parseReplayUrl(rawValue: string): ParsedReplayUrl | null {
@@ -128,7 +143,16 @@ export function parseReplayUrl(rawValue: string): ParsedReplayUrl | null {
         hostname,
         provider: "youtube",
         previewKind: "iframe",
-        embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
+        // Browser autoplay policies generally require muted playback.
+        embedUrl: buildEmbedUrl(
+          `https://www.youtube-nocookie.com/embed/${videoId}`,
+          {
+            autoplay: 1,
+            mute: 1,
+            playsinline: 1,
+            rel: 0,
+          },
+        ),
       };
     }
   }
@@ -141,7 +165,11 @@ export function parseReplayUrl(rawValue: string): ParsedReplayUrl | null {
         hostname,
         provider: "vimeo",
         previewKind: "iframe",
-        embedUrl: `https://player.vimeo.com/video/${videoId}`,
+        embedUrl: buildEmbedUrl(`https://player.vimeo.com/video/${videoId}`, {
+          autoplay: 1,
+          muted: 1,
+          autopause: 0,
+        }),
       };
     }
   }

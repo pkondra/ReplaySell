@@ -50,6 +50,13 @@ function LinkCard({
   );
 }
 
+function getTikTokEmbedSrc(embedId: string) {
+  const url = new URL(`https://www.tiktok.com/embed/v2/${embedId}`);
+  // Ask TikTok to autoplay when possible. Browser/site policy may still restrict.
+  url.searchParams.set("autoplay", "1");
+  return url.toString();
+}
+
 export function EmbedPreview({ url, className }: { url: string; className?: string }) {
   const parsed = useMemo(() => parseReplayUrl(url), [url]);
   const [tiktokState, setTikTokState] = useState<TikTokState>({ status: "idle" });
@@ -158,7 +165,7 @@ export function EmbedPreview({ url, className }: { url: string; className?: stri
           <div className="overflow-hidden rounded-xl border-[3px] border-line bg-bg-strong shadow-[0_4px_0_#000]">
             <div className="relative mx-auto aspect-[9/16] w-full max-w-sm">
               <iframe
-                src={`https://www.tiktok.com/embed/v2/${embedId}`}
+                src={getTikTokEmbedSrc(embedId)}
                 title="TikTok preview"
                 className="absolute inset-0 h-full w-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
