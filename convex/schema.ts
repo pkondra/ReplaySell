@@ -81,4 +81,36 @@ export default defineSchema({
     .index("by_userId", ["userId"])
     .index("by_stripeCustomerId", ["stripeCustomerId"])
     .index("by_stripeSubscriptionId", ["stripeSubscriptionId"]),
+
+  connectedStripeAccounts: defineTable({
+    userId: v.string(),
+    stripeAccountId: v.string(),
+    displayName: v.optional(v.string()),
+    contactEmail: v.optional(v.string()),
+    latestRequirementsStatus: v.optional(v.string()),
+    latestCardPaymentsStatus: v.optional(v.string()),
+    lastThinEventId: v.optional(v.string()),
+    lastThinEventType: v.optional(v.string()),
+    lastThinEventCreatedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_stripeAccountId", ["stripeAccountId"]),
+
+  connectedStripeSubscriptions: defineTable({
+    userId: v.optional(v.string()),
+    stripeAccountId: v.string(),
+    stripeSubscriptionId: v.optional(v.string()),
+    stripePriceId: v.optional(v.string()),
+    status: v.string(),
+    cancelAtPeriodEnd: v.optional(v.boolean()),
+    currentPeriodEnd: v.optional(v.number()),
+    lastEventType: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_stripeAccountId", ["stripeAccountId"])
+    .index("by_stripeSubscriptionId", ["stripeSubscriptionId"]),
 });

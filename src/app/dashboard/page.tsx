@@ -147,6 +147,13 @@ export default function DashboardPage() {
               <UserRound size={15} />
               Buyer history
             </Link>
+            <Link
+              href="/dashboard/connect"
+              className="flex items-center gap-2 rounded-xl border-2 border-line bg-white px-4 py-3.5 text-sm font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5"
+            >
+              <CreditCard size={15} />
+              Connect sample
+            </Link>
           </nav>
 
           <div
