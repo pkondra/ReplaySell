@@ -553,9 +553,9 @@ export default function HomePage() {
 
               {/* Headline */}
               <h1 className="font-heading text-[clamp(2.2rem,5vw,4.2rem)] font-black leading-[1.08] tracking-[-0.035em]">
-                From Replay Link to{" "}
+                Turn Your Live Replay Link Into a{" "}
                 <span className="relative text-[#ff6b5a]">
-                  Live Storefront in 2 Minutes
+                  Shoppable Storefront
                   <svg
                     aria-hidden
                     className="absolute -bottom-1 left-0 w-full"
@@ -575,7 +575,7 @@ export default function HomePage() {
 
               {/* Sub-headline */}
               <p className="mt-5 max-w-lg text-lg leading-relaxed text-text-muted sm:text-xl sm:leading-relaxed">
-                Paste your replay URL, add products, and publish instantly. Start selling to missed buyers before your next story post.
+                Paste your live replay URL, add products, and publish instantly. Keep selling to viewers who missed your live.
               </p>
 
               {/* Input + CTA */}
