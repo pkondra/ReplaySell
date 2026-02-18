@@ -17,6 +17,7 @@ export type ParsedReplayUrl = {
   embedUrl?: string;
   tiktokVideoId?: string;
   supportNote?: string;
+  isVertical?: boolean;
 };
 
 const EMBED_ATTEMPT_HOSTS = [
@@ -138,12 +139,13 @@ export function parseReplayUrl(rawValue: string): ParsedReplayUrl | null {
   if (matchesHost(hostname, "youtube.com") || matchesHost(hostname, "youtu.be")) {
     const videoId = getYouTubeVideoId(url);
     if (videoId) {
+      const isShort = url.pathname.split("/").filter(Boolean)[0] === "shorts";
       return {
         normalizedUrl: url.toString(),
         hostname,
         provider: "youtube",
         previewKind: "iframe",
-        // Browser autoplay policies generally require muted playback.
+        isVertical: isShort,
         embedUrl: buildEmbedUrl(
           `https://www.youtube-nocookie.com/embed/${videoId}`,
           {
@@ -180,17 +182,20 @@ export function parseReplayUrl(rawValue: string): ParsedReplayUrl | null {
       hostname,
       provider: "tiktok",
       previewKind: "tiktok",
+      isVertical: true,
       tiktokVideoId: getTikTokVideoId(url) ?? undefined,
     };
   }
 
   if (matchesHost(hostname, "facebook.com") || matchesHost(hostname, "fb.watch")) {
     if (isFacebookVideoUrl(url)) {
+      const isReel = url.pathname.toLowerCase().startsWith("/reel/");
       return {
         normalizedUrl: url.toString(),
         hostname,
         provider: "facebook",
         previewKind: "iframe",
+        isVertical: isReel,
         embedUrl: buildFacebookEmbedUrl(url),
       };
     }
