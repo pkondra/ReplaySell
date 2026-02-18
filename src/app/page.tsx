@@ -632,14 +632,6 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Stats floating pill */}
-              <div className="absolute -right-8 bottom-28 z-20 rounded-xl border-[3px] border-line bg-accent-amber px-4 py-2.5 shadow-[0_4px_0_#000]">
-                <p className="font-heading text-lg font-black">$2,140</p>
-                <p className="font-dashboard text-[10px] font-bold text-text-muted">
-                  Replay revenue
-                </p>
-              </div>
-
               {/* Main mockup card */}
               <div className="relative z-10 rounded-2xl border-[3px] border-line bg-white shadow-[0_10px_0_#000]">
                 {/* Mock nav */}
