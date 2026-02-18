@@ -157,6 +157,8 @@ export default function PublicReplayClient() {
     () => `/sign-in?next=${encodeURIComponent(pathname)}`,
     [pathname],
   );
+  const parsedUrl = useMemo(() => parseReplayUrl(replay?.url ?? ""), [replay?.url]);
+  const isVertical = parsedUrl?.isVertical ?? false;
   const publicShareUrl =
     typeof window !== "undefined" ? window.location.href : `/r/${replayId}`;
 
@@ -402,8 +404,6 @@ export default function PublicReplayClient() {
   /* ── Unlocked replay view ──────────────────────────────── */
   const inStockProducts = products?.filter((p) => p.stock > 0) ?? [];
   const soldOutProducts = products?.filter((p) => p.stock <= 0) ?? [];
-  const parsedUrl = useMemo(() => parseReplayUrl(replay.url), [replay.url]);
-  const isVertical = parsedUrl?.isVertical ?? false;
 
   return (
     <PageShell
@@ -442,9 +442,9 @@ export default function PublicReplayClient() {
             <div className="rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000] sm:p-6">
               <div className="mb-5 flex items-center justify-between">
                 <p className="flex items-center gap-2.5 font-heading text-xl font-black">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border-[3px] border-line bg-accent shadow-[0_2px_0_#000]">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl border-[3px] border-line bg-accent shadow-[0_2px_0_#000]">
                     <ShoppingBag size={16} />
-                  </div>
+                  </span>
                   Products
                 </p>
                 <span className="rounded-full border-2 border-line bg-accent px-3 py-1 font-dashboard text-xs font-bold shadow-[0_2px_0_#000]">
@@ -494,9 +494,9 @@ export default function PublicReplayClient() {
                 className="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full bg-white/20"
               />
               <p className="mb-3 flex items-center gap-2 font-heading text-lg font-black">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-line bg-white/60 shadow-[0_1px_0_#000]">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-line bg-white/60 shadow-[0_1px_0_#000]">
                   <Bell size={14} />
-                </div>
+                </span>
                 Your alerts
               </p>
               <div className="flex flex-wrap gap-2">
@@ -675,32 +675,38 @@ function ProductCard({
           : "bg-white hover:-translate-y-0.5 hover:shadow-[0_5px_0_#000]"
       }`}
     >
-      <div className="flex items-center gap-4">
-        <div
-          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border-[3px] border-line shadow-[0_2px_0_#000] ${
-            outOfStock ? "bg-panel-strong" : "bg-accent-amber"
-          }`}
-        >
-          <ShoppingBag size={20} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="font-heading text-lg font-extrabold leading-tight">{product.name}</p>
-          <div className="mt-1.5 flex items-center gap-3">
-            <span className="font-heading text-xl font-black">${product.price.toFixed(2)}</span>
-            <span
-              className={`rounded-full border-2 border-line px-2.5 py-0.5 font-dashboard text-[10px] font-bold shadow-[0_1px_0_#000] ${
-                outOfStock ? "bg-panel-strong" : product.stock <= 5 ? "bg-[#ff6b5a]/20" : "bg-accent"
-              }`}
-            >
-              {outOfStock ? "Sold out" : product.stock <= 5 ? `Only ${product.stock} left` : `${product.stock} left`}
-            </span>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-4">
+          <div
+            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border-[3px] border-line shadow-[0_2px_0_#000] ${
+              outOfStock ? "bg-panel-strong" : "bg-accent-amber"
+            }`}
+          >
+            <ShoppingBag size={20} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-heading text-lg font-extrabold leading-tight">{product.name}</p>
+            <div className="mt-1.5 flex flex-wrap items-center gap-2.5">
+              <span className="font-heading text-xl font-black leading-none">${product.price.toFixed(2)}</span>
+              <span
+                className={`shrink-0 whitespace-nowrap rounded-full border-2 border-line px-2.5 py-0.5 font-dashboard text-[10px] font-bold shadow-[0_1px_0_#000] ${
+                  outOfStock ? "bg-panel-strong" : product.stock <= 5 ? "bg-[#ff6b5a]/20" : "bg-accent"
+                }`}
+              >
+                {outOfStock
+                  ? "Sold out"
+                  : product.stock <= 5
+                    ? `Only ${product.stock} left`
+                    : `${product.stock} left`}
+              </span>
+            </div>
           </div>
         </div>
 
         {!isSignedIn ? (
           <Link
             href={signInHref}
-            className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-[3px] border-line bg-white px-4 font-dashboard text-xs font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5"
+            className="inline-flex h-10 w-full shrink-0 items-center justify-center gap-1.5 rounded-xl border-[3px] border-line bg-white px-4 font-dashboard text-xs font-bold shadow-[0_3px_0_#000] transition-all hover:-translate-y-0.5 sm:w-auto"
           >
             <LogIn size={13} />
             Sign in to buy
@@ -709,7 +715,7 @@ function ProductCard({
           <button
             onClick={handleBuy}
             disabled={buying || outOfStock || !email}
-            className="brutal-btn-primary h-10 shrink-0 px-5 text-sm disabled:opacity-50"
+            className="brutal-btn-primary h-10 w-full shrink-0 px-5 text-sm disabled:opacity-50 sm:w-auto"
           >
             {buying ? "..." : outOfStock ? "Sold out" : "Buy now"}
           </button>
@@ -717,7 +723,7 @@ function ProductCard({
       </div>
 
       {!isSignedIn && (
-        <p className="mt-2.5 pl-[4.5rem] text-xs font-semibold text-text-muted">
+        <p className="mt-2.5 text-xs font-semibold text-text-muted sm:pl-[4.5rem]">
           Create an account to buy and track your order history.
         </p>
       )}
