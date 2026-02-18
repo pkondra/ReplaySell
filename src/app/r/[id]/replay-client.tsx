@@ -20,6 +20,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { api } from "@convex/_generated/api";
 import { EmbedPreview } from "@/components/replay/embed-preview";
+import { parseReplayUrl } from "@/lib/embed";
 import { useToast } from "@/components/ui/toast-provider";
 
 /* ------------------------------------------------------------------ */
@@ -401,6 +402,8 @@ export default function PublicReplayClient() {
   /* ── Unlocked replay view ──────────────────────────────── */
   const inStockProducts = products?.filter((p) => p.stock > 0) ?? [];
   const soldOutProducts = products?.filter((p) => p.stock <= 0) ?? [];
+  const parsedUrl = useMemo(() => parseReplayUrl(replay.url), [replay.url]);
+  const isVertical = parsedUrl?.isVertical ?? false;
 
   return (
     <PageShell
@@ -411,7 +414,6 @@ export default function PublicReplayClient() {
       showShareTip={showShareTip}
     >
       <div className="space-y-8">
-        {/* Title */}
         {replay.title ? (
           <h1 className="font-heading text-3xl font-black tracking-tight sm:text-4xl">
             {replay.title}
@@ -424,14 +426,17 @@ export default function PublicReplayClient() {
           </p>
         ) : null}
 
-        {/* Main content grid */}
-        <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
-          {/* Left — Video */}
-          <div className="space-y-4">
-            <EmbedPreview url={replay.url} />
+        <div
+          className={
+            isVertical
+              ? "grid gap-8 lg:grid-cols-[minmax(0,380px)_1fr]"
+              : "grid gap-8 lg:grid-cols-[1.3fr_1fr]"
+          }
+        >
+          <div className={isVertical ? "mx-auto w-full max-w-[380px] lg:sticky lg:top-6 lg:self-start" : "space-y-4"}>
+            <EmbedPreview url={replay.url} autoplay />
           </div>
 
-          {/* Right — Products + Alerts */}
           <div className="space-y-5">
             {/* Products */}
             <div className="rounded-2xl border-[3px] border-line bg-white p-5 shadow-[0_4px_0_#000] sm:p-6">

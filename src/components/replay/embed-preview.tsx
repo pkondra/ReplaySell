@@ -50,6 +50,18 @@ function LinkCard({
   );
 }
 
+function stripAutoplayParam(src: string) {
+  try {
+    const url = new URL(src);
+    url.searchParams.delete("autoplay");
+    url.searchParams.delete("mute");
+    url.searchParams.delete("muted");
+    return url.toString();
+  } catch {
+    return src;
+  }
+}
+
 function getTikTokEmbedSrc(embedId: string) {
   const url = new URL(`https://www.tiktok.com/embed/v2/${embedId}`);
   // Ask TikTok to autoplay when possible. Browser/site policy may still restrict.
@@ -57,7 +69,7 @@ function getTikTokEmbedSrc(embedId: string) {
   return url.toString();
 }
 
-export function EmbedPreview({ url, className }: { url: string; className?: string }) {
+export function EmbedPreview({ url, className, autoplay = false }: { url: string; className?: string; autoplay?: boolean }) {
   const parsed = useMemo(() => parseReplayUrl(url), [url]);
   const [tiktokState, setTikTokState] = useState<TikTokState>({ status: "idle" });
 
@@ -127,6 +139,8 @@ export function EmbedPreview({ url, className }: { url: string; className?: stri
   }
 
   if (parsed.previewKind === "iframe" && parsed.embedUrl) {
+    const iframeSrc = autoplay ? parsed.embedUrl : stripAutoplayParam(parsed.embedUrl);
+    const vertical = parsed.isVertical;
     return (
       <RetroCard className={cn("space-y-3", className)}>
         <div className="flex items-center justify-between gap-3">
@@ -134,12 +148,12 @@ export function EmbedPreview({ url, className }: { url: string; className?: stri
           <span className="text-xs text-text-muted">Embedded preview</span>
         </div>
         <div className="overflow-hidden rounded-xl border-[3px] border-line bg-bg-strong shadow-[0_4px_0_#000]">
-          <div className="relative aspect-video">
+          <div className={cn("relative", vertical ? "aspect-[9/16]" : "aspect-video")}>
             <iframe
-              src={parsed.embedUrl}
+              src={iframeSrc}
               title={`${parsed.provider} preview`}
               className="absolute inset-0 h-full w-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allow={`accelerometer; ${autoplay ? "autoplay; " : ""}clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share`}
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             />
@@ -156,6 +170,9 @@ export function EmbedPreview({ url, className }: { url: string; className?: stri
         : parsed.tiktokVideoId;
 
     if (embedId) {
+      const tiktokSrc = autoplay
+        ? getTikTokEmbedSrc(embedId)
+        : getTikTokEmbedSrc(embedId).replace("autoplay=1", "autoplay=0");
       return (
         <RetroCard className={cn("space-y-3", className)}>
           <div className="flex items-center justify-between gap-3">
@@ -163,12 +180,12 @@ export function EmbedPreview({ url, className }: { url: string; className?: stri
             <span className="text-xs text-text-muted">oEmbed assisted</span>
           </div>
           <div className="overflow-hidden rounded-xl border-[3px] border-line bg-bg-strong shadow-[0_4px_0_#000]">
-            <div className="relative mx-auto aspect-[9/16] w-full max-w-sm">
+            <div className="relative aspect-[9/16] w-full">
               <iframe
-                src={getTikTokEmbedSrc(embedId)}
+                src={tiktokSrc}
                 title="TikTok preview"
                 className="absolute inset-0 h-full w-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow={`accelerometer; ${autoplay ? "autoplay; " : ""}clipboard-write; encrypted-media; gyroscope; picture-in-picture`}
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />

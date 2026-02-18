@@ -8,6 +8,7 @@ import {
   DollarSign,
   ExternalLink,
   Layers2,
+  LinkIcon,
   Mail,
   Plus,
   RadioTower,
@@ -468,35 +469,49 @@ export default function DashboardPage() {
                   const isArchived = replay.status === "archived";
                   const isLive = replay.status === "live" && (replay.expiresAt ?? 0) > renderNow;
                   return (
-                    <Link
+                    <div
                       key={replay._id}
-                      href={`/dashboard/replays/${replay._id}`}
-                      className={`group block rounded-2xl border-[3px] border-line p-5 shadow-[0_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[0_6px_0_#000] ${
+                      className={`group rounded-2xl border-[3px] border-line p-5 shadow-[0_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[0_6px_0_#000] ${
                         isArchived ? "bg-panel-strong/50 opacity-75" : "bg-white"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div>
+                        <Link href={`/dashboard/replays/${replay._id}`} className="min-w-0 flex-1">
                           <p className="font-heading text-xl font-extrabold leading-tight">
                             {replay.title || replay.url}
                           </p>
                           <p className="mt-1 text-xs font-semibold text-text-muted">
                             Created {formatTimestamp(replay.createdAt)}
                           </p>
+                        </Link>
+                        <div className="flex shrink-0 items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const url = `${window.location.origin}/r/${replay._id}`;
+                              navigator.clipboard.writeText(url).then(() => {
+                                toast.success("Link copied!");
+                              });
+                            }}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border-2 border-line bg-white text-text-muted shadow-[0_2px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[0_3px_0_#000] hover:text-text"
+                          >
+                            <LinkIcon size={14} />
+                          </button>
+                          <span
+                            className={`rounded-full border-2 border-line px-2.5 py-1 text-[11px] font-bold shadow-[0_2px_0_#000] ${
+                              isArchived
+                                ? "bg-[#e0d4f7]"
+                                : isLive
+                                  ? "bg-accent"
+                                  : "bg-panel-strong"
+                            }`}
+                          >
+                            {isArchived ? "ARCHIVED" : isLive ? "LIVE" : "ENDED"}
+                          </span>
                         </div>
-                        <span
-                          className={`rounded-full border-2 border-line px-2.5 py-1 text-[11px] font-bold shadow-[0_2px_0_#000] ${
-                            isArchived
-                              ? "bg-[#e0d4f7]"
-                              : isLive
-                                ? "bg-accent"
-                                : "bg-panel-strong"
-                          }`}
-                        >
-                          {isArchived ? "ARCHIVED" : isLive ? "LIVE" : "ENDED"}
-                        </span>
                       </div>
-                    </Link>
+                    </div>
                   );
                 })}
               </div>

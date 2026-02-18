@@ -7,7 +7,6 @@ import {
   CreditCard,
   Link2,
   Package,
-  Play,
   ShoppingBag,
   Sparkles,
   Star,
@@ -663,20 +662,21 @@ export default function HomePage() {
                   <span className="font-dashboard text-lg font-black tabular-nums">23:47:12</span>
                 </div>
 
-                {/* Mock content */}
-                <div className="p-5">
-                  {/* Video placeholder */}
-                  <div className="mb-4 flex h-36 items-center justify-center rounded-xl border-[3px] border-line bg-panel-strong">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-line bg-white shadow-[0_3px_0_#000]">
-                      <Play size={18} className="ml-0.5" />
-                    </div>
-                  </div>
-
-                  {/* Mock products */}
-                  <div className="space-y-2.5">
+                <div className="grid grid-cols-[1fr_auto] gap-0">
+                  <div className="space-y-2.5 p-5">
                     <MockProduct name="Floral Print Dress" price="$38.00" stock="12 left" inStock />
                     <MockProduct name="Gold Hoop Earrings" price="$22.00" stock="4 left" inStock />
                     <MockProduct name="Silk Scrunchie Set" price="$14.00" stock="Sold out" inStock={false} />
+                  </div>
+                  <div className="border-l-[3px] border-line bg-[#1a1a1a]">
+                    <video
+                      src="/video demo.mp4"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="h-full w-44 object-cover"
+                    />
                   </div>
                 </div>
               </div>
