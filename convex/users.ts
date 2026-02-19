@@ -78,6 +78,15 @@ export const createUserWithPassword = mutation({
       updatedAt: now,
     });
 
+    await ctx.db.insert("sellerSubscriptions", {
+      userId: id,
+      plan: "starter",
+      status: "active",
+      cancelAtPeriodEnd: false,
+      createdAt: now,
+      updatedAt: now,
+    });
+
     return {
       id,
       email: args.email,

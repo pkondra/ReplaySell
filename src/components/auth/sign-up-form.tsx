@@ -102,7 +102,7 @@ export function SignUpForm({ nextPath }: { nextPath: string }) {
           Create your account
         </h2>
         <p className="mt-1 text-sm font-semibold text-text-muted">
-          Free 7-day trial. No credit card to browse.
+          Beta access includes the Starter plan immediately.
         </p>
       </div>
 
