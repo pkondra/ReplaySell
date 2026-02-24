@@ -53,6 +53,7 @@ Required:
 
 - `AUTH_SECRET`
 - `AUTH_INTERNAL_SECRET`
+- `ADMIN_PIN` (required to unlock `/admin`)
 - `CONVEX_AUTH_PRIVATE_KEY` (RS256 private key in PEM format, with `\n` escapes)
 - `CONVEX_AUTH_ISSUER` (recommended: `https://replaysell.com`)
 - `NEXT_PUBLIC_CONVEX_URL`
